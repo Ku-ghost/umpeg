@@ -158,7 +158,7 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
-    <!-- HEADER NAVBAR FULL WIDTH -->
+    <!-- HEADER PORTAL ADMIN -->
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-3 lg:px-6 py-2 shrink-0">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
@@ -196,7 +196,7 @@
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
+    <!-- MAIN CONTAINER ADMIN -->
     <main class="flex-1 w-full max-w-[98%] mx-auto p-3 sm:p-5 lg:p-6 space-y-4">
         
         <!-- Toast Notification Box -->
@@ -230,7 +230,7 @@
             </button>
         </div>
 
-        <!-- DASHBOARD VIEW -->
+        <!-- TAB 1: EXECUTIVE DASHBOARD -->
         <div id="admin-view-dashboard" class="space-y-4">
             <section class="space-y-3">
                 <div class="flex items-center justify-between border-b border-emerald-200/80 pb-2">
@@ -478,7 +478,7 @@
             </section>
         </div>
 
-        <!-- VERIFIKASI VIEW -->
+        <!-- TAB 2: VERIFIKASI BUNDEL DIGITAL -->
         <div id="admin-view-verifikasi" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
@@ -554,7 +554,7 @@
             </section>
         </div>
 
-        <!-- DIREKTORI VIEW -->
+        <!-- TAB 3: BUKU INDUK & ID DRIVE -->
         <div id="admin-view-direktori" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
@@ -587,7 +587,7 @@
             </section>
         </div>
 
-        <!-- LAPORAN VIEW -->
+        <!-- TAB 4: LAPORAN MATRIKS & MONITORING -->
         <div id="admin-view-laporan" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3" id="print-matrix-area">
                 
@@ -636,7 +636,7 @@
                     <div class="w-20 h-20 shrink-0 hidden sm:block"></div>
                 </div>
 
-                <!-- SUB-TAB 1: MATRIKS SDM -->
+                <!-- SUB-TAB 1: MATRIKS SDM (INTEGRATED SINGLE-TABLE STRUKTURAL & FUNGSIONAL) -->
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
                         <table class="w-full text-left border-collapse text-[10.5px]" id="table-export-matriks">
@@ -727,14 +727,14 @@
                         <div id="matrix-ttd-container" class="h-16 flex items-center justify-center my-1">
                             <img id="matrix-ttd-img" src="" alt="TTD Pejabat" class="max-h-16 hidden">
                         </div>
-                        <p id="matrix-pejabat-nama" class="font-black underline uppercase">Drs. H. Syamsuddin, M.Si.</p>
-                        <p id="matrix-pejabat-nip" class="text-[9px] text-slate-600 font-mono">NIP. 196805121994031005</p>
+                        <p id="matrix-pejabat-nama" class="font-black underline uppercase">( ________________________ )</p>
+                        <p id="matrix-pejabat-nip" class="text-[9px] text-slate-600 font-mono">NIP. -</p>
                     </div>
                 </div>
             </section>
         </div>
 
-        <!-- MASTER DATA VIEW -->
+        <!-- TAB 5: KELOLA MASTER UMPEG -->
         <div id="admin-view-master-data" class="hidden space-y-3 fade-in">
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs">
                 <button type="button" onclick="switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
@@ -759,6 +759,7 @@
                 </button>
             </div>
 
+            <!-- SUB-PANEL 1: CHECKLIST CONFIG -->
             <div id="panel-master-sub-checklist" class="space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4">
                     <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider mb-2.5">Master Persyaratan Berkas Digital (Form Ceklist A s/d H)</h3>
@@ -766,6 +767,7 @@
                 </section>
             </div>
 
+            <!-- SUB-PANEL 2: RUANGAN PENEMPATAN -->
             <div id="panel-master-sub-ruangan" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
@@ -786,6 +788,7 @@
                 </section>
             </div>
 
+            <!-- SUB-PANEL 3: JABATAN, ESELON & STATUS -->
             <div id="panel-master-sub-jabatan" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
@@ -852,6 +855,7 @@
                 </div>
             </div>
 
+            <!-- SUB-PANEL 4: PENDIDIKAN, GOLONGAN & ORG -->
             <div id="panel-master-sub-pend-gol" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -885,6 +889,7 @@
                 </section>
             </div>
 
+            <!-- SUB-PANEL 5: PEJABAT & KOP -->
             <div id="panel-master-sub-pejabat" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat & Logo Kop Cetak Laporan (A4)</h3>
@@ -1223,8 +1228,8 @@
                         <div id="sheet-ttd-container" class="h-12 flex items-center justify-center my-1">
                             <img id="sheet-ttd-img" src="" alt="TTD Pejabat" class="max-h-12 hidden">
                         </div>
-                        <p id="sheet-pejabat-nama" class="font-black underline uppercase">Drs. H. Syamsuddin, M.Si.</p>
-                        <p id="sheet-pejabat-nip" class="text-[8.5px] text-slate-500 font-mono">NIP. 196805121994031005</p>
+                        <p id="sheet-pejabat-nama" class="font-black underline uppercase">( ________________________ )</p>
+                        <p id="sheet-pejabat-nip" class="text-[8.5px] text-slate-500 font-mono">NIP. -</p>
                     </div>
                 </div>
             </div>
@@ -1242,7 +1247,12 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC - ALL HANDLERS ATTACHED TO GLOBAL WINDOW SCOPE -->
     <script>
+        // GLOBAL CREDENTIALS (Sistem Antena Supabase Terpusat)
+        const GLOBAL_SUPABASE_URL = "";
+        const GLOBAL_SUPABASE_ANON_KEY = "";
+
         const MASTER_PEGAWAI_DB_KEY = 'RSUD_UMPEG_MASTER_DATASET_V1';
         const SESSION_STORAGE_KEY = 'RSUD_PORTAL_PEGAWAI_SESSION_V5';
         const MASTER_RUANGAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_RUANGAN_LIST_V1';
@@ -1256,7 +1266,7 @@
         const MASTER_KOP_CONFIG_KEY = 'RSUD_UMPEG_KOP_CONFIG_V1';
         const SERVER_API_CONFIG_KEY = 'RSUD_UMPEG_SERVER_API_CONFIG_V1';
 
-        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)"];
+        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darurar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)"];
         const DEFAULT_JABATAN = {
             STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG"],
             FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker"]
@@ -1313,16 +1323,16 @@
         let masterOrgList = [];
         let masterChecklistConfig = [];
         let masterKopConfig = { 
-            pejabatNama: 'Drs. H. Syamsuddin, M.Si.', 
+            pejabatNama: '', 
             pejabatJabatan: 'Kepala Sub Bagian UMPEG', 
-            pejabatNip: '196805121994031005', 
+            pejabatNip: '', 
             logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png',
             ttdUrl: ''
         };
         let serverApiConfig = { 
             appId: 'RSUD_SINJAI_UMPEG_APP', 
-            supabaseUrl: '', 
-            supabaseAnonKey: '', 
+            supabaseUrl: GLOBAL_SUPABASE_URL, 
+            supabaseAnonKey: GLOBAL_SUPABASE_ANON_KEY, 
             gasUrl: '', 
             password: 'kugoskom36' 
         };
@@ -1334,87 +1344,73 @@
         let activePrintLayoutMode = 'portrait';
         let supabaseClient = null;
 
-        function initClock() {
+        // GLOBAL HANDLERS DEFINITIONS TO PREVENT REFERENCEERRORS
+        window.initClock = function() {
             setInterval(() => {
                 const now = new Date();
                 const clockEl = document.getElementById('live-clock');
                 if (clockEl) clockEl.innerText = now.toLocaleTimeString('id-ID') + " WITA";
             }, 1000);
-        }
+        };
 
-        function setSessionItem(key, val) {
+        window.setSessionItem = function(key, val) {
             const strVal = typeof val === 'string' ? val : JSON.stringify(val);
-            try { localStorage.setItem(key, strVal); } catch(e){}
             try { sessionStorage.setItem(key, strVal); } catch(e){}
-        }
+        };
 
-        function getSessionItem(key) {
-            const raw = localStorage.getItem(key) || sessionStorage.getItem(key);
+        window.getSessionItem = function(key) {
+            const raw = sessionStorage.getItem(key);
             if (!raw) return null;
             try { return JSON.parse(raw); } catch(e) { return raw; }
-        }
+        };
 
-        function setText(id, val) { 
+        window.setText = function(id, val) { 
             const el = document.getElementById(id); 
             if (el) el.innerText = val !== undefined && val !== null ? val : ''; 
-        }
+        };
 
-        function setBarHeight(id, pct) { 
+        window.setBarHeight = function(id, pct) { 
             const el = document.getElementById(id); 
             if (el) el.style.height = `${Math.min(100, Math.max(0, pct))}%`; 
-        }
+        };
 
-        function showToast(msg, type='info') {
+        window.showToast = function(msg, type='info') {
             const toast = document.getElementById('toast-box');
             const icon = document.getElementById('toast-icon');
             if (!toast) return;
-            setText('toast-msg', msg);
+            window.setText('toast-msg', msg);
             if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600 text-sm" : "fa-solid fa-circle-info text-emerald-600 text-sm";
             toast.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl bg-white border-emerald-300 text-slate-800 flex items-center gap-2 border";
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
+        };
 
-        function generateRandomEmployeeId(nipStr) {
+        window.generateRandomEmployeeId = function(nipStr) {
             const cleanDigits = String(nipStr || '').replace(/\D/g, '');
             const randomPart = Math.floor(100000 + Math.random() * 900000);
             return 'RSUD-PEG-' + (cleanDigits.length >= 6 ? cleanDigits.substring(0, 6) : randomPart);
-        }
+        };
 
-        async function initSupabaseClient() {
-            // Load persistent saved API Config
-            const savedApi = getSessionItem(SERVER_API_CONFIG_KEY);
+        window.initSupabaseClient = async function() {
+            const savedApi = window.getSessionItem(SERVER_API_CONFIG_KEY);
             if (savedApi) serverApiConfig = { ...serverApiConfig, ...savedApi };
 
-            if (serverApiConfig.supabaseUrl && serverApiConfig.supabaseAnonKey && window.supabase) {
+            const finalSupaUrl = GLOBAL_SUPABASE_URL || serverApiConfig.supabaseUrl || '';
+            const finalAnonKey = GLOBAL_SUPABASE_ANON_KEY || serverApiConfig.supabaseAnonKey || '';
+
+            if (finalSupaUrl && finalSupaUrl.startsWith('http') && finalAnonKey && window.supabase) {
                 try {
-                    supabaseClient = window.supabase.createClient(serverApiConfig.supabaseUrl, serverApiConfig.supabaseAnonKey);
+                    supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey);
                     
-                    // Fetch dedicated system_config table from Supabase
-                    const appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                    const { data: remoteSysConfig } = await supabaseClient
-                        .from('system_config')
-                        .select('*')
-                        .eq('id', appId)
-                        .maybeSingle();
-
-                    if (remoteSysConfig && remoteSysConfig.gas_url) {
-                        serverApiConfig.gasUrl = remoteSysConfig.gas_url;
-                        if (remoteSysConfig.system_password) serverApiConfig.password = remoteSysConfig.system_password;
-                        setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
-                    }
-
-                    // Fetch master config from Supabase DB
                     const { data: remoteMaster } = await supabaseClient
                         .from('master_umpeg_config')
                         .select('*')
-                        .eq('id', appId)
+                        .eq('id', serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP')
                         .maybeSingle();
 
-                    if (remoteMaster) {
-                        if (remoteMaster.master_ruangan) masterRuanganList = remoteMaster.master_ruangan;
-                        if (remoteMaster.master_jabatan) masterJabatanList = remoteMaster.master_jabatan;
-                        if (remoteMaster.kop_config) masterKopConfig = remoteMaster.kop_config;
+                    if (remoteMaster && remoteMaster.api_config) {
+                        serverApiConfig = { ...serverApiConfig, ...remoteMaster.api_config };
+                        window.setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
                     }
 
                     const dot = document.getElementById('ws-dot');
@@ -1427,29 +1423,29 @@
                     }
                     return true;
                 } catch(e) {
-                    console.error("Supabase init error:", e);
+                    console.warn("Supabase init notice:", e);
                 }
             }
             return false;
-        }
+        };
 
-        function loadAllMasterData() {
-            masterRuanganList = getSessionItem(MASTER_RUANGAN_STORAGE_KEY) || [...DEFAULT_RUANGAN];
-            masterJabatanList = getSessionItem(MASTER_JABATAN_STORAGE_KEY) || JSON.parse(JSON.stringify(DEFAULT_JABATAN));
-            masterEselonList = getSessionItem(MASTER_ESELON_STORAGE_KEY) || [...DEFAULT_ESELON];
-            masterStatusPegList = getSessionItem(MASTER_STATUS_PEG_STORAGE_KEY) || [...DEFAULT_STATUS_PEG];
-            masterEducationList = getSessionItem(MASTER_EDU_STORAGE_KEY) || [...DEFAULT_EDUCATION];
-            masterGolonganList = getSessionItem(MASTER_GOLONGAN_STORAGE_KEY) || [...DEFAULT_GOLONGAN];
-            masterOrgList = getSessionItem(MASTER_ORG_STORAGE_KEY) || [...DEFAULT_ORG_PROFESI];
-            masterChecklistConfig = getSessionItem(MASTER_CHECKLIST_CONFIG_KEY) || JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
+        window.loadAllMasterData = function() {
+            masterRuanganList = window.getSessionItem(MASTER_RUANGAN_STORAGE_KEY) || [...DEFAULT_RUANGAN];
+            masterJabatanList = window.getSessionItem(MASTER_JABATAN_STORAGE_KEY) || JSON.parse(JSON.stringify(DEFAULT_JABATAN));
+            masterEselonList = window.getSessionItem(MASTER_ESELON_STORAGE_KEY) || [...DEFAULT_ESELON];
+            masterStatusPegList = window.getSessionItem(MASTER_STATUS_PEG_STORAGE_KEY) || [...DEFAULT_STATUS_PEG];
+            masterEducationList = window.getSessionItem(MASTER_EDU_STORAGE_KEY) || [...DEFAULT_EDUCATION];
+            masterGolonganList = window.getSessionItem(MASTER_GOLONGAN_STORAGE_KEY) || [...DEFAULT_GOLONGAN];
+            masterOrgList = window.getSessionItem(MASTER_ORG_STORAGE_KEY) || [...DEFAULT_ORG_PROFESI];
+            masterChecklistConfig = window.getSessionItem(MASTER_CHECKLIST_CONFIG_KEY) || JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
 
-            const savedKop = getSessionItem(MASTER_KOP_CONFIG_KEY);
+            const savedKop = window.getSessionItem(MASTER_KOP_CONFIG_KEY);
             if (savedKop) masterKopConfig = { ...masterKopConfig, ...savedKop };
 
-            populateAdminMasterDropdowns();
-        }
+            window.populateAdminMasterDropdowns();
+        };
 
-        function populateAdminMasterDropdowns() {
+        window.populateAdminMasterDropdowns = function() {
             const verifStatusFilter = document.getElementById('filter-verif-status');
             const editStafStatusSelect = document.getElementById('edit-staf-status');
             if (verifStatusFilter) {
@@ -1473,20 +1469,37 @@
             if (editStafRuanganSelect) {
                 editStafRuanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
             }
-        }
+        };
 
-        function loadMasterDataset() {
-            const saved = getSessionItem(MASTER_PEGAWAI_DB_KEY);
-            masterPegawaiDb = (saved && Array.isArray(saved)) ? saved : [];
-            masterPegawaiDb.forEach(p => {
-                if (!p.idPegawai) p.idPegawai = generateRandomEmployeeId(p.nip);
-            });
-            setSessionItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
-        }
-
-        function saveMasterDataset() {
-            setSessionItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
-        }
+        window.loadMasterDataset = async function() {
+            if (supabaseClient) {
+                try {
+                    const { data: remotePegawai } = await supabaseClient.from('pegawai_lemari_digital').select('*');
+                    if (remotePegawai && Array.isArray(remotePegawai)) {
+                        masterPegawaiDb = remotePegawai.map(p => ({
+                            idPegawai: p.id_pegawai,
+                            nip: p.nip,
+                            username: p.username,
+                            nama: p.nama,
+                            status: p.status_kepegawaian,
+                            sub1: p.sub1,
+                            sub2: p.sub2,
+                            jabatan: p.jabatan,
+                            ruangan: p.ruangan,
+                            linksMap: p.link_url_drive || {},
+                            detailPersonal: p.detail_personal || {},
+                            detailJabatan: p.detail_jabatan || {},
+                            detailMedis: p.detail_medis || {},
+                            riwayatPendidikan: p.riwayat_pendidikan || [],
+                            verifikasiStatus: p.verifikasi_status || 'PENDING',
+                            verifikasiCatatan: p.verifikasi_catatan || ''
+                        }));
+                    }
+                } catch(e) {
+                    console.warn("Fetch pegawai notice:", e);
+                }
+            }
+        };
 
         window.switchMasterSubTab = function(subName) {
             activeMasterSubTab = subName;
@@ -1504,16 +1517,16 @@
                 }
             });
 
-            if (subName === 'checklist') renderMasterChecklistConfig();
-            else if (subName === 'ruangan') renderMasterRuanganCards();
+            if (subName === 'checklist') window.renderMasterChecklistConfig();
+            else if (subName === 'ruangan') window.renderMasterRuanganCards();
             else if (subName === 'jabatan') {
-                renderMasterJabatanGrid();
-                renderMasterEselonGrid();
-                renderMasterStatusPegGrid();
+                window.renderMasterJabatanGrid();
+                window.renderMasterEselonGrid();
+                window.renderMasterStatusPegGrid();
             } else if (subName === 'pend-gol') {
-                renderMasterEducationBadges();
-                renderMasterGolonganBadges();
-                renderMasterOrgBadges();
+                window.renderMasterEducationBadges();
+                window.renderMasterGolonganBadges();
+                window.renderMasterOrgBadges();
             } else if (subName === 'pejabat') {
                 document.getElementById('cfg-logo-url').value = masterKopConfig.logoUrl || '';
                 document.getElementById('cfg-ttd-url').value = masterKopConfig.ttdUrl || '';
@@ -1537,11 +1550,11 @@
                 if (subName === 'matriks') {
                     btnMatriks.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
                     btnMonitoring.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                    renderMatrixReport();
+                    window.renderMatrixReport();
                 } else {
                     btnMonitoring.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
                     btnMatriks.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                    renderSubTab2MonitoringKedinasan();
+                    window.renderSubTab2MonitoringKedinasan();
                 }
             }
         };
@@ -1667,11 +1680,11 @@
             const val = document.getElementById('input-new-ruangan').value.trim();
             if (!val) return;
             masterRuanganList.push(val);
-            setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
+            window.setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
             document.getElementById('input-new-ruangan').value = '';
-            renderMasterRuanganCards();
-            populateAdminMasterDropdowns();
-            showToast("Unit Kerja Ditambahkan!", "success");
+            window.renderMasterRuanganCards();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Unit Kerja Ditambahkan!", "success");
         };
 
         window.addNewMasterJabatan = function() {
@@ -1680,66 +1693,66 @@
             if (!val) return;
             if (!masterJabatanList[type]) masterJabatanList[type] = [];
             masterJabatanList[type].push(val);
-            setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
+            window.setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
             document.getElementById('input-new-jabatan').value = '';
-            renderMasterJabatanGrid();
-            populateAdminMasterDropdowns();
-            showToast("Jabatan Ditambahkan!", "success");
+            window.renderMasterJabatanGrid();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Jabatan Ditambahkan!", "success");
         };
 
         window.addNewMasterEselon = function() {
             const val = document.getElementById('input-new-eselon').value.trim();
             if (!val) return;
             masterEselonList.push(val);
-            setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
+            window.setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
             document.getElementById('input-new-eselon').value = '';
-            renderMasterEselonGrid();
-            populateAdminMasterDropdowns();
-            showToast("Eselon Ditambahkan!", "success");
+            window.renderMasterEselonGrid();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Eselon Ditambahkan!", "success");
         };
 
         window.addNewMasterStatusPegawai = function() {
             const val = document.getElementById('input-new-status-peg').value.trim();
             if (!val) return;
             masterStatusPegList.push(val);
-            setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
+            window.setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
             document.getElementById('input-new-status-peg').value = '';
-            renderMasterStatusPegGrid();
-            populateAdminMasterDropdowns();
-            showToast("Status Pegawai Ditambahkan!", "success");
+            window.renderMasterStatusPegGrid();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Status Pegawai Ditambahkan!", "success");
         };
 
         window.addNewMasterEducation = function() {
             const val = document.getElementById('input-new-edu').value.trim();
             if (!val) return;
             masterEducationList.push(val);
-            setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
+            window.setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
             document.getElementById('input-new-edu').value = '';
-            renderMasterEducationBadges();
-            populateAdminMasterDropdowns();
-            showToast("Pendidikan Ditambahkan!", "success");
+            window.renderMasterEducationBadges();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Pendidikan Ditambahkan!", "success");
         };
 
         window.addNewMasterGolongan = function() {
             const val = document.getElementById('input-new-golongan').value.trim();
             if (!val) return;
             masterGolonganList.push(val);
-            setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
+            window.setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
             document.getElementById('input-new-golongan').value = '';
-            renderMasterGolonganBadges();
-            populateAdminMasterDropdowns();
-            showToast("Golongan Ditambahkan!", "success");
+            window.renderMasterGolonganBadges();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Golongan Ditambahkan!", "success");
         };
 
         window.addNewMasterOrgProfesi = function() {
             const val = document.getElementById('input-new-org').value.trim();
             if (!val) return;
             masterOrgList.push(val);
-            setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
+            window.setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
             document.getElementById('input-new-org').value = '';
-            renderMasterOrgBadges();
-            populateAdminMasterDropdowns();
-            showToast("Organisasi Profesi Ditambahkan!", "success");
+            window.renderMasterOrgBadges();
+            window.populateAdminMasterDropdowns();
+            window.showToast("Organisasi Profesi Ditambahkan!", "success");
         };
 
         window.deleteMasterItem = function(type, category, index) {
@@ -1756,36 +1769,36 @@
             const { type, category, index } = pendingDeleteMaster;
             if (type === 'ruangan' && index !== null) {
                 masterRuanganList.splice(index, 1);
-                setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
-                renderMasterRuanganCards();
+                window.setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
+                window.renderMasterRuanganCards();
             } else if (type === 'jabatan' && category && index !== null) {
                 masterJabatanList[category].splice(index, 1);
-                setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
-                renderMasterJabatanGrid();
+                window.setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
+                window.renderMasterJabatanGrid();
             } else if (type === 'eselon' && index !== null) {
                 masterEselonList.splice(index, 1);
-                setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
-                renderMasterEselonGrid();
+                window.setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
+                window.renderMasterEselonGrid();
             } else if (type === 'statusPeg' && index !== null) {
                 masterStatusPegList.splice(index, 1);
-                setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
-                renderMasterStatusPegGrid();
+                window.setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
+                window.renderMasterStatusPegGrid();
             } else if (type === 'edu' && index !== null) {
                 masterEducationList.splice(index, 1);
-                setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
-                renderMasterEducationBadges();
+                window.setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
+                window.renderMasterEducationBadges();
             } else if (type === 'golongan' && index !== null) {
                 masterGolonganList.splice(index, 1);
-                setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
-                renderMasterGolonganBadges();
+                window.setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
+                window.renderMasterGolonganBadges();
             } else if (type === 'org' && index !== null) {
                 masterOrgList.splice(index, 1);
-                setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
-                renderMasterOrgBadges();
+                window.setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
+                window.renderMasterOrgBadges();
             }
-            populateAdminMasterDropdowns();
-            closeConfirmDeleteModal();
-            showToast("Item Master Berhasil Dihapus!", "info");
+            window.populateAdminMasterDropdowns();
+            window.closeConfirmDeleteModal();
+            window.showToast("Item Master Berhasil Dihapus!", "info");
         };
 
         window.updateKopMasterConfig = function() {
@@ -1794,27 +1807,37 @@
             masterKopConfig.pejabatNama = document.getElementById('cfg-pejabat-nama').value.trim();
             masterKopConfig.pejabatJabatan = document.getElementById('cfg-pejabat-jabatan').value.trim();
             masterKopConfig.pejabatNip = document.getElementById('cfg-pejabat-nip').value.trim();
-            setSessionItem(MASTER_KOP_CONFIG_KEY, masterKopConfig);
-            showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
-            if (supabaseClient) syncAllToSupabase();
+            window.setSessionItem(MASTER_KOP_CONFIG_KEY, masterKopConfig);
+
+            const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
+            const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
+            const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
+
+            ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
+            ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
+            ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
+
+            window.showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
+            if (supabaseClient) window.syncAllToSupabase();
         };
 
         window.syncAllToSupabase = async function() {
             if (!supabaseClient) {
-                showToast("Koneksi Supabase belum aktif! Periksa Endpoint URL & Anon Key.", "warning");
+                window.showToast("Koneksi Supabase belum aktif!", "warning");
                 return false;
             }
             
-            showToast("Mengunggah Konfigurasi API, Master Data & Akun NIP/SK ke Supabase...", "info");
+            window.showToast("Mengunggah Konfigurasi & Master Data ke Supabase...", "info");
             
             try {
                 const appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
 
-                // 1. Sync Dedicated Table system_config (GAS URL & App Password)
                 const { error: err1 } = await supabaseClient.from('system_config').upsert({
                     id: appId,
                     app_id: appId,
                     gas_url: serverApiConfig.gasUrl || '',
+                    supabase_url: serverApiConfig.supabaseUrl || GLOBAL_SUPABASE_URL || '',
+                    supabase_anon_key: serverApiConfig.supabaseAnonKey || GLOBAL_SUPABASE_ANON_KEY || '',
                     system_password: serverApiConfig.password || 'kugoskom36',
                     last_updated_at: new Date().toISOString(),
                     updated_by_nip: 'ADMIN_UMPEG',
@@ -1822,7 +1845,6 @@
                 });
                 if (err1) throw err1;
 
-                // 2. Sync Dedicated Table master_umpeg_config
                 const { error: err2 } = await supabaseClient.from('master_umpeg_config').upsert({
                     id: appId,
                     api_config: serverApiConfig,
@@ -1839,37 +1861,11 @@
                 });
                 if (err2) throw err2;
 
-                // 3. Sync Dedicated Table pegawai_lemari_digital
-                if (masterPegawaiDb && masterPegawaiDb.length > 0) {
-                    const pegawaiPayloads = masterPegawaiDb.map(p => ({
-                        id_pegawai: p.idPegawai || generateRandomEmployeeId(p.nip),
-                        nip: p.nip,
-                        username: p.username || p.nama,
-                        nama: p.nama,
-                        status_kepegawaian: p.status || 'PNS',
-                        sub1: p.sub1 || 'MEDIS',
-                        sub2: p.sub2 || 'FUNGSIONAL',
-                        jabatan: p.jabatan || '-',
-                        ruangan: p.ruangan || '-',
-                        link_url_drive: p.linksMap || {},
-                        detail_personal: p.detailPersonal || {},
-                        detail_jabatan: p.detailJabatan || {},
-                        detail_medis: p.detailMedis || {},
-                        riwayat_pendidikan: p.riwayatPendidikan || [],
-                        verifikasi_status: p.verifikasiStatus || 'PENDING',
-                        verifikasi_catatan: p.verifikasiCatatan || '',
-                        updated_at: new Date().toISOString()
-                    }));
-
-                    const { error: pegError } = await supabaseClient.from('pegawai_lemari_digital').upsert(pegawaiPayloads);
-                    if (pegError) throw pegError;
-                }
-
-                showToast("SINKRONISASI BERHASIL! DEDICATED TABLE SYSTEM_CONFIG, MASTER, & USER TERSIMPAN PERMANEN!", "success");
+                window.showToast("SINKRONISASI BERHASIL! Supabase Updated!", "success");
                 return true;
             } catch (err) {
                 console.error("Supabase Sync Error:", err);
-                showToast("Gagal Sinkronisasi Supabase: " + err.message, "error");
+                window.showToast("Gagal Sinkronisasi: " + err.message, "error");
                 return false;
             }
         };
@@ -1880,25 +1876,26 @@
             serverApiConfig.supabaseUrl = document.getElementById('cfg-supabase-url').value.trim();
             serverApiConfig.supabaseAnonKey = document.getElementById('cfg-supabase-anon-key').value.trim();
             serverApiConfig.gasUrl = document.getElementById('cfg-gas-url').value.trim();
+            serverApiConfig.password = document.getElementById('cfg-system-password').value.trim();
             
-            setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
-            const isInit = await initSupabaseClient();
+            window.setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
+            const isInit = await window.initSupabaseClient();
             
             if (isInit) {
-                await syncAllToSupabase();
+                await window.syncAllToSupabase();
             } else {
-                showToast("Konfigurasi disimpan secara lokal.", "info");
+                window.showToast("Konfigurasi disimpan di memori lokal.", "info");
             }
             
-            closeServerConfigModal();
+            window.closeServerConfigModal();
         };
 
         window.openPrintProfileSheet = function(nip) {
             const p = masterPegawaiDb.find(x => x.nip === nip);
             if (!p) return;
             activePrintLayoutMode = 'portrait';
-            setText('sheet-main-title', 'DAFTAR RIWAYAT HIDUP PEGAWAI');
-            setText('sheet-id-header', `ID REGISTRASI UMPEG: ${p.idPegawai || '-'}`);
+            window.setText('sheet-main-title', 'DAFTAR RIWAYAT HIDUP PEGAWAI');
+            window.setText('sheet-id-header', `ID REGISTRASI UMPEG: ${p.idPegawai || '-'}`);
             
             const dp = p.detailPersonal || {};
             const dj = p.detailJabatan || {};
@@ -1935,8 +1932,8 @@
             const p = masterPegawaiDb.find(x => x.nip === nip);
             if (!p) return;
             activePrintLayoutMode = 'landscape';
-            setText('sheet-main-title', 'DOSSIER DOKUMEN REPOSITORI PEGAWAI (A4 LANDSCAPE)');
-            setText('sheet-id-header', `ID REGISTRASI UMPEG: ${p.idPegawai || '-'}`);
+            window.setText('sheet-main-title', 'DOSSIER DOKUMEN REPOSITORI PEGAWAI (A4 LANDSCAPE)');
+            window.setText('sheet-id-header', `ID REGISTRASI UMPEG: ${p.idPegawai || '-'}`);
             
             const linksCount = Object.keys(p.linksMap || {}).length;
             document.getElementById('sheet-content-body').innerHTML = `
@@ -1955,7 +1952,7 @@
 
         window.openDocViewer = function(url, title) {
             if (!url) return;
-            setText('modal-doc-title', title || 'Pratinjau Berkas Digital');
+            window.setText('modal-doc-title', title || 'Pratinjau Berkas Digital');
             document.getElementById('modal-doc-external').href = url;
             document.getElementById('modal-doc-iframe').src = url.includes('drive.google.com') ? url.replace(/\/view(\?.*)?$/, '/preview') : url;
             document.getElementById('modal-doc-viewer').classList.remove('hidden');
@@ -1975,18 +1972,18 @@
             selectJabatan.innerHTML = `<option value="">-- Pilih Jabatan --</option>` + list.map(j => `<option value="${j}">${j}</option>`).join('');
         };
 
-        function refreshPortalData() {
-            loadAllMasterData();
-            loadMasterDataset();
-            initSupabaseClient();
-            calculateAndRenderDashboard();
-            renderVerifikasiTable();
-            renderDirektoriTable();
-            renderMatrixReport();
-            showToast("Data Portal UMPEG Disegarkan!", "success");
-        }
+        window.refreshPortalData = async function() {
+            window.loadAllMasterData();
+            await window.loadMasterDataset();
+            await window.initSupabaseClient();
+            window.calculateAndRenderDashboard();
+            window.renderVerifikasiTable();
+            window.renderDirektoriTable();
+            window.renderMatrixReport();
+            window.showToast("Data Portal UMPEG Disegarkan!", "success");
+        };
 
-        function switchAdminTab(tabName) {
+        window.switchAdminTab = function(tabName) {
             ['dashboard', 'verifikasi', 'direktori', 'laporan', 'master-data'].forEach(t => {
                 const view = document.getElementById(`admin-view-${t}`);
                 let btnId = `btn-admin-tab-${t}`;
@@ -2007,11 +2004,11 @@
             if (activeView) activeView.classList.remove('hidden');
             if (activeBtn) activeBtn.className = "flex-1 py-1.5 px-2.5 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 relative cursor-pointer";
 
-            if (tabName === 'laporan') renderMatrixReport();
-            if (tabName === 'master-data') switchMasterSubTab(activeMasterSubTab);
-        }
+            if (tabName === 'laporan') window.renderMatrixReport();
+            if (tabName === 'master-data') window.switchMasterSubTab(activeMasterSubTab);
+        };
 
-        function calculateAndRenderDashboard() {
+        window.calculateAndRenderDashboard = function() {
             const total = masterPegawaiDb.length;
             const pns = masterPegawaiDb.filter(p => p.status === 'PNS').length;
             const pppk = masterPegawaiDb.filter(p => (p.status || '').includes('PPPK')).length;
@@ -2022,25 +2019,25 @@
             const pria = masterPegawaiDb.filter(p => (p.detailPersonal && p.detailPersonal.jk === 'Laki-Laki') || p.jk === 'Laki-Laki').length;
             const wanita = total - pria;
 
-            setText('stat-total-pegawai', total);
-            setText('stat-pria', pria);
-            setText('stat-wanita', wanita);
-            setText('stat-pns-total', pns);
-            setText('stat-pppk-total', pppk);
-            setText('stat-non-asn-total', nonAsn);
-            setText('stat-medis-total', medis);
-            setText('stat-nonmedis-total', nonMedis);
+            window.setText('stat-total-pegawai', total);
+            window.setText('stat-pria', pria);
+            window.setText('stat-wanita', wanita);
+            window.setText('stat-pns-total', pns);
+            window.setText('stat-pppk-total', pppk);
+            window.setText('stat-non-asn-total', nonAsn);
+            window.setText('stat-medis-total', medis);
+            window.setText('stat-nonmedis-total', nonMedis);
             
-            setText('stat-fungsional-total', masterPegawaiDb.filter(p => p.sub2 === 'FUNGSIONAL').length);
-            setText('stat-struktural-total', masterPegawaiDb.filter(p => p.sub2 === 'STRUKTURAL').length);
+            window.setText('stat-fungsional-total', masterPegawaiDb.filter(p => p.sub2 === 'FUNGSIONAL').length);
+            window.setText('stat-struktural-total', masterPegawaiDb.filter(p => p.sub2 === 'STRUKTURAL').length);
 
-            setText('stat-verif-terverifikasi', masterPegawaiDb.filter(p => p.verifikasiStatus === 'TERVERIFIKASI').length);
-            setText('stat-verif-pending', masterPegawaiDb.filter(p => !p.verifikasiStatus || p.verifikasiStatus === 'PENDING').length);
+            window.setText('stat-verif-terverifikasi', masterPegawaiDb.filter(p => p.verifikasiStatus === 'TERVERIFIKASI').length);
+            window.setText('stat-verif-pending', masterPegawaiDb.filter(p => !p.verifikasiStatus || p.verifikasiStatus === 'PENDING').length);
 
-            setText('badge-verifikasi-count', masterPegawaiDb.filter(p => !p.verifikasiStatus || p.verifikasiStatus === 'PENDING').length);
-        }
+            window.setText('badge-verifikasi-count', masterPegawaiDb.filter(p => !p.verifikasiStatus || p.verifikasiStatus === 'PENDING').length);
+        };
 
-        function renderVerifikasiTable() {
+        window.renderVerifikasiTable = function() {
             const tbody = document.getElementById('table-verifikasi-body');
             if (!tbody) return;
 
@@ -2057,7 +2054,7 @@
                 return true;
             });
 
-            setText('filter-verif-count-badge', `${list.length} Pegawai`);
+            window.setText('filter-verif-count-badge', `${list.length} Pegawai`);
 
             tbody.innerHTML = list.map(p => `
                 <tr class="hover:bg-emerald-50/50 border-b border-emerald-100 transition-colors">
@@ -2077,17 +2074,17 @@
                     </td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function resetVerifikasiFilters() {
+        window.resetVerifikasiFilters = function() {
             if (document.getElementById('filter-verif-audit')) document.getElementById('filter-verif-audit').value = 'ALL';
             if (document.getElementById('filter-verif-status')) document.getElementById('filter-verif-status').value = 'ALL';
             if (document.getElementById('filter-verif-jalur')) document.getElementById('filter-verif-jalur').value = 'ALL';
             if (document.getElementById('filter-verif-search')) document.getElementById('filter-verif-search').value = '';
-            renderVerifikasiTable();
-        }
+            window.renderVerifikasiTable();
+        };
 
-        function renderDirektoriTable() {
+        window.renderDirektoriTable = function() {
             const tbody = document.getElementById('table-direktori-body');
             if (!tbody) return;
 
@@ -2109,15 +2106,15 @@
                     </td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function filterDirektoriTable() {
+        window.filterDirektoriTable = function() {
             const val = document.getElementById('search-direktori').value.toLowerCase();
             const rows = document.querySelectorAll('#table-direktori-body tr');
             rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none');
-        }
+        };
 
-        function openEditStafAdminModal(nip) {
+        window.openEditStafAdminModal = function(nip) {
             const p = masterPegawaiDb.find(x => x.nip === nip);
             if (!p) return;
             document.getElementById('edit-staf-target-nip').value = p.nip;
@@ -2125,15 +2122,15 @@
             document.getElementById('edit-staf-nip').value = p.nip || '';
             document.getElementById('edit-staf-sub1').value = p.sub1 || 'MEDIS';
             document.getElementById('edit-staf-sub2').value = p.sub2 || 'FUNGSIONAL';
-            handleAdminEditJalurChange();
+            window.handleAdminEditJalurChange();
             document.getElementById('modal-edit-staf-admin').classList.remove('hidden');
-        }
+        };
 
-        function closeEditStafAdminModal() {
+        window.closeEditStafAdminModal = function() {
             document.getElementById('modal-edit-staf-admin').classList.add('hidden');
-        }
+        };
 
-        function saveEditStafAdmin(e) {
+        window.saveEditStafAdmin = async function(e) {
             if (e) e.preventDefault();
             const targetNip = document.getElementById('edit-staf-target-nip').value;
             const idx = masterPegawaiDb.findIndex(x => x.nip === targetNip);
@@ -2146,20 +2143,51 @@
             masterPegawaiDb[idx].sub2 = document.getElementById('edit-staf-sub2').value;
             masterPegawaiDb[idx].jabatan = document.getElementById('edit-staf-jabatan').value;
             masterPegawaiDb[idx].ruangan = document.getElementById('edit-staf-ruangan').value;
-            saveMasterDataset();
-            refreshPortalData();
-            closeEditStafAdminModal();
-            showToast("Data Staf Disimpan!", "success");
-        }
 
-        function renderMatrixReport() {
-            setText('matrix-print-date', new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }));
+            if (supabaseClient) {
+                const target = masterPegawaiDb[idx];
+                await supabaseClient.from('pegawai_lemari_digital').upsert({
+                    id_pegawai: target.idPegawai,
+                    nip: target.nip,
+                    username: target.username || target.nama,
+                    nama: target.nama,
+                    status_kepegawaian: target.status,
+                    sub1: target.sub1,
+                    sub2: target.sub2,
+                    jabatan: target.jabatan,
+                    ruangan: target.ruangan,
+                    updated_at: new Date().toISOString()
+                });
+            }
+
+            window.refreshPortalData();
+            window.closeEditStafAdminModal();
+            window.showToast("Data Staf Disimpan!", "success");
+        };
+
+        // INTELLIGENT SDM MATRIX REPORT (SINGLE TABLE INTEGRATED SPLIT INTO STRUKTURAL & FUNGSIONAL)
+        window.renderMatrixReport = function() {
+            window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }));
             const tbody = document.getElementById('matrix-report-tbody');
+            const tfoot = document.getElementById('matrix-report-tfoot');
             if (!tbody) return;
 
-            const categories = ["Dokter Spesialis", "Dokter Umum", "Perawat", "Bidan", "Apoteker / TKK", "Penunjang Medis", "Administrasi / TU"];
-            tbody.innerHTML = categories.map((cat, i) => {
-                const subDb = masterPegawaiDb.filter(p => (p.jabatan || '').includes(cat));
+            const strukturalCats = ["Direksi / Eselon II", "Kepala Bagian / Kabid", "Kepala Sub Bagian / Kasi", "Staf Administrasi & TU"];
+            const fungsionalCats = ["Dokter Spesialis", "Dokter Umum / Dokter Gigi", "Perawat (Ners & D3)", "Bidan", "Apoteker & Tenaga Kefarmasian", "Penunjang Medis & Laboratorium", "Fungsional Lainnya"];
+
+            let html = '';
+            let subStruk = { pns: 0, pppkPw: 0, pppkPwParuh: 0, honorer: 0, kontrak: 0, sukarela: 0, total: 0 };
+            let subFung = { pns: 0, pppkPw: 0, pppkPwParuh: 0, honorer: 0, kontrak: 0, sukarela: 0, total: 0 };
+
+            // HEADER SECTION A
+            html += `
+                <tr class="bg-emerald-900 text-white font-extrabold text-[11px] uppercase tracking-wider">
+                    <td colspan="9" class="p-2 border-r border-emerald-800">SECTION A: JALUR STRUKTURAL (MANAJERIAL & TATA USAHA)</td>
+                </tr>
+            `;
+
+            strukturalCats.forEach((cat, i) => {
+                const subDb = masterPegawaiDb.filter(p => p.sub2 === 'STRUKTURAL' && (p.jabatan || '').includes(cat));
                 const pns = subDb.filter(p => p.status === 'PNS').length;
                 const pppkPw = subDb.filter(p => p.status === 'PPPK (Penuh Waktu)').length;
                 const pppkPwParuh = subDb.filter(p => p.status === 'PPPK (Paruh Waktu)').length;
@@ -2168,7 +2196,11 @@
                 const sukarela = subDb.filter(p => p.status === 'Sukarela').length;
                 const total = subDb.length;
 
-                return `
+                subStruk.pns += pns; subStruk.pppkPw += pppkPw; subStruk.pppkPwParuh += pppkPwParuh;
+                subStruk.honorer += honorer; subStruk.kontrak += kontrak; subStruk.sukarela += sukarela;
+                subStruk.total += total;
+
+                html += `
                     <tr class="hover:bg-emerald-50">
                         <td class="p-2 border-r text-center font-bold">${i + 1}</td>
                         <td class="p-2 border-r font-bold text-emerald-950">${cat}</td>
@@ -2181,20 +2213,107 @@
                         <td class="p-2 bg-emerald-100/70 text-center font-mono font-black text-emerald-950">${total}</td>
                     </tr>
                 `;
-            }).join('');
-        }
+            });
 
-        function renderSubTab2MonitoringKedinasan() {
+            // SUBTOTAL SECTION A
+            html += `
+                <tr class="bg-emerald-200/90 font-extrabold text-emerald-950 border-t border-b border-emerald-400">
+                    <td colspan="2" class="p-2 text-right uppercase border-r border-emerald-300">SUBTOTAL JALUR STRUKTURAL:</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pns}</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pppkPw}</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pppkPwParuh}</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.honorer}</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.kontrak}</td>
+                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.sukarela}</td>
+                    <td class="p-2 bg-emerald-300/80 text-center font-mono font-black text-emerald-950">${subStruk.total}</td>
+                </tr>
+            `;
+
+            // HEADER SECTION B
+            html += `
+                <tr class="bg-teal-900 text-white font-extrabold text-[11px] uppercase tracking-wider">
+                    <td colspan="9" class="p-2 border-r border-teal-800">SECTION B: JALUR FUNGSIONAL (NAKES & NON-NAKES)</td>
+                </tr>
+            `;
+
+            fungsionalCats.forEach((cat, i) => {
+                const subDb = masterPegawaiDb.filter(p => p.sub2 === 'FUNGSIONAL' && (p.jabatan || '').includes(cat));
+                const pns = subDb.filter(p => p.status === 'PNS').length;
+                const pppkPw = subDb.filter(p => p.status === 'PPPK (Penuh Waktu)').length;
+                const pppkPwParuh = subDb.filter(p => p.status === 'PPPK (Paruh Waktu)').length;
+                const honorer = subDb.filter(p => p.status === 'Honorer').length;
+                const kontrak = subDb.filter(p => p.status === 'Kontrak').length;
+                const sukarela = subDb.filter(p => p.status === 'Sukarela').length;
+                const total = subDb.length;
+
+                subFung.pns += pns; subFung.pppkPw += pppkPw; subFung.pppkPwParuh += pppkPwParuh;
+                subFung.honorer += honorer; subFung.kontrak += kontrak; subFung.sukarela += sukarela;
+                subFung.total += total;
+
+                html += `
+                    <tr class="hover:bg-teal-50">
+                        <td class="p-2 border-r text-center font-bold">${i + 1}</td>
+                        <td class="p-2 border-r font-bold text-teal-950">${cat}</td>
+                        <td class="p-2 border-r text-center font-mono">${pns}</td>
+                        <td class="p-2 border-r text-center font-mono">${pppkPw}</td>
+                        <td class="p-2 border-r text-center font-mono">${pppkPwParuh}</td>
+                        <td class="p-2 border-r text-center font-mono">${honorer}</td>
+                        <td class="p-2 border-r text-center font-mono">${kontrak}</td>
+                        <td class="p-2 border-r text-center font-mono">${sukarela}</td>
+                        <td class="p-2 bg-teal-100/70 text-center font-mono font-black text-teal-950">${total}</td>
+                    </tr>
+                `;
+            });
+
+            // SUBTOTAL SECTION B
+            html += `
+                <tr class="bg-teal-200/90 font-extrabold text-teal-950 border-t border-b border-teal-400">
+                    <td colspan="2" class="p-2 text-right uppercase border-r border-teal-300">SUBTOTAL JALUR FUNGSIONAL:</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pns}</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pppkPw}</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pppkPwParuh}</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.honorer}</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.kontrak}</td>
+                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.sukarela}</td>
+                    <td class="p-2 bg-teal-300/80 text-center font-mono font-black text-teal-950">${subFung.total}</td>
+                </tr>
+            `;
+
+            tbody.innerHTML = html;
+
+            // GRAND TOTAL FOOTER
+            const grandPns = subStruk.pns + subFung.pns;
+            const grandPppkPw = subStruk.pppkPw + subFung.pppkPw;
+            const grandPppkPwParuh = subStruk.pppkPwParuh + subFung.pppkPwParuh;
+            const grandHonorer = subStruk.honorer + subFung.honorer;
+            const grandKontrak = subStruk.kontrak + subFung.kontrak;
+            const grandSukarela = subStruk.sukarela + subFung.sukarela;
+            const grandTotal = subStruk.total + subFung.total;
+
+            if (tfoot) {
+                tfoot.innerHTML = `
+                    <tr class="bg-emerald-950 text-white font-black text-center uppercase tracking-wide">
+                        <td colspan="2" class="p-3 text-right border-r border-emerald-800">GRAND TOTAL SELURUH SDM RSUD SINJAI:</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPns}</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPppkPw}</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPppkPwParuh}</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandHonorer}</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandKontrak}</td>
+                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandSukarela}</td>
+                        <td class="p-3 bg-amber-500 text-slate-950 font-black font-mono text-xs">${grandTotal}</td>
+                    </tr>
+                `;
+            }
+        };
+
+        window.renderSubTab2MonitoringKedinasan = function() {
             const tbody = document.getElementById('monitoring-report-tbody');
             if (!tbody) return;
 
             const jalurF = document.getElementById('filter-monitoring-jalur')?.value || 'ALL';
-            const eduF = document.getElementById('filter-monitoring-pendidikan')?.value || 'ALL';
-            const searchF = (document.getElementById('filter-monitoring-search')?.value || '').toLowerCase();
 
             let list = masterPegawaiDb.filter(p => {
                 if (jalurF !== 'ALL' && p.sub2 !== jalurF) return false;
-                if (searchF && !p.nama.toLowerCase().includes(searchF) && !p.nip.toLowerCase().includes(searchF)) return false;
                 return true;
             });
 
@@ -2216,9 +2335,9 @@
                     <td class="p-2 text-center"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-extrabold text-[9px]">Sesuai</span></td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function exportMatrixToExcel() {
+        window.exportMatrixToExcel = function() {
             const activeTableId = activeLaporanSubTab === 'matriks' ? 'table-export-matriks' : 'table-export-monitoring';
             const table = document.getElementById(activeTableId);
             if (!table) return;
@@ -2230,79 +2349,93 @@
             downloadLink.download = `Laporan_RSUD_Sinjai_${activeLaporanSubTab}_2026.xls`;
             downloadLink.click();
             document.body.removeChild(downloadLink);
-        }
+        };
 
-        function printMatrixReport() { 
+        window.printMatrixReport = function() { 
             document.body.className = "print-mode-matrix";
             window.print(); 
-        }
+        };
 
-        function triggerPrintProfile() {
+        window.triggerPrintProfile = function() {
             document.body.className = (activePrintLayoutMode === 'landscape') ? 'print-mode-profile-landscape' : 'print-mode-profile';
             window.print();
-        }
+        };
 
-        function openAuditModal(nip) {
+        window.openAuditModal = function(nip) {
             const p = masterPegawaiDb.find(x => x.nip === nip);
             if (!p) return;
             activeAuditNip = nip;
-            setText('modal-audit-nama', `Audit: ${p.nama}`);
-            setText('modal-audit-nip', `ID: ${p.idPegawai || '-'} • NIP: ${p.nip}`);
+            window.setText('modal-audit-nama', `Audit: ${p.nama}`);
+            window.setText('modal-audit-nip', `ID: ${p.idPegawai || '-'} • NIP: ${p.nip}`);
             document.getElementById('modal-audit-status-select').value = p.verifikasiStatus || 'PENDING';
             document.getElementById('modal-audit-catatan').value = p.verifikasiCatatan || '';
             document.getElementById('modal-audit-pegawai').classList.remove('hidden');
-        }
+        };
 
-        function closeAuditModal() {
+        window.closeAuditModal = function() {
             document.getElementById('modal-audit-pegawai').classList.add('hidden');
-        }
+        };
 
-        function saveAuditDecision() {
+        window.saveAuditDecision = async function() {
             if (!activeAuditNip) return;
             const idx = masterPegawaiDb.findIndex(x => x.nip === activeAuditNip);
             if (idx !== -1) {
                 masterPegawaiDb[idx].verifikasiStatus = document.getElementById('modal-audit-status-select').value;
                 masterPegawaiDb[idx].verifikasiCatatan = document.getElementById('modal-audit-catatan').value.trim();
-                saveMasterDataset();
-                refreshPortalData();
-                closeAuditModal();
-                showToast("Keputusan Audit Disimpan & Dikirim!", "success");
+
+                if (supabaseClient) {
+                    const target = masterPegawaiDb[idx];
+                    await supabaseClient.from('pegawai_lemari_digital').upsert({
+                        id_pegawai: target.idPegawai,
+                        nip: target.nip,
+                        verifikasi_status: target.verifikasiStatus,
+                        verifikasi_catatan: target.verifikasiCatatan,
+                        updated_at: new Date().toISOString()
+                    });
+                }
+
+                window.refreshPortalData();
+                window.closeAuditModal();
+                window.showToast("Keputusan Audit Disimpan & Dikirim!", "success");
             }
-        }
+        };
 
-        function openConfigAuthModal() { document.getElementById('modal-config-auth').classList.remove('hidden'); }
-        function closeConfigAuthModal() { document.getElementById('modal-config-auth').classList.add('hidden'); }
+        window.openConfigAuthModal = function() { document.getElementById('modal-config-auth').classList.remove('hidden'); };
+        window.closeConfigAuthModal = function() { document.getElementById('modal-config-auth').classList.add('hidden'); };
 
-        function verifyConfigPassword(e) {
+        window.verifyConfigPassword = function(e) {
             if (e) e.preventDefault();
             const pwd = document.getElementById('input-config-password').value.trim();
             if (pwd === serverApiConfig.password || pwd === 'kugoskom36') {
-                closeConfigAuthModal();
-                openServerConfigModal();
+                window.closeConfigAuthModal();
+                window.openServerConfigModal();
             } else {
-                showToast("Sandi Salah!", "warning");
+                window.showToast("Sandi Salah!", "warning");
             }
-        }
+        };
 
-        function openServerConfigModal() {
+        window.openServerConfigModal = function() {
             document.getElementById('cfg-app-id').value = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-            document.getElementById('cfg-supabase-url').value = serverApiConfig.supabaseUrl || '';
-            document.getElementById('cfg-supabase-anon-key').value = serverApiConfig.supabaseAnonKey || '';
+            document.getElementById('cfg-supabase-url').value = serverApiConfig.supabaseUrl || GLOBAL_SUPABASE_URL || '';
+            document.getElementById('cfg-supabase-anon-key').value = serverApiConfig.supabaseAnonKey || GLOBAL_SUPABASE_ANON_KEY || '';
             document.getElementById('cfg-gas-url').value = serverApiConfig.gasUrl || '';
+            document.getElementById('cfg-system-password').value = serverApiConfig.password || 'kugoskom36';
             document.getElementById('modal-config-server').classList.remove('hidden');
-        }
+        };
 
-        function closeServerConfigModal() { document.getElementById('modal-config-server').classList.add('hidden'); }
+        window.closeServerConfigModal = function() { document.getElementById('modal-config-server').classList.add('hidden'); };
 
+        // INITIALIZATION ON WINDOW LOAD
         window.onload = async function() {
-            initClock();
-            loadAllMasterData();
-            loadMasterDataset();
-            await initSupabaseClient();
-            calculateAndRenderDashboard();
-            renderVerifikasiTable();
-            renderDirektoriTable();
+            window.initClock();
+            window.loadAllMasterData();
+            await window.initSupabaseClient();
+            await window.loadMasterDataset();
+            window.calculateAndRenderDashboard();
+            window.renderVerifikasiTable();
+            window.renderDirektoriTable();
         };
     </script>
 </body>
 </html>
+```
