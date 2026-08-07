@@ -782,6 +782,7 @@
             return String(val1).trim().toLowerCase() === String(val2).trim().toLowerCase();
         };
 
+        // MEMBUANG LOCALSTORAGE 100% -> MURNI MENGGUNAKAN SESSIONSTORAGE
         window.getSessItem = function(key) {
             const raw = sessionStorage.getItem(key);
             if (!raw) return null;
@@ -819,7 +820,11 @@
             return 'RSUD-PEG-' + (digits.length >= 8 ? digits.substring(0, 8) : Date.now().toString().slice(-8));
         };
 
+        // ANTENA SUPABASE REALTIME + SILENT RE-HYDRATION BALIK LAYAR
         window.initCloudConnectionAndRealtime = async function() {
+            const savedApi = window.getSessItem('RSUD_UMPEG_SERVER_API_CONFIG_V1');
+            if (savedApi) serverApiConfig = { ...serverApiConfig, ...savedApi };
+
             const finalSupaUrl = GLOBAL_SUPABASE_URL || serverApiConfig.supabaseUrl || '';
             const finalAnonKey = GLOBAL_SUPABASE_ANON_KEY || serverApiConfig.supabaseAnonKey || '';
 
@@ -827,7 +832,6 @@
                 try {
                     supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey);
                     
-                    // Fetch GAS URL and active config from system_config antenna
                     const { data: sysConfig } = await supabaseClient
                         .from('system_config')
                         .select('gas_url')
@@ -841,17 +845,25 @@
                     const dot = document.getElementById('ws-dot');
                     const txt = document.getElementById('header-sync-status');
                     if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                    if (txt) txt.innerText = "Antena Supabase Aktif";
+                    if (txt) txt.innerText = "Antena Sky Toll Aktif";
 
                     // Pub/Sub Realtime WebSocket Broadcaster
                     if (!realtimeChannel) {
                         realtimeChannel = supabaseClient
                             .channel('pegawai-portal-changes')
-                            .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, (payload) => {
+                            .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
                                 if (currentPegawai && payload.new && isMatchingKey(payload.new.nip, currentPegawai.nip)) {
+                                    // RE-HYDRATION SENYAP DIBALIK LAYAR TANPA REFRESH HALAMAN MANUAL
                                     currentPegawai.verifikasiStatus = payload.new.verifikasi_status || 'PENDING';
                                     currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
+                                    if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
+                                    if (payload.new.detail_personal) currentPegawai.detailPersonal = payload.new.detail_personal;
+                                    
+                                    // MUSNAHKAN CACHE LAMA & GANTI DENGAN PEMBAHARUAN MURNI KEDALAM SESSIONSTORAGE
+                                    sessionStorage.removeItem(SESSION_STORAGE_KEY);
                                     setSessItem(SESSION_STORAGE_KEY, currentPegawai);
+                                    
+                                    // RE-RENDER UI SECARA SILENT
                                     renderDashboard();
                                 }
                             })
@@ -872,7 +884,7 @@
 
             setTimeout(async () => {
                 try {
-                    // 1. Dual-Sync Pipeline: Parallel write to Supabase (pegawai_lemari_digital)
+                    // Dual-Sync Pipeline: Supabase + GAS Google Sheets
                     if (supabaseClient) {
                         const { error: supaErr } = await supabaseClient.from('pegawai_lemari_digital').upsert({
                             id_pegawai: recordPayload.idPegawai,
@@ -907,7 +919,6 @@
                         }
                     }
 
-                    // 2. Dual-Sync Pipeline: Parallel push to Google Sheets via GAS (LockService FIFO Queue)
                     if (serverApiConfig.gasUrl) {
                         await fetch(serverApiConfig.gasUrl, {
                             method: 'POST',
@@ -1036,7 +1047,6 @@
             
             showToast("Memverifikasi NIP ke Supabase...", "info");
 
-            // Fetch from Supabase directly
             if (supabaseClient) {
                 const { data: foundRemote } = await supabaseClient
                     .from('pegawai_lemari_digital')
@@ -1070,7 +1080,7 @@
                 }
             }
 
-            showToast("Akun/NIP tidak ditemukan di Supabase. Silakan Registrasi!", "warning");
+            showToast("Akun/NIP tidak ditemukan. Silakan Registrasi!", "warning");
             switchAuthTab('register');
             setVal('auth-key-input', key);
             setVal('auth-username', uname);
@@ -1155,7 +1165,6 @@
                 }
             }
 
-            // CORRECTION BANNER UPDATE
             const corrBanner = document.getElementById('correction-banner');
             if (corrBanner) {
                 if (currentPegawai.verifikasiStatus === 'PERLU_PERBAIKAN') {
@@ -1332,9 +1341,8 @@
         window.toggleJalurJabatanForm = function() {
             if (!currentPegawai) return;
             currentPegawai.sub2 = (currentPegawai.sub2 === 'STRUKTURAL') ? 'FUNGSIONAL' : 'STRUKTURAL';
-            triggerActionDrivenSyncQueue(currentPegawai);
+            toggleJabatanFormType();
             renderDashboard();
-            populateDetailProfileForm();
         };
 
         window.toggleJabatanFormType = function() {
@@ -1562,7 +1570,6 @@
             });
         };
 
-        // INITIALIZATION ON WINDOW LOAD
         window.onload = function() {
             initCloudConnectionAndRealtime();
             populateMasterDropdowns();
