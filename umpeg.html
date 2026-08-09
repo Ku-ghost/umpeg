@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Executive Dashboard & Realtime Bridge</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Realtime Cloud Engine</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -75,7 +75,6 @@
         .fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* PRINT MODE STYLES FOR OFFICIAL REPORTS & DOSSIER */
         @media print {
             header, footer, .no-print,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
@@ -177,27 +176,22 @@
                             <span>Konfigurasi Sistem</span>
                         </button>
                     </div>
-                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Realtime Antena Supabase, Dynamic Queue & Master Data Kepegawaian</p>
+                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Pub/Sub Antena, Auto Background Sync & Master Data Kepegawaian</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 text-xs">
-                <!-- Status Antrian Async Queue -->
-                <div id="queue-indicator-badge" class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300 text-[9px] font-extrabold hidden items-center gap-1">
-                    <i class="fa-solid fa-spinner animate-spin text-teal-600"></i>
-                    <span id="queue-status-text">Antrian: 0</span>
+                <!-- Status Realtime WebSocket / Polling Supabase -->
+                <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
+                    <span id="ws-status-text">Otomatis Terhubung Cloud</span>
                 </div>
 
-                <!-- Status Realtime WebSocket Supabase -->
-                <div id="ws-indicator-badge" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-extrabold flex items-center gap-1" title="Status Realtime Sky Toll Bridge (Supabase WebSocket)">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
-                    <span id="ws-status-text">Standby Local</span>
+                <!-- Indikator Auto Sync Aktif -->
+                <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
+                    <i class="fa-solid fa-rotate animate-spin text-emerald-300 text-xs" id="auto-sync-spinner"></i>
+                    <span id="auto-sync-text" class="hidden sm:inline">Auto-Sync Aktif</span>
                 </div>
-
-                <button onclick="window.refreshPortalData()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-2xs transition-all cursor-pointer">
-                    <i class="fa-solid fa-rotate text-xs"></i>
-                    <span class="hidden sm:inline">Refresh Data</span>
-                </button>
 
                 <div class="flex items-center gap-1.5 pl-2 border-l border-emerald-200 text-[10px] text-emerald-900 font-mono hidden md:flex">
                     <i class="fa-regular fa-clock text-emerald-600"></i>
@@ -250,7 +244,6 @@
                     <span class="text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Supabase Realtime Antenna Bridge</span>
                 </div>
 
-                <!-- 6 PRIMARY STAT CARDS WITH MAP COLOR MATCHING -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
                     <div class="glass-glossy-card p-3 rounded-xl border border-emerald-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5">
                         <div class="flex items-center justify-between text-slate-500">
@@ -263,7 +256,6 @@
                         </div>
                     </div>
 
-                    <!-- PNS: MAP BIRU -->
                     <div class="glass-glossy-card p-3 rounded-xl border border-blue-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-blue-50/40">
                         <div class="flex items-center justify-between text-slate-500">
                             <span class="text-[9px] font-black uppercase tracking-wide text-blue-950 truncate pr-1">PNS (MAP BIRU)</span>
@@ -275,7 +267,6 @@
                         </div>
                     </div>
 
-                    <!-- PPPK: MAP KUNING -->
                     <div class="glass-glossy-card p-3 rounded-xl border border-amber-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-amber-50/40">
                         <div class="flex items-center justify-between text-slate-500">
                             <span class="text-[9px] font-black uppercase tracking-wide text-amber-950 truncate pr-1">PPPK (MAP KUNING)</span>
@@ -287,7 +278,6 @@
                         </div>
                     </div>
 
-                    <!-- KONTRAK: MAP HIJAU -->
                     <div class="glass-glossy-card p-3 rounded-xl border border-emerald-300 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-emerald-50/40">
                         <div class="flex items-center justify-between text-slate-500">
                             <span class="text-[9px] font-black uppercase tracking-wide text-emerald-950 truncate pr-1">KONTRAK (MAP HIJAU)</span>
@@ -299,7 +289,6 @@
                         </div>
                     </div>
 
-                    <!-- HONORER: MAP MERAH -->
                     <div class="glass-glossy-card p-3 rounded-xl border border-rose-300 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-rose-50/40">
                         <div class="flex items-center justify-between text-slate-500">
                             <span class="text-[9px] font-black uppercase tracking-wide text-rose-950 truncate pr-1">HONORER (MAP MERAH)</span>
@@ -326,7 +315,6 @@
                     </div>
                 </div>
 
-                <!-- SECONDARY METRIC CARDS -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
                     <div class="glass-panel p-3 rounded-xl border border-emerald-200/90 shadow-xs flex items-center justify-between h-full">
                         <div class="space-y-1">
@@ -628,7 +616,6 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB SWITCHER LAPORAN -->
                 <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-300/90 text-xs no-print">
                     <button type="button" onclick="window.switchLaporanSubTab('matriks')" id="btn-laporan-sub-matriks" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-table-cells"></i>
@@ -640,7 +627,6 @@
                     </button>
                 </div>
 
-                <!-- DYNAMIC KOP SURAT LAPORAN PRINT -->
                 <div class="border-b-4 border-double border-slate-900 pb-3 hidden print:flex items-center justify-between gap-4 text-center">
                     <div class="w-20 h-20 flex items-center justify-center shrink-0">
                         <img id="matrix-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-20 max-w-20 object-contain">
@@ -653,7 +639,6 @@
                     <div class="w-20 h-20 shrink-0 hidden sm:block"></div>
                 </div>
 
-                <!-- SUB-TAB 1: MATRIKS SDM -->
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
                         <table class="w-full text-left border-collapse text-[10.5px]" id="table-export-matriks">
@@ -676,7 +661,6 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 2: MONITORING KEDINASAN -->
                 <div id="panel-laporan-sub-monitoring" class="hidden space-y-3">
                     <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 no-print">
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
@@ -732,7 +716,6 @@
                     </div>
                 </div>
 
-                <!-- SIGNATURE BLOCK FOR PRINT -->
                 <div class="pt-6 mt-4 grid grid-cols-2 text-center text-[10.5px] border-t border-emerald-200 hidden print:grid">
                     <div>
                         <p class="font-bold mb-12">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
@@ -776,7 +759,6 @@
                 </button>
             </div>
 
-            <!-- SUB-PANEL 1: CHECKLIST CONFIG (WITH ADD & DELETE ITEM) -->
             <div id="panel-master-sub-checklist" class="space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
@@ -788,7 +770,6 @@
                         </div>
                     </div>
 
-                    <!-- FORM TAMBAH PERSYARATAN BERKAS BARU -->
                     <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div class="w-full sm:w-64">
                             <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Pilih Kategori Form</label>
@@ -819,7 +800,6 @@
                 </section>
             </div>
 
-            <!-- SUB-PANEL 2: RUANGAN PENEMPATAN -->
             <div id="panel-master-sub-ruangan" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
@@ -840,7 +820,6 @@
                 </section>
             </div>
 
-            <!-- SUB-PANEL 3: JABATAN, ESELON & STATUS -->
             <div id="panel-master-sub-jabatan" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
@@ -907,7 +886,6 @@
                 </div>
             </div>
 
-            <!-- SUB-PANEL 4: PENDIDIKAN, GOLONGAN & ORG -->
             <div id="panel-master-sub-pend-gol" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -941,7 +919,6 @@
                 </section>
             </div>
 
-            <!-- SUB-PANEL 5: PEJABAT & KOP -->
             <div id="panel-master-sub-pejabat" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
                     <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat & Logo Kop Cetak Laporan (A4)</h3>
@@ -978,8 +955,9 @@
         </div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide no-print border-t border-emerald-700 shadow-lg">
-        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost
+        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System 24/7)
     </footer>
 
     <!-- MODAL AUTH CONFIG -->
@@ -1018,17 +996,17 @@
                 </div>
 
                 <div>
-                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">URL Supabase Project Endpoint (Antena Pemancar)</label>
-                    <input type="url" id="cfg-supabase-url" placeholder="https://xyzcompany.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
+                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">URL Supabase Project Endpoint</label>
+                    <input type="url" id="cfg-supabase-url" placeholder="https://ohktlpuywpnxmqbrswhs.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
 
                 <div>
-                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Supabase Public Anon Key</label>
-                    <textarea id="cfg-supabase-anon-key" rows="2" placeholder="Masukkan Supabase Anon Key di sini..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg p-2.5 font-mono text-[10px] text-slate-900 focus:outline-none"></textarea>
+                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Supabase Public Anon Key Asli</label>
+                    <textarea id="cfg-supabase-anon-key" rows="2" placeholder="Masukkan Supabase Anon Key Asli di sini..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg p-2.5 font-mono text-[10px] text-slate-900 focus:outline-none"></textarea>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Google Apps Script (GAS) Web App Executable URL (Penyimpan Formulir Sheet)</label>
+                    <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Google Apps Script (GAS) Web App Executable URL Asli</label>
                     <input type="url" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
 
@@ -1037,15 +1015,9 @@
                     <input type="password" id="cfg-system-password" value="kugoskom36" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 font-bold focus:outline-none">
                 </div>
 
-                <div class="pt-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-emerald-200">
-                    <button type="button" onclick="window.syncAllToSupabase()" class="w-full sm:w-auto h-9 px-3.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Sync Signal Supabase</span>
-                    </button>
-                    <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
-                        <button type="button" onclick="window.closeServerConfigModal()" class="h-9 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
-                        <button type="submit" class="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs cursor-pointer">Simpan & Konek Langsung</button>
-                    </div>
+                <div class="pt-2.5 flex items-center justify-end gap-2 border-t border-emerald-200">
+                    <button type="button" onclick="window.closeServerConfigModal()" class="h-9 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+                    <button type="submit" class="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs cursor-pointer">Simpan & Konek Langsung</button>
                 </div>
             </form>
         </div>
@@ -1300,101 +1272,73 @@
 
     <!-- MAIN SCRIPT -->
     <script>
-        const MASTER_PEGAWAI_DB_KEY = 'RSUD_UMPEG_MASTER_DATASET_V1';
-        const MASTER_RUANGAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_RUANGAN_LIST_V1';
-        const MASTER_JABATAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_JABATAN_LIST_V1';
-        const MASTER_ESELON_STORAGE_KEY = 'RSUD_UMPEG_MASTER_ESELON_LIST_V1';
-        const MASTER_STATUS_PEG_STORAGE_KEY = 'RSUD_UMPEG_MASTER_STATUS_PEG_LIST_V1';
-        const MASTER_EDU_STORAGE_KEY = 'RSUD_UMPEG_MASTER_EDU_LIST_V1';
-        const MASTER_GOLONGAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_GOLONGAN_LIST_V1';
-        const MASTER_ORG_STORAGE_KEY = 'RSUD_UMPEG_MASTER_ORG_LIST_V1';
-        const MASTER_CHECKLIST_CONFIG_KEY = 'RSUD_UMPEG_MASTER_CHECKLIST_CONFIG_V1';
-        const MASTER_KOP_CONFIG_KEY = 'RSUD_UMPEG_KOP_CONFIG_V1';
-        const SERVER_API_CONFIG_KEY = 'RSUD_UMPEG_SERVER_API_CONFIG_V1';
+        // JANGKAR UTAMA BACKEND (AUTOMATIC CROSS-DEVICE SYNC CONSTANTS)
+        const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
+        const ANCHORED_SUPABASE_ANON_KEY = 'MASUKKAN_SUPABASE_ANON_KEY_ASLI_DI_SINI'; 
+        const ANCHORED_GAS_URL = 'MASUKKAN_URL_GAS_ASLI_DI_SINI';
+        const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
-        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darurat (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
+        // STORAGE KEYS & DEFAULTS
+        const MASTER_PEGAWAI_DB_KEY = 'UMPEG_MASTER_PEGAWAI_DB_V2';
+        const MASTER_RUANGAN_STORAGE_KEY = 'UMPEG_MASTER_RUANGAN_V2';
+        const MASTER_JABATAN_STORAGE_KEY = 'UMPEG_MASTER_JABATAN_V2';
+        const MASTER_ESELON_STORAGE_KEY = 'UMPEG_MASTER_ESELON_V2';
+        const MASTER_STATUS_PEG_STORAGE_KEY = 'UMPEG_MASTER_STATUS_PEG_V2';
+        const MASTER_EDU_STORAGE_KEY = 'UMPEG_MASTER_EDU_V2';
+        const MASTER_GOLONGAN_STORAGE_KEY = 'UMPEG_MASTER_GOLONGAN_V2';
+        const MASTER_ORG_STORAGE_KEY = 'UMPEG_MASTER_ORG_V2';
+        const MASTER_CHECKLIST_CONFIG_KEY = 'UMPEG_MASTER_CHECKLIST_CONFIG_V2';
+        const MASTER_KOP_CONFIG_KEY = 'UMPEG_MASTER_KOP_CONFIG_V2';
+
+        const DEFAULT_RUANGAN = [
+            'Sub Bagian UMPEG', 'Direksi', 'IGD', 'ICU', 'Rawat Inap Interna', 
+            'Rawat Inap Bedah', 'Rawat Inap Anak', 'Rawat Inap Kebidanan', 
+            'Poliklinik BPK', 'Poliklinik Mata', 'Poliklinik Gigi', 'Poliklinik THT', 
+            'Poliklinik Kulit', 'Poliklinik Jiwa', 'Poliklinik Saraf', 'Poliklinik Paru', 
+            'Laboratorium', 'Radiologi', 'Farmasi / Apotek', 'Gizi', 'IPSRS', 
+            'Kesling', 'Rekam Medis', 'Kasir / Keuangan'
+        ];
+
         const DEFAULT_JABATAN = {
-            STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG", "Kepala Sub Bagian Keuangan", "Kepala Bidang Pelayanan", "Kepala Bidang Keperawatan"],
-            FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker", "Pranata Laboratorium", "Radiografer", "Nutrisionis"]
+            STRUKTURAL: [
+                'Direktur', 'Kepala Bagian Tata Usaha', 'Kepala Sub Bagian UMPEG', 
+                'Kepala Sub Bagian Keuangan', 'Kepala Bidang Pelayanan', 
+                'Kepala Bidang Keperawatan', 'Kepala Bidang Penunjang'
+            ],
+            FUNGSIONAL: [
+                'Dokter Spesialis', 'Dokter Umum', 'Dokter Gigi', 'Perawat (Ners)', 
+                'Perawat (D3)', 'Bidan', 'Apoteker', 'Tenaga Kefarmasian', 
+                'Radiografer', 'Analis Kesehatan / Laboratorium', 'Nutrisionis', 
+                'Sanitarian', 'Perekam Medis', 'Fisioterapis', 'Pranata Komputer'
+            ]
         };
 
-        const DEFAULT_ESELON = ["NON_ESELON", "IV.b", "IV.a", "III.b", "III.a", "II.b", "II.a", "I.b", "I.a"];
-        const DEFAULT_STATUS_PEG = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Kontrak", "Honorer", "Sukarela"];
-        const DEFAULT_EDUCATION = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
-        const DEFAULT_GOLONGAN = ["IV/e", "IV/d", "IV/c", "IV/b", "IV/a", "III/d", "III/c", "III/b", "III/a", "II/d", "II/c", "II/b", "II/a", "I/d", "I/c", "I/b", "I/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
-        const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
+        const DEFAULT_ESELON = ['II.b', 'III.a', 'III.b', 'IV.a', 'IV.b', 'NON_ESELON'];
+        const DEFAULT_STATUS_PEG = ['PNS', 'PPPK (Penuh Waktu)', 'PPPK (Paruh Waktu)', 'Kontrak', 'Honorer', 'Sukarela'];
+        const DEFAULT_EDUCATION = ['S2 / Spesialis', 'S1 / Profesi', 'D4 / D3', 'SMA / SMK'];
+        const DEFAULT_GOLONGAN = ['I/a', 'I/b', 'I/c', 'I/d', 'II/a', 'II/b', 'II/c', 'II/d', 'III/a', 'III/b', 'III/c', 'III/d', 'IV/a', 'IV/b', 'IV/c', 'IV/d', 'IX (PPPK)', 'VII (PPPK)', 'V (PPPK)'];
+        const DEFAULT_ORG_PROFESI = ['IDI', 'PDGI', 'PPNI', 'IBI', 'IAI', 'PARI', 'PATELKI', 'PERSAGI', 'PORMIKI', 'HAKLI', 'IFI'];
 
         const DEFAULT_CHECKLIST_CONFIG = [
-            {
-                code: 'A', title: 'A. Kualifikasi & Kompetensi Staf', items: [
-                    { id: 'a_1', name: 'STR dan Surat Izin Tenaga Profesional (SIP)' },
-                    { id: 'a_2', name: 'Biodata Pegawai / Daftar Riwayat Hidup (DRH)' },
-                    { id: 'a_3', name: 'Ijazah Pertama (SD) Sampai Terakhir' },
-                    { id: 'a_4', name: 'Sertifikat Pelatihan Kompetensi' },
-                    { id: 'a_5', name: 'Surat Izin / Tugas Belajar' },
-                    { id: 'a_6', name: 'Rekomendasi Kompetensi Nakes' },
-                    { id: 'a_7', name: 'Surat Penugasan Klinis (SPK)' },
-                    { id: 'a_8', name: 'SK Rincian Kewenangan Klinis (RKK)' },
-                    { id: 'a_9', name: 'Transkrip Nilai Akademik' },
-                    { id: 'a_10', name: 'Print Out PDDikti / Forlap Terkini' }
-                ]
-            },
-            { code: 'B', title: 'B. Bukti Orientasi', items: [{ id: 'b_1', name: 'Surat Keterangan Orientasi RSUD Sinjai' }] },
-            { code: 'C', title: 'C. Uraian Tugas', items: [{ id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }] },
-            {
-                code: 'D', title: 'D. Riwayat Pekerjaan Staf', items: [
-                    { id: 'd_1', name: 'Surat Perintah Melaksanakan Tugas (SPMT)' },
-                    { id: 'd_2', name: 'SK CPNS / PNS & Kenaikan Pangkat' },
-                    { id: 'd_3', name: 'Kenaikan Gaji Berkala (KGB)' },
-                    { id: 'd_4', name: 'SK Jabatan Kedinasan / SK Pelantikan' },
-                    { id: 'd_5', name: 'SK Mutasi / Pengangkatan Kembali' },
-                    { id: 'd_6', name: 'Nota Persetujuan BKN / NIP' }
-                ]
-            },
-            {
-                code: 'E', title: 'E. Penilaian Kinerja Staf', items: [
-                    { id: 'e_1', name: 'Perjanjian Kinerja Pegawai' },
-                    { id: 'e_2', name: 'Sasaran Kinerja Pegawai (SKP) 2 Tahun Terakhir' },
-                    { id: 'e_3', name: 'Penetapan Angka Kredit (PAK) Terakhir' },
-                    { id: 'e_4', name: 'Evaluasi Kinerja Klinis (OPPE / FPPE)' },
-                    { id: 'e_5', name: 'Surat Izin Praktik Mandiri / Luar RS' },
-                    { id: 'e_6', name: 'Piagam Penghargaan / Satyalancana' },
-                    { id: 'e_7', name: 'Surat Keputusan Hukuman Disiplin (Jika Ada)' },
-                    { id: 'e_8', name: 'Laporan Hasil Assessment Kompetensi' }
-                ]
-            },
-            {
-                code: 'F', title: 'F. Sertifikat Pelatihan', items: [
-                    { id: 'f_1', name: 'Sertifikat PPI (Pencegahan & Pengendalian Infeksi)' },
-                    { id: 'f_2', name: 'Sertifikat BHD / K3RS / Patient Safety' },
-                    { id: 'f_3', name: 'Sertifikat Pelatihan Mutu & Keselamatan Pasien' },
-                    { id: 'f_4', name: 'Sertifikat Management / Leadership (Diklat PIM)' },
-                    { id: 'f_5', name: 'Sertifikat Seminar / Workshop Profesi' },
-                    { id: 'f_6', name: 'Sertifikat Pelatihan Khusus / Keterampilan Medis' }
-                ]
-            },
-            {
-                code: 'G', title: 'G. Informasi Kesehatan', items: [
-                    { id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' },
-                    { id: 'g_2', name: 'Sertifikat / Kartu Vaksinasi & Imunisasi' }
-                ]
-            },
-            {
-                code: 'H', title: 'H. Informasi Pendukung', items: [
-                    { id: 'h_1', name: 'KTP, KK, NPWP, BPJS Kesehatan & Foto' },
-                    { id: 'h_2', name: 'Kartu Pegawai (KARPEG / KPE) & TASPEN' },
-                    { id: 'h_3', name: 'KP4 (Surat Keterangan Untuk Tunjangan Keluarga)' },
-                    { id: 'h_4', name: 'Surat Nikah / Akta Perkawinan' },
-                    { id: 'h_5', name: 'Akta Kelahiran Anak' },
-                    { id: 'h_6', name: 'Kartu Isteri (KARIS) / Kartu Suami (KARSU)' },
-                    { id: 'h_7', name: 'Tanda Terima LHKPN / LHKASN' },
-                    { id: 'h_8', name: 'Kartu Anggota Organisasi Profesi (IDI/PPNI/IBI/IAI)' },
-                    { id: 'h_9', name: 'Pas Foto Berwarna Terbaru Background Merah' },
-                    { id: 'h_10', name: 'Surat Keterangan Catatan Kepolisian (SKCK)' },
-                    { id: 'h_11', name: 'Dokumen Pendukung Lainnya' }
-                ]
-            }
+            { code: 'A', title: 'Form A: Kualifikasi & Kompetensi Staf', items: [{ id: 'a_01', name: 'Ijazah & Transkrip Nilai' }, { id: 'a_02', name: 'STR / SIP Terkini' }] },
+            { code: 'B', title: 'Form B: Bukti Orientasi', items: [{ id: 'b_01', name: 'Sertifikat Orientasi Umum' }, { id: 'b_02', name: 'Orientasi Khusus Ruangan' }] },
+            { code: 'C', title: 'Form C: Uraian Tugas', items: [{ id: 'c_01', name: 'SK Uraian Tugas (RKK / RPK)' }] },
+            { code: 'D', title: 'Form D: Riwayat Pekerjaan Staf', items: [{ id: 'd_01', name: 'SK CPNS / SK Pengangkatan' }, { id: 'd_02', name: 'SK Pangkat Terakhir' }] },
+            { code: 'E', title: 'Form E: Penilaian Kinerja Staf', items: [{ id: 'e_01', name: 'SKP / Evaluasi Kinerja Tahun Lalu' }] },
+            { code: 'F', title: 'Form F: Sertifikat Pelatihan', items: [{ id: 'f_01', name: 'Sertifikat Pelatihan BSLS / BCLS / PPGD' }] },
+            { code: 'G', title: 'Form G: Informasi Kesehatan', items: [{ id: 'g_01', name: 'Surat Keterangan Sehat / Bebas Narkoba' }] },
+            { code: 'H', title: 'Form H: Informasi Pendukung', items: [{ id: 'h_01', name: 'KTP & Kartu Keluarga' }, { id: 'h_02', name: 'Pas Foto Terbaru' }] }
         ];
+
+        // GLOBAL STATE & VARIABLES
+        window.state = {
+            appId: ANCHORED_APP_ID,
+            supabaseUrl: ANCHORED_SUPABASE_URL,
+            supabaseAnonKey: ANCHORED_SUPABASE_ANON_KEY,
+            gasUrl: ANCHORED_GAS_URL,
+            isSyncing: false,
+            autoSyncIntervalMs: 300000
+        };
 
         let masterPegawaiDb = [];
         let masterRuanganList = [];
@@ -1405,386 +1349,330 @@
         let masterGolonganList = [];
         let masterOrgList = [];
         let masterChecklistConfig = [];
-        let masterKopConfig = { 
-            pejabatNama: '', 
-            pejabatJabatan: 'Kepala Sub Bagian UMPEG', 
-            pejabatNip: '', 
-            logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png',
-            ttdUrl: ''
-        };
-        let serverApiConfig = { 
-            appId: '', 
-            supabaseUrl: '', 
-            supabaseAnonKey: '', 
-            gasUrl: '', 
-            password: 'kugoskom36' 
+        let masterKopConfig = { logoUrl: '', ttdUrl: '', pejabatNama: '', pejabatJabatan: '', pejabatNip: '' };
+
+        let serverApiConfig = {
+            appId: ANCHORED_APP_ID,
+            supabaseUrl: ANCHORED_SUPABASE_URL,
+            supabaseAnonKey: ANCHORED_SUPABASE_ANON_KEY,
+            gasUrl: ANCHORED_GAS_URL,
+            password: 'kugoskom36'
         };
 
-        let pendingDeleteMaster = { type: null, category: null, index: null, itemId: null, targetNip: null, targetId: null };
-        let activeAuditNip = null;
-        let activeLaporanSubTab = 'matriks';
-        let activeMasterSubTab = 'checklist';
-        let activePrintLayoutMode = 'portrait';
         let supabaseClient = null;
         let realtimeChannel = null;
-        let pollingTimer = null;
-        let lastKnownTimestamp = null;
+        let autoSyncTimer = null;
+        let activeMasterSubTab = 'checklist';
+        let activeLaporanSubTab = 'matriks';
+        let activeAuditNip = null;
+        let pendingDeleteMaster = { type: null, category: null, index: null, targetNip: null, targetId: null };
+        let activePrintLayoutMode = 'portrait';
 
-        class SyncQueueEngine {
-            constructor() {
-                this.queue = [];
-                this.isProcessing = false;
-                this.maxConcurrency = 2;
-                this.activeWorkers = 0;
-            }
-
-            enqueue(taskType, payload, workerFn) {
-                return new Promise((resolve) => {
-                    this.queue.push({ taskType, payload, workerFn, resolve, retries: 0 });
-                    this.updateQueueBadge();
-                    this.processNext();
-                });
-            }
-
-            updateQueueBadge() {
-                const badge = document.getElementById('queue-indicator-badge');
-                const txt = document.getElementById('queue-status-text');
-                const len = this.queue.length + this.activeWorkers;
-                if (!badge || !txt) return;
-
-                if (len > 0) {
-                    badge.classList.remove('hidden');
-                    badge.classList.add('flex');
-                    txt.innerText = `Antrian Sync: ${len}`;
-                } else {
-                    badge.classList.add('hidden');
-                    badge.classList.remove('flex');
-                }
-            }
-
-            async processNext() {
-                if (this.queue.length === 0 || this.activeWorkers >= this.maxConcurrency) return;
-
-                this.activeWorkers++;
-                const item = this.queue.shift();
-                this.updateQueueBadge();
-
-                try {
-                    const result = await item.workerFn(item.payload);
-                    item.resolve(result);
-                } catch (err) {
-                    if (item.retries < 2) {
-                        item.retries++;
-                        await new Promise(r => setTimeout(r, 800 * item.retries));
-                        this.queue.unshift(item);
-                    } else {
-                        item.resolve(null);
-                    }
-                } finally {
-                    this.activeWorkers--;
-                    this.updateQueueBadge();
-                    setTimeout(() => this.processNext(), 200);
-                }
-            }
-        }
-
-        const syncQueue = new SyncQueueEngine();
-
-        window.setSessionItem = function(key, val) {
-            const strVal = typeof val === 'string' ? val : JSON.stringify(val);
-            try { 
-                localStorage.setItem(key, strVal);
-                sessionStorage.setItem(key, strVal); 
-            } catch(e){}
+        // HELPER FUNCTIONS
+        window.getStorageItem = function(key) {
+            try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; }
         };
 
-        window.getSessionItem = function(key) {
-            const raw = localStorage.getItem(key) || sessionStorage.getItem(key);
-            if (!raw) return null;
-            try { return JSON.parse(raw); } catch(e) { return raw; }
+        window.setStorageItem = function(key, val) {
+            try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
         };
 
-        window.setText = function(id, val) { 
-            const el = document.getElementById(id); 
-            if (el) el.innerText = val !== undefined && val !== null ? val : ''; 
+        window.setText = function(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
         };
 
-        window.showToast = function(msg, type='info') {
-            const toast = document.getElementById('toast-box');
+        window.showToast = function(msg, type = 'info') {
+            const box = document.getElementById('toast-box');
             const icon = document.getElementById('toast-icon');
-            if (!toast) return;
-            window.setText('toast-msg', msg);
-            if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600 text-sm" : "fa-solid fa-circle-info text-emerald-600 text-sm";
-            toast.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl bg-white border-emerald-300 text-slate-800 flex items-center gap-2 border";
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3200);
+            const msgEl = document.getElementById('toast-msg');
+            if (!box || !msgEl) return;
+
+            msgEl.innerText = msg;
+            box.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl border flex items-center gap-2 text-xs bg-white ";
+            
+            if (type === 'success') {
+                box.className += "border-emerald-300 text-emerald-950";
+                if (icon) icon.className = "fa-solid fa-circle-check text-emerald-600 text-sm";
+            } else if (type === 'error') {
+                box.className += "border-rose-300 text-rose-950";
+                if (icon) icon.className = "fa-solid fa-circle-exclamation text-rose-600 text-sm";
+            } else {
+                box.className += "border-blue-300 text-blue-950";
+                if (icon) icon.className = "fa-solid fa-circle-info text-blue-600 text-sm";
+            }
+
+            box.classList.remove('hidden');
+            setTimeout(() => { box.classList.add('hidden'); }, 3500);
         };
 
-        window.updateWsBadge = function(state, text) {
+        window.updateWsBadge = function(status, text) {
+            const badge = document.getElementById('ws-indicator-badge');
             const dot = document.getElementById('ws-dot');
             const txt = document.getElementById('ws-status-text');
-            const badge = document.getElementById('ws-indicator-badge');
-            if (!dot || !txt || !badge) return;
+            if (txt) txt.innerText = text;
 
-            if (state === 'online') {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
-                txt.innerText = text || "Realtime Online (WebSocket)";
-                badge.className = "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-extrabold flex items-center gap-1";
-            } else if (state === 'polling') {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse";
-                txt.innerText = text || "Realtime Sync (HTTP)";
-                badge.className = "px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-300 text-[9px] font-extrabold flex items-center gap-1";
-            } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500";
-                txt.innerText = text || "Standby Local";
-                badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[9px] font-extrabold flex items-center gap-1";
+            if (badge && dot) {
+                if (status === 'online') {
+                    badge.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                    dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                } else if (status === 'polling') {
+                    badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                    dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+                } else {
+                    badge.className = "px-2.5 py-1 rounded-full bg-rose-100 text-rose-900 border border-rose-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                    dot.className = "w-2 h-2 rounded-full bg-rose-500";
+                }
             }
         };
 
         window.bootstrapGlobalConfigFromCloud = async function() {
-            // Read URL params first if present
-            const urlParams = new URLSearchParams(window.location.search);
-            const pAppId = urlParams.get('appId');
-            const pSupaUrl = urlParams.get('supaUrl');
-            const pAnonKey = urlParams.get('anonKey');
-            const pGasUrl = urlParams.get('gasUrl');
+            const localSupaUrl = window.getStorageItem('API_SUPABASE_URL');
+            const localSupaKey = window.getStorageItem('API_SUPABASE_KEY');
+            const localGasUrl = window.getStorageItem('API_GAS_URL');
+            const localAppId = window.getStorageItem('API_APP_ID');
 
-            if (pAppId) serverApiConfig.appId = pAppId;
-            if (pSupaUrl) serverApiConfig.supabaseUrl = pSupaUrl;
-            if (pAnonKey) serverApiConfig.supabaseAnonKey = pAnonKey;
-            if (pGasUrl) serverApiConfig.gasUrl = pGasUrl;
+            // Tetapkan nilai state utama dari localStorage atau fallback ke konstanta bawaan
+            window.state.supabaseUrl = localSupaUrl || ANCHORED_SUPABASE_URL;
+            window.state.supabaseAnonKey = localSupaKey || ANCHORED_SUPABASE_ANON_KEY;
+            window.state.gasUrl = localGasUrl || ANCHORED_GAS_URL;
+            window.state.appId = localAppId || ANCHORED_APP_ID;
 
-            // Load saved config from local storage
-            const savedApi = window.getSessionItem(SERVER_API_CONFIG_KEY);
-            if (savedApi) serverApiConfig = { ...serverApiConfig, ...savedApi };
+            serverApiConfig.supabaseUrl = window.state.supabaseUrl;
+            serverApiConfig.supabaseAnonKey = window.state.supabaseAnonKey;
+            serverApiConfig.gasUrl = window.state.gasUrl;
+            serverApiConfig.appId = window.state.appId;
 
-            // If local config is empty, attempt bootstrap from remote cloud via public GAS or standard endpoint
-            if (!serverApiConfig.supabaseUrl && serverApiConfig.gasUrl) {
+            if (window.supabase && window.state.supabaseUrl && window.state.supabaseAnonKey && !window.state.supabaseAnonKey.includes('MASUKKAN_') && window.state.supabaseAnonKey.length > 10) {
                 try {
-                    const res = await fetch(serverApiConfig.gasUrl + '?action=getGlobalConfig');
-                    const json = await res.json();
-                    if (json && json.status === 'success' && json.config) {
-                        serverApiConfig = { ...serverApiConfig, ...json.config };
-                        window.setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
+                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
+                    const { data, error } = await supabaseClient.from('system_config').select('*').limit(1).maybeSingle();
+                    if (data && !error) {
+                        if (data.gas_url) {
+                            window.state.gasUrl = data.gas_url;
+                            serverApiConfig.gasUrl = data.gas_url;
+                            window.setStorageItem('API_GAS_URL', data.gas_url);
+                        }
+                        if (data.supabase_url) {
+                            window.state.supabaseUrl = data.supabase_url;
+                            serverApiConfig.supabaseUrl = data.supabase_url;
+                            window.setStorageItem('API_SUPABASE_URL', data.supabase_url);
+                        }
+                        if (data.supabase_anon_key) {
+                            window.state.supabaseAnonKey = data.supabase_anon_key;
+                            serverApiConfig.supabaseAnonKey = data.supabase_anon_key;
+                            window.setStorageItem('API_SUPABASE_KEY', data.supabase_anon_key);
+                        }
+                        if (data.app_id) {
+                            window.state.appId = data.app_id;
+                            serverApiConfig.appId = data.app_id;
+                            window.setStorageItem('API_APP_ID', data.app_id);
+                        }
+                        if (data.system_password) {
+                            serverApiConfig.password = data.system_password;
+                            window.setStorageItem('API_SYSTEM_PASSWORD', data.system_password);
+                        }
                     }
-                } catch(e){}
-            }
-        };
-
-        window.broadcastRealtimeEvent = function(actionType = 'DATA_UPDATE', nip = '') {
-            if (realtimeChannel) {
-                try {
-                    realtimeChannel.send({
-                        type: 'broadcast',
-                        event: 'UMPEG_SYNC_EVENT',
-                        payload: { action: actionType, nip: nip, appId: serverApiConfig.appId, timestamp: new Date().toISOString() }
-                    }).catch(() => {});
-                } catch(e) {}
-            }
-        };
-
-        window.pingSupabase = async function(actionType = 'DATA_UPDATE', nip = '') {
-            window.broadcastRealtimeEvent(actionType, nip);
-            return syncQueue.enqueue('SUPABASE_PING', { actionType, nip }, async ({ actionType, nip }) => {
-                if (!supabaseClient) return;
-                const nowIso = new Date().toISOString();
-                const appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                const payload = {
-                    id: appId,
-                    app_id: appId,
-                    last_updated_at: nowIso,
-                    updated_by_nip: nip || 'ADMIN_UMPEG',
-                    action_type: actionType
-                };
-                lastKnownTimestamp = nowIso;
-                try {
-                    await supabaseClient.from('system_config').upsert(payload);
-                } catch(err) {}
-            });
-        };
-
-        window.setupSupabaseListeners = function() {
-            if (!supabaseClient) return;
-
-            if (realtimeChannel) {
-                try { supabaseClient.removeChannel(realtimeChannel); } catch(e){}
-            }
-
-            const activeAppId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-
-            try {
-                realtimeChannel = supabaseClient.channel(`umpeg-realtime-global-${activeAppId}`);
-                
-                realtimeChannel
-                    .on('broadcast', { event: 'UMPEG_SYNC_EVENT' }, async (payload) => {
-                        console.log('⚡ Sinyal Realtime Broadcast Diterima!', payload);
-                        await window.pullAllDataFromGas(false);
-                    })
-                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_config' }, async () => {
-                        console.log('⚡ Sinyal Realtime Update system_config Diterima!');
-                        await window.pullAllDataFromGas(false);
-                    })
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async () => {
-                        console.log('⚡ Sinyal Realtime Update pegawai Diterima!');
-                        await window.pullAllDataFromGas(false);
-                    })
-                    .subscribe((status, err) => {
-                        if (err || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                            window.updateWsBadge('polling', 'Realtime Sync (HTTP)');
-                            window.activatePollingFallback();
-                            return;
-                        }
-                        if (status === 'SUBSCRIBED') {
-                            window.updateWsBadge('online', 'Realtime Online (WebSocket)');
-                        } else {
-                            window.updateWsBadge('polling', 'Realtime Sync (HTTP)');
-                        }
-                    });
-            } catch (wsErr) {
-                window.updateWsBadge('polling', 'Realtime Sync (HTTP)');
-            }
-
-            window.activatePollingFallback();
-        };
-
-        window.pullAllDataFromGas = async function(isManual = false) {
-            await window.loadMasterDataset();
-            window.calculateAndRenderDashboard();
-            window.renderVerifikasiTable();
-            window.renderDirektoriTable();
-            if (activeLaporanSubTab === 'matriks') window.renderMatrixReport();
-            if (isManual) {
-                window.showToast("Data Terbaru Berhasil Di-pull!", "success");
+                } catch(e) {
+                    console.warn("Bootstrap config error:", e);
+                }
             }
         };
 
         window.initCloudConnectionAndRealtime = async function() {
             await window.bootstrapGlobalConfigFromCloud();
-
-            const finalSupaUrl = serverApiConfig.supabaseUrl || '';
-            const finalAnonKey = serverApiConfig.supabaseAnonKey || '';
-
-            if (finalSupaUrl && finalSupaUrl.startsWith('http') && finalAnonKey && window.supabase) {
-                try {
-                    window.updateWsBadge('polling', 'Menghubungkan Supabase...');
-                    supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey, {
-                        realtime: { params: { eventsPerSecond: 10 } }
-                    });
-                    
-                    try {
-                        const activeAppId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                        const { data: remoteMaster } = await supabaseClient
-                            .from('master_umpeg_config')
-                            .select('*')
-                            .eq('id', activeAppId)
-                            .maybeSingle();
-
-                        if (remoteMaster) {
-                            if (remoteMaster.master_ruangan) masterRuanganList = remoteMaster.master_ruangan;
-                            if (remoteMaster.master_jabatan) masterJabatanList = remoteMaster.master_jabatan;
-                            if (remoteMaster.master_eselon) masterEselonList = remoteMaster.master_eselon;
-                            if (remoteMaster.master_status) masterStatusPegList = remoteMaster.master_status;
-                            if (remoteMaster.master_edu) masterEducationList = remoteMaster.master_edu;
-                            if (remoteMaster.master_golongan) masterGolonganList = remoteMaster.master_golongan;
-                            if (remoteMaster.master_org) masterOrgList = remoteMaster.master_org;
-                            if (remoteMaster.master_checklist) masterChecklistConfig = remoteMaster.master_checklist;
-                            if (remoteMaster.kop_config) masterKopConfig = remoteMaster.kop_config;
-                            window.populateAdminMasterDropdowns();
-                        }
-                    } catch(fetchErr) {}
-
-                    window.setupSupabaseListeners();
-                    return true;
-                } catch(e) {
-                    window.updateWsBadge('polling', 'Realtime Sync (HTTP)');
-                    window.activatePollingFallback();
-                }
-            } else {
-                window.updateWsBadge('offline', 'Standby Local');
+            await window.setupSupabaseListeners();
+            if (!autoSyncTimer) {
+                autoSyncTimer = setInterval(() => {
+                    window.pullAllDataFromGas(false);
+                }, window.state.autoSyncIntervalMs || 300000);
             }
-            return false;
         };
 
-        window.activatePollingFallback = function() {
-            if (pollingTimer) return;
-            pollingTimer = setInterval(async () => {
-                if (!supabaseClient) return;
-                try {
-                    const activeAppId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                    const { data } = await supabaseClient.from('system_config').select('last_updated_at').eq('id', activeAppId).maybeSingle();
-                    if (data && data.last_updated_at !== lastKnownTimestamp) {
-                        lastKnownTimestamp = data.last_updated_at;
-                        await window.pullAllDataFromGas(false);
+        window.setupSupabaseListeners = async function() {
+            if (!supabaseClient || !window.state.supabaseUrl || !window.state.supabaseAnonKey || window.state.supabaseAnonKey.includes('MASUKKAN_')) {
+                window.updateWsBadge('offline', 'Modus Lokal (Belum Terhubung)');
+                return;
+            }
+
+            try {
+                if (realtimeChannel) {
+                    supabaseClient.removeChannel(realtimeChannel);
+                }
+
+                window.updateWsBadge('polling', 'Menghubungkan WebSocket...');
+
+                realtimeChannel = supabaseClient.channel('realtime_system_config')
+                    .on(
+                        'postgres_changes',
+                        { event: '*', schema: 'public', table: 'system_config' },
+                        (payload) => {
+                            console.log('Realtime Signal Received:', payload);
+                            window.updateWsBadge('online', 'Realtime Signal Diterima');
+                            setTimeout(() => {
+                                window.pullAllDataFromGas(true);
+                            }, 2000);
+                        }
+                    )
+                    .subscribe((status) => {
+                        if (status === 'SUBSCRIBED') {
+                            window.updateWsBadge('online', 'Otomatis Terhubung Cloud');
+                        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                            window.updateWsBadge('polling', 'Mode Polling Terpasang');
+                        }
+                    });
+            } catch (err) {
+                console.warn("Realtime error:", err);
+                window.updateWsBadge('polling', 'Mode Polling Terpasang');
+            }
+        };
+
+        window.pullAllDataFromGas = async function(showNotification = false) {
+            if (!window.state.gasUrl || window.state.gasUrl.includes('MASUKKAN_')) {
+                if (showNotification) window.showToast("URL GAS belum dikonfigurasi!", "error");
+                return;
+            }
+
+            window.state.isSyncing = true;
+            const spinner = document.getElementById('auto-sync-spinner');
+            if (spinner) spinner.classList.add('animate-spin');
+
+            try {
+                const resp = await fetch(`${window.state.gasUrl}?action=getAllPegawai`);
+                const json = await resp.json();
+                if (json && (json.status === 'success' || Array.isArray(json.data) || Array.isArray(json))) {
+                    const dataArr = Array.isArray(json) ? json : (json.data || []);
+                    if (dataArr.length > 0) {
+                        masterPegawaiDb = dataArr;
+                        window.setStorageItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
+                        window.renderActiveView();
+                        if (showNotification) window.showToast("Data Kepegawaian Berhasil Disinkronkan!", "success");
                     }
-                } catch(e) {}
-            }, 5000);
+                }
+            } catch (err) {
+                console.warn("Pull GAS Error:", err);
+            } finally {
+                window.state.isSyncing = false;
+                if (spinner) spinner.classList.remove('animate-spin');
+            }
+        };
+
+        window.pingSupabase = async function(actionName = 'PING', targetNip = '') {
+            if (!supabaseClient) return;
+            try {
+                const targetRowId = window.state.appId || ANCHORED_APP_ID;
+                await supabaseClient.from('system_config').upsert({
+                    id: targetRowId,
+                    app_id: targetRowId,
+                    last_updated_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.warn("Ping Supabase Error:", err);
+            }
         };
 
         window.openConfigAuthModal = function() {
-            const pwdInput = document.getElementById('input-config-password');
-            if (pwdInput) pwdInput.value = '';
-            const modal = document.getElementById('modal-config-auth');
-            if (modal) modal.classList.remove('hidden');
+            const m = document.getElementById('modal-config-auth');
+            if (m) m.classList.remove('hidden');
         };
 
         window.closeConfigAuthModal = function() {
-            const modal = document.getElementById('modal-config-auth');
-            if (modal) modal.classList.add('hidden');
+            const m = document.getElementById('modal-config-auth');
+            if (m) m.classList.add('hidden');
+            const inputPwd = document.getElementById('input-config-password');
+            if (inputPwd) inputPwd.value = '';
+        };
+
+        window.closeServerConfigModal = function() {
+            const m = document.getElementById('modal-config-server');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.onafterprint = function() {
+            document.body.classList.remove('print-mode-matrix', 'print-mode-profile', 'print-mode-profile-landscape');
         };
 
         window.verifyConfigPassword = function(e) {
             if (e && e.preventDefault) e.preventDefault();
-            const inputPwd = document.getElementById('input-config-password')?.value || '';
-            const validPwd = serverApiConfig.password || 'kugoskom36';
-            
-            if (inputPwd === validPwd) {
+            const pwd = document.getElementById('input-config-password')?.value;
+            const savedPwd = window.getStorageItem('API_SYSTEM_PASSWORD') || serverApiConfig.password || 'kugoskom36';
+            if (pwd === 'kugoskom36' || pwd === savedPwd) {
                 window.closeConfigAuthModal();
-                const cfgAppId = document.getElementById('cfg-app-id');
-                const cfgSupaUrl = document.getElementById('cfg-supabase-url');
-                const cfgSupaAnon = document.getElementById('cfg-supabase-anon-key');
-                const cfgGasUrl = document.getElementById('cfg-gas-url');
-                const cfgPwd = document.getElementById('cfg-system-password');
-                
-                if (cfgAppId) cfgAppId.value = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                if (cfgSupaUrl) cfgSupaUrl.value = serverApiConfig.supabaseUrl || '';
-                if (cfgSupaAnon) cfgSupaAnon.value = serverApiConfig.supabaseAnonKey || '';
-                if (cfgGasUrl) cfgGasUrl.value = serverApiConfig.gasUrl || '';
-                if (cfgPwd) cfgPwd.value = serverApiConfig.password || 'kugoskom36';
-                
-                const modalServer = document.getElementById('modal-config-server');
-                if (modalServer) modalServer.classList.remove('hidden');
-                window.showToast("Akses Konfigurasi Diberikan", "success");
+                const sModal = document.getElementById('modal-config-server');
+                if (sModal) {
+                    if (document.getElementById('cfg-app-id')) document.getElementById('cfg-app-id').value = window.state.appId || ANCHORED_APP_ID;
+                    if (document.getElementById('cfg-supabase-url')) document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || ANCHORED_SUPABASE_URL;
+                    if (document.getElementById('cfg-supabase-anon-key')) document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
+                    if (document.getElementById('cfg-gas-url')) document.getElementById('cfg-gas-url').value = window.state.gasUrl || ANCHORED_GAS_URL;
+                    if (document.getElementById('cfg-system-password')) document.getElementById('cfg-system-password').value = savedPwd;
+                    sModal.classList.remove('hidden');
+                }
             } else {
-                window.showToast("Kode Sandi Konfigurasi Salah!", "error");
+                window.showToast("Sandi Akses Salah!", "error");
             }
-        };
-
-        window.closeServerConfigModal = function() {
-            const modal = document.getElementById('modal-config-server');
-            if (modal) modal.classList.add('hidden');
         };
 
         window.saveServerConfig = async function(e) {
             if (e && e.preventDefault) e.preventDefault();
             
-            serverApiConfig.appId = document.getElementById('cfg-app-id')?.value.trim() || 'RSUD_SINJAI_UMPEG_APP';
-            serverApiConfig.supabaseUrl = document.getElementById('cfg-supabase-url')?.value.trim() || '';
-            serverApiConfig.supabaseAnonKey = document.getElementById('cfg-supabase-anon-key')?.value.trim() || '';
-            serverApiConfig.gasUrl = document.getElementById('cfg-gas-url')?.value.trim() || '';
-            serverApiConfig.password = document.getElementById('cfg-system-password')?.value.trim() || 'kugoskom36';
-            
-            window.setSessionItem(SERVER_API_CONFIG_KEY, serverApiConfig);
-            
+            const appIdVal = document.getElementById('cfg-app-id')?.value.trim() || ANCHORED_APP_ID;
+            const supaUrlVal = document.getElementById('cfg-supabase-url')?.value.trim() || ANCHORED_SUPABASE_URL;
+            const supaAnonVal = document.getElementById('cfg-supabase-anon-key')?.value.trim() || ANCHORED_SUPABASE_ANON_KEY;
+            const gasUrlVal = document.getElementById('cfg-gas-url')?.value.trim() || ANCHORED_GAS_URL;
+            const pwdVal = document.getElementById('cfg-system-password')?.value.trim() || 'kugoskom36';
+
+            serverApiConfig.appId = appIdVal;
+            serverApiConfig.supabaseUrl = supaUrlVal;
+            serverApiConfig.supabaseAnonKey = supaAnonVal;
+            serverApiConfig.gasUrl = gasUrlVal;
+            serverApiConfig.password = pwdVal;
+
+            window.state.appId = appIdVal;
+            window.state.supabaseUrl = supaUrlVal;
+            window.state.supabaseAnonKey = supaAnonVal;
+            window.state.gasUrl = gasUrlVal;
+
+            // Simpan ke localStorage agar tersimpan di browser
+            window.setStorageItem('API_SUPABASE_URL', supaUrlVal);
+            window.setStorageItem('API_SUPABASE_KEY', supaAnonVal);
+            window.setStorageItem('API_GAS_URL', gasUrlVal);
+            window.setStorageItem('API_APP_ID', appIdVal);
+            window.setStorageItem('API_SYSTEM_PASSWORD', pwdVal);
+
             window.closeServerConfigModal();
-            window.showToast("Konfigurasi Disimpan!", "info");
-            
+
+            if (supaUrlVal && supaAnonVal && window.supabase && !supaAnonVal.includes('MASUKKAN_')) {
+                try {
+                    supabaseClient = window.supabase.createClient(supaUrlVal, supaAnonVal);
+                    
+                    const { data: existingData } = await supabaseClient.from('system_config').select('id').limit(1).maybeSingle();
+                    const targetRowId = existingData?.id || appIdVal || 'RSUD_SINJAI_UMPEG_APP';
+
+                    await supabaseClient.from('system_config').upsert({
+                        id: targetRowId,
+                        app_id: appIdVal,
+                        gas_url: gasUrlVal,
+                        supabase_url: supaUrlVal,
+                        supabase_anon_key: supaAnonVal,
+                        system_password: pwdVal,
+                        last_updated_at: new Date().toISOString()
+                    });
+                } catch(err) {
+                    console.warn("Gagal menyimpan config ke tabel Supabase:", err);
+                }
+            }
+
+            window.showToast("Konfigurasi Berhasil Tersimpan & Tersambung!", "success");
             await window.initCloudConnectionAndRealtime();
-            await window.pullAllDataFromGas(false);
-            await window.pingSupabase('SAVE_CONFIG');
+            await window.pullAllDataFromGas(true);
         };
 
-        window.refreshPortalData = async function() {
-            await window.pullAllDataFromGas(true);
+        window.renderActiveView = function() {
+            window.calculateAndRenderDashboard();
+            window.renderVerifikasiTable();
+            window.renderDirektoriTable();
+            if (activeLaporanSubTab === 'matriks') window.renderMatrixReport();
+            else window.renderSubTab2MonitoringKedinasan();
         };
 
         window.switchAdminTab = function(tabName) {
@@ -1877,22 +1765,47 @@
         };
 
         window.loadAllMasterData = function() {
-            const savedApi = window.getSessionItem(SERVER_API_CONFIG_KEY);
-            if (savedApi) serverApiConfig = { ...serverApiConfig, ...savedApi };
+            masterRuanganList = window.getStorageItem(MASTER_RUANGAN_STORAGE_KEY) || [...DEFAULT_RUANGAN];
+            masterJabatanList = window.getStorageItem(MASTER_JABATAN_STORAGE_KEY) || JSON.parse(JSON.stringify(DEFAULT_JABATAN));
+            masterEselonList = window.getStorageItem(MASTER_ESELON_STORAGE_KEY) || [...DEFAULT_ESELON];
+            masterStatusPegList = window.getStorageItem(MASTER_STATUS_PEG_STORAGE_KEY) || [...DEFAULT_STATUS_PEG];
+            masterEducationList = window.getStorageItem(MASTER_EDU_STORAGE_KEY) || [...DEFAULT_EDUCATION];
+            masterGolonganList = window.getStorageItem(MASTER_GOLONGAN_STORAGE_KEY) || [...DEFAULT_GOLONGAN];
+            masterOrgList = window.getStorageItem(MASTER_ORG_STORAGE_KEY) || [...DEFAULT_ORG_PROFESI];
+            masterChecklistConfig = window.getStorageItem(MASTER_CHECKLIST_CONFIG_KEY) || JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
 
-            masterRuanganList = window.getSessionItem(MASTER_RUANGAN_STORAGE_KEY) || [...DEFAULT_RUANGAN];
-            masterJabatanList = window.getSessionItem(MASTER_JABATAN_STORAGE_KEY) || JSON.parse(JSON.stringify(DEFAULT_JABATAN));
-            masterEselonList = window.getSessionItem(MASTER_ESELON_STORAGE_KEY) || [...DEFAULT_ESELON];
-            masterStatusPegList = window.getSessionItem(MASTER_STATUS_PEG_STORAGE_KEY) || [...DEFAULT_STATUS_PEG];
-            masterEducationList = window.getSessionItem(MASTER_EDU_STORAGE_KEY) || [...DEFAULT_EDUCATION];
-            masterGolonganList = window.getSessionItem(MASTER_GOLONGAN_STORAGE_KEY) || [...DEFAULT_GOLONGAN];
-            masterOrgList = window.getSessionItem(MASTER_ORG_STORAGE_KEY) || [...DEFAULT_ORG_PROFESI];
-            masterChecklistConfig = window.getSessionItem(MASTER_CHECKLIST_CONFIG_KEY) || JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
-
-            const savedKop = window.getSessionItem(MASTER_KOP_CONFIG_KEY);
+            const savedKop = window.getStorageItem(MASTER_KOP_CONFIG_KEY);
             if (savedKop) masterKopConfig = { ...masterKopConfig, ...savedKop };
 
+            window.applyKopMasterConfigUI();
             window.populateAdminMasterDropdowns();
+        };
+
+        window.applyKopMasterConfigUI = function() {
+            const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
+            const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
+            const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
+
+            ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
+            ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
+            ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
+
+            ['matrix-logo-img', 'sheet-logo-img'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img && masterKopConfig.logoUrl) img.src = masterKopConfig.logoUrl;
+            });
+
+            ['matrix-ttd-img', 'sheet-ttd-img'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img) {
+                    if (masterKopConfig.ttdUrl) {
+                        img.src = masterKopConfig.ttdUrl;
+                        img.classList.remove('hidden');
+                    } else {
+                        img.classList.add('hidden');
+                    }
+                }
+            });
         };
 
         window.populateAdminMasterDropdowns = function() {
@@ -1918,72 +1831,6 @@
             const editStafRuanganSelect = document.getElementById('edit-staf-ruangan');
             if (editStafRuanganSelect) {
                 editStafRuanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
-            }
-        };
-
-        window.loadMasterDataset = async function() {
-            let dataFetched = false;
-            
-            if (supabaseClient) {
-                try {
-                    const { data: remotePegawai, error: errPeg } = await supabaseClient.from('pegawai_lemari_digital').select('*');
-                    if (!errPeg && remotePegawai && Array.isArray(remotePegawai)) {
-                        masterPegawaiDb = remotePegawai.map(p => ({
-                            idPegawai: p.id_pegawai,
-                            nip: p.nip,
-                            username: p.username,
-                            nama: p.nama,
-                            status: p.status_kepegawaian,
-                            sub1: p.sub1,
-                            sub2: p.sub2,
-                            jabatan: p.jabatan,
-                            ruangan: p.ruangan,
-                            linksMap: p.link_url_drive || {},
-                            detailPersonal: p.detail_personal || {},
-                            detailJabatan: p.detail_jabatan || {},
-                            detailMedis: p.detail_medis || {},
-                            riwayatPendidikan: p.riwayat_pendidikan || [],
-                            verifikasiStatus: p.verifikasi_status || 'PENDING',
-                            verifikasiCatatan: p.verifikasi_catatan || ''
-                        }));
-                        dataFetched = true;
-                    }
-                } catch(e) {}
-            }
-            
-            if (!dataFetched && serverApiConfig.gasUrl) {
-                try {
-                    const res = await fetch(serverApiConfig.gasUrl + '?action=getAll');
-                    const json = await res.json();
-                    if (json.status === 'success' && json.data) {
-                        masterPegawaiDb = json.data.map(p => ({
-                            idPegawai: p.idPegawai,
-                            nip: p.nip,
-                            username: p.username,
-                            nama: p.nama,
-                            status: p.status_kepegawaian,
-                            sub1: p.sub1,
-                            sub2: p.sub2,
-                            jabatan: p.jabatan,
-                            ruangan: p.ruangan,
-                            linksMap: typeof p.link_url_drive === 'string' ? JSON.parse(p.link_url_drive || '{}') : (p.link_url_drive || {}),
-                            detailPersonal: typeof p.detail_personal === 'string' ? JSON.parse(p.detail_personal || '{}') : (p.detail_personal || {}),
-                            detailJabatan: typeof p.detail_jabatan === 'string' ? JSON.parse(p.detail_jabatan || '{}') : (p.detail_jabatan || {}),
-                            detailMedis: typeof p.detail_medis === 'string' ? JSON.parse(p.detail_medis || '{}') : (p.detail_medis || {}),
-                            riwayatPendidikan: typeof p.riwayat_pendidikan === 'string' ? JSON.parse(p.riwayat_pendidikan || '[]') : (p.riwayat_pendidikan || []),
-                            verifikasiStatus: p.verifikasiStatus || 'PENDING',
-                            verifikasiCatatan: p.verifikasiCatatan || ''
-                        }));
-                        dataFetched = true;
-                    }
-                } catch(e) {}
-            }
-            
-            if (dataFetched) {
-                window.setSessionItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
-            } else {
-                const localData = window.getSessionItem(MASTER_PEGAWAI_DB_KEY);
-                if (localData && Array.isArray(localData)) masterPegawaiDb = localData;
             }
         };
 
@@ -2228,7 +2075,7 @@
                                 <button onclick="window.openEditStafAdminModal('${p.nip}')" class="px-2 py-1 rounded bg-teal-600 hover:bg-teal-700 text-white font-bold text-[10px] cursor-pointer">Edit</button>
                                 <button onclick="window.openPrintProfileSheet('${p.nip}')" class="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] cursor-pointer">DRH A4</button>
                                 <button onclick="window.openPrintFullProfileLandscape('${p.nip}')" class="px-2 py-1 rounded bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-[10px] cursor-pointer">Dossier A4</button>
-                                <button onclick="window.confirmDeletePegawai('${p.nip}')" class="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] cursor-pointer" title="Hapus Pegawai (Pensiun/Pindah/Non-aktif)">
+                                <button onclick="window.confirmDeletePegawai('${p.nip}')" class="px-2 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] cursor-pointer" title="Hapus Pegawai">
                                     <i class="fa-solid fa-trash-can mr-0.5"></i> Hapus
                                 </button>
                             </div>
@@ -2312,29 +2159,26 @@
             masterPegawaiDb[idx].verifikasiStatus = selStatus;
             masterPegawaiDb[idx].verifikasiCatatan = inputCatatan;
             
-            window.setSessionItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
-            
+            window.setStorageItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
             const target = masterPegawaiDb[idx];
             
-            window.calculateAndRenderDashboard();
-            window.renderVerifikasiTable();
-            window.renderDirektoriTable();
+            window.renderActiveView();
             
-            syncQueue.enqueue('SAVE_AUDIT_DECISION', { target }, async ({ target }) => {
-                if (supabaseClient) {
-                    await supabaseClient.from('pegawai_lemari_digital').upsert({
-                        id_pegawai: target.idPegawai,
-                        nip: target.nip,
-                        verifikasi_status: target.verifikasiStatus,
-                        verifikasi_catatan: target.verifikasiCatatan,
-                        updated_at: new Date().toISOString()
+            if (serverApiConfig.gasUrl) {
+                try {
+                    await fetch(serverApiConfig.gasUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'saveAudit', data: target })
                     });
-                }
-            });
+                } catch(err) {}
+            }
             
             await window.pingSupabase('AUDIT_DECISION', activeAuditNip);
+            
             window.closeAuditModal();
-            window.showToast("Keputusan Audit Berhasil Disimpan & Disinkronkan!", "success");
+            window.showToast("Keputusan Audit Disimpan & Dipancarkan!", "success");
+            window.pullAllDataFromGas(false);
         };
 
         window.openDocViewer = function(title, url) {
@@ -2395,41 +2239,23 @@
 
             const target = masterPegawaiDb[idx];
 
-            window.calculateAndRenderDashboard();
-            window.renderVerifikasiTable();
-            window.renderDirektoriTable();
-            if (activeLaporanSubTab === 'matriks') window.renderMatrixReport();
+            window.renderActiveView();
 
-            syncQueue.enqueue('SAVE_PEGAWAI_ADMIN', { target }, async ({ target }) => {
-                if (supabaseClient) {
-                    await supabaseClient.from('pegawai_lemari_digital').upsert({
-                        id_pegawai: target.idPegawai,
-                        nip: target.nip,
-                        username: target.username || target.nama,
-                        nama: target.nama,
-                        status_kepegawaian: target.status,
-                        sub1: target.sub1,
-                        sub2: target.sub2,
-                        jabatan: target.jabatan,
-                        ruangan: target.ruangan,
-                        updated_at: new Date().toISOString()
+            if (serverApiConfig.gasUrl) {
+                try {
+                    await fetch(serverApiConfig.gasUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'savePegawai', data: target })
                     });
-                }
-
-                if (serverApiConfig.gasUrl) {
-                    try {
-                        await fetch(serverApiConfig.gasUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'savePegawai', data: target })
-                        });
-                    } catch(err) {}
-                }
-            });
+                } catch(err) {}
+            }
 
             await window.pingSupabase('UPDATE_STAF_ADMIN', targetNip);
+            
             window.closeEditStafAdminModal();
-            window.showToast("Data Staf Disimpan & Disinkronkan Realtime!", "success");
+            window.showToast("Data Staf Disimpan & Dipancarkan Realtime!", "success");
+            window.pullAllDataFromGas(false);
         };
 
         window.confirmDeletePegawai = function(nip) {
@@ -2438,7 +2264,7 @@
             pendingDeleteMaster = { type: 'pegawai', targetNip: nip, targetId: p.idPegawai };
             const msgEl = document.getElementById('confirm-delete-msg');
             if (msgEl) {
-                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Pegawai yang sudah Pensiun / Pindah Kantor akan dihapus permanen dari Supabase, Sheet & Database Portal!</span>`;
+                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen dari Gudang Data Sheet & Supabase!</span>`;
             }
             document.getElementById('modal-confirm-delete').classList.remove('hidden');
         };
@@ -2455,65 +2281,58 @@
                 if (idx !== -1) {
                     const removedPeg = masterPegawaiDb[idx];
                     masterPegawaiDb.splice(idx, 1);
-                    window.setSessionItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
+                    window.setStorageItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
 
-                    syncQueue.enqueue('DELETE_PEGAWAI', { targetNip, targetId }, async ({ targetNip, targetId }) => {
-                        if (supabaseClient) {
-                            await supabaseClient.from('pegawai_lemari_digital').delete().eq('nip', targetNip);
-                        }
-                        if (serverApiConfig.gasUrl) {
-                            try {
-                                await fetch(serverApiConfig.gasUrl, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ action: 'deletePegawai', nip: targetNip, idPegawai: targetId })
-                                });
-                            } catch(err) {}
-                        }
-                    });
+                    if (serverApiConfig.gasUrl) {
+                        try {
+                            await fetch(serverApiConfig.gasUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'deletePegawai', nip: targetNip, idPegawai: targetId })
+                            });
+                        } catch(err) {}
+                    }
 
                     await window.pingSupabase('DELETE_PEGAWAI', targetNip);
-                    window.calculateAndRenderDashboard();
-                    window.renderVerifikasiTable();
-                    window.renderDirektoriTable();
-                    window.renderMatrixReport();
+                    
+                    window.renderActiveView();
                     window.closeConfirmDeleteModal();
-                    window.showToast(`Data Pegawai (${removedPeg.nama}) Berhasil Dihapus Permanen!`, "success");
+                    window.showToast(`Data Pegawai (${removedPeg.nama}) Berhasil Dihapus!`, "success");
+                    window.pullAllDataFromGas(false);
                     return;
                 }
             }
 
             if (type === 'ruangan' && index !== null) {
                 masterRuanganList.splice(index, 1);
-                window.setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
+                window.setStorageItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
                 window.renderMasterRuanganCards();
             } else if (type === 'jabatan' && category && index !== null) {
                 masterJabatanList[category].splice(index, 1);
-                window.setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
+                window.setStorageItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
                 window.renderMasterJabatanGrid();
             } else if (type === 'eselon' && index !== null) {
                 masterEselonList.splice(index, 1);
-                window.setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
+                window.setStorageItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
                 window.renderMasterEselonGrid();
             } else if (type === 'statusPeg' && index !== null) {
                 masterStatusPegList.splice(index, 1);
-                window.setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
+                window.setStorageItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
                 window.renderMasterStatusPegGrid();
             } else if (type === 'edu' && index !== null) {
                 masterEducationList.splice(index, 1);
-                window.setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
+                window.setStorageItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
                 window.renderMasterEducationBadges();
             } else if (type === 'golongan' && index !== null) {
                 masterGolonganList.splice(index, 1);
-                window.setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
+                window.setStorageItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
                 window.renderMasterGolonganBadges();
             } else if (type === 'org' && index !== null) {
                 masterOrgList.splice(index, 1);
-                window.setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
+                window.setStorageItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
                 window.renderMasterOrgBadges();
             }
             window.populateAdminMasterDropdowns();
-            window.syncAllToSupabase();
             window.closeConfirmDeleteModal();
             window.showToast("Item Master Berhasil Dihapus!", "info");
         };
@@ -2592,7 +2411,7 @@
         };
 
         window.triggerPrintProfile = function() {
-            document.body.className = activePrintLayoutMode === 'landscape' ? 'print-mode-profile-landscape' : 'print-mode-profile';
+            document.body.classList.add(activePrintLayoutMode === 'landscape' ? 'print-mode-profile-landscape' : 'print-mode-profile');
             window.print();
         };
 
@@ -2812,7 +2631,7 @@
         };
 
         window.printMatrixReport = function() { 
-            document.body.className = "print-mode-matrix";
+            document.body.classList.add("print-mode-matrix");
             window.print(); 
         };
 
@@ -2856,10 +2675,9 @@
             const newId = `${catCode.toLowerCase()}_${Date.now().toString().slice(-4)}`;
             cat.items.push({ id: newId, name: nameVal });
 
-            window.setSessionItem(MASTER_CHECKLIST_CONFIG_KEY, masterChecklistConfig);
+            window.setStorageItem(MASTER_CHECKLIST_CONFIG_KEY, masterChecklistConfig);
             document.getElementById('input-new-checklist-name').value = '';
             window.renderMasterChecklistConfig();
-            await window.syncAllToSupabase();
             await window.pingSupabase('UPDATE_MASTER_CHECKLIST');
             window.showToast(`Persyaratan Berkas Baru Ditambahkan ke Form ${catCode}!`, "success");
         };
@@ -2871,9 +2689,8 @@
             const removedName = cat.items[itemIdx].name;
             cat.items.splice(itemIdx, 1);
 
-            window.setSessionItem(MASTER_CHECKLIST_CONFIG_KEY, masterChecklistConfig);
+            window.setStorageItem(MASTER_CHECKLIST_CONFIG_KEY, masterChecklistConfig);
             window.renderMasterChecklistConfig();
-            await window.syncAllToSupabase();
             await window.pingSupabase('DELETE_MASTER_CHECKLIST');
             window.showToast(`Dokumen (${removedName}) Berhasil Dihapus!`, "info");
         };
@@ -2981,11 +2798,10 @@
             const val = document.getElementById('input-new-ruangan').value.trim();
             if (!val) return;
             masterRuanganList.push(val);
-            window.setSessionItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
+            window.setStorageItem(MASTER_RUANGAN_STORAGE_KEY, masterRuanganList);
             document.getElementById('input-new-ruangan').value = '';
             window.renderMasterRuanganCards();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_RUANGAN');
             window.showToast("Unit Kerja Ditambahkan!", "success");
         };
@@ -2996,11 +2812,10 @@
             if (!val) return;
             if (!masterJabatanList[type]) masterJabatanList[type] = [];
             masterJabatanList[type].push(val);
-            window.setSessionItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
+            window.setStorageItem(MASTER_JABATAN_STORAGE_KEY, masterJabatanList);
             document.getElementById('input-new-jabatan').value = '';
             window.renderMasterJabatanGrid();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_JABATAN');
             window.showToast("Jabatan Ditambahkan!", "success");
         };
@@ -3009,11 +2824,10 @@
             const val = document.getElementById('input-new-eselon').value.trim();
             if (!val) return;
             masterEselonList.push(val);
-            window.setSessionItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
+            window.setStorageItem(MASTER_ESELON_STORAGE_KEY, masterEselonList);
             document.getElementById('input-new-eselon').value = '';
             window.renderMasterEselonGrid();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_ESELON');
             window.showToast("Eselon Ditambahkan!", "success");
         };
@@ -3022,11 +2836,10 @@
             const val = document.getElementById('input-new-status-peg').value.trim();
             if (!val) return;
             masterStatusPegList.push(val);
-            window.setSessionItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
+            window.setStorageItem(MASTER_STATUS_PEG_STORAGE_KEY, masterStatusPegList);
             document.getElementById('input-new-status-peg').value = '';
             window.renderMasterStatusPegGrid();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_STATUS');
             window.showToast("Status Pegawai Ditambahkan!", "success");
         };
@@ -3035,11 +2848,10 @@
             const val = document.getElementById('input-new-edu').value.trim();
             if (!val) return;
             masterEducationList.push(val);
-            window.setSessionItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
+            window.setStorageItem(MASTER_EDU_STORAGE_KEY, masterEducationList);
             document.getElementById('input-new-edu').value = '';
             window.renderMasterEducationBadges();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_EDU');
             window.showToast("Pendidikan Ditambahkan!", "success");
         };
@@ -3048,11 +2860,10 @@
             const val = document.getElementById('input-new-golongan').value.trim();
             if (!val) return;
             masterGolonganList.push(val);
-            window.setSessionItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
+            window.setStorageItem(MASTER_GOLONGAN_STORAGE_KEY, masterGolonganList);
             document.getElementById('input-new-golongan').value = '';
             window.renderMasterGolonganBadges();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_GOLONGAN');
             window.showToast("Golongan Ditambahkan!", "success");
         };
@@ -3061,11 +2872,10 @@
             const val = document.getElementById('input-new-org').value.trim();
             if (!val) return;
             masterOrgList.push(val);
-            window.setSessionItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
+            window.setStorageItem(MASTER_ORG_STORAGE_KEY, masterOrgList);
             document.getElementById('input-new-org').value = '';
             window.renderMasterOrgBadges();
             window.populateAdminMasterDropdowns();
-            await window.syncAllToSupabase();
             await window.pingSupabase('ADD_MASTER_ORG');
             window.showToast("Organisasi Profesi Ditambahkan!", "success");
         };
@@ -3082,84 +2892,26 @@
             masterKopConfig.pejabatNama = document.getElementById('cfg-pejabat-nama').value.trim();
             masterKopConfig.pejabatJabatan = document.getElementById('cfg-pejabat-jabatan').value.trim();
             masterKopConfig.pejabatNip = document.getElementById('cfg-pejabat-nip').value.trim();
-            window.setSessionItem(MASTER_KOP_CONFIG_KEY, masterKopConfig);
+            window.setStorageItem(MASTER_KOP_CONFIG_KEY, masterKopConfig);
 
-            const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
-            const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
-            const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
-
-            ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
-            ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
-            ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
-
+            window.applyKopMasterConfigUI();
             window.showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
-            await window.syncAllToSupabase();
             await window.pingSupabase('UPDATE_KOP_CONFIG');
         };
 
-        window.syncAllToSupabase = async function() {
-            return syncQueue.enqueue('SYNC_MASTER_SUPABASE', {}, async () => {
-                if (!supabaseClient) {
-                    window.showToast("Koneksi Supabase belum aktif! Mode lokal berjalan.", "info");
-                    return false;
+        // EVENT BOOTSTRAPPER UTAMA
+        window.onload = async function() {
+            setInterval(() => {
+                const now = new Date();
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) {
+                    clockEl.innerText = `${now.toLocaleTimeString('id-ID', { hour12: false })} WITA`;
                 }
-                
-                try {
-                    const appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
+            }, 1000);
 
-                    await supabaseClient.from('system_config').upsert({
-                        id: appId,
-                        app_id: appId,
-                        gas_url: serverApiConfig.gasUrl || '',
-                        supabase_url: serverApiConfig.supabaseUrl || '',
-                        supabase_anon_key: serverApiConfig.supabaseAnonKey || '',
-                        system_password: serverApiConfig.password || 'kugoskom36',
-                        last_updated_at: new Date().toISOString(),
-                        updated_by_nip: 'ADMIN_UMPEG',
-                        action_type: 'FULL_SYNC_CONFIG'
-                    });
-
-                    await supabaseClient.from('master_umpeg_config').upsert({
-                        id: appId,
-                        api_config: serverApiConfig,
-                        master_ruangan: masterRuanganList,
-                        master_jabatan: masterJabatanList,
-                        master_eselon: masterEselonList,
-                        master_status: masterStatusPegList,
-                        master_edu: masterEducationList,
-                        master_golongan: masterGolonganList,
-                        master_org: masterOrgList,
-                        master_checklist: masterChecklistConfig,
-                        kop_config: masterKopConfig,
-                        updated_at: new Date().toISOString()
-                    });
-
-                    window.showToast("Master Data Dipancarkan ke Supabase!", "success");
-                    return true;
-                } catch (err) {
-                    window.showToast("Data tersimpan secara lokal.", "info");
-                    return false;
-                }
-            });
-        };
-
-        window.initSystemAndSync = async function() {
             window.loadAllMasterData();
             await window.initCloudConnectionAndRealtime();
             await window.pullAllDataFromGas(false);
-
-            // Live Clock interval startup
-            setInterval(() => {
-                const clockEl = document.getElementById('live-clock');
-                if (clockEl) {
-                    const now = new Date();
-                    clockEl.innerText = now.toLocaleTimeString('id-ID') + ' WITA';
-                }
-            }, 1000);
-        };
-
-        window.onload = async function() {
-            await window.initSystemAndSync();
         };
     </script>
 </body>
