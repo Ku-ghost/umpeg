@@ -1257,7 +1257,7 @@
     <script>
         // JANGKAR UTAMA BACKEND (UNIVERSAL ANCHOR CREDENTIALS)
         const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
-        const ANCHORED_SUPABASE_ANON_KEY = 'sb_publishable_jAvDxk31RmP2dhRu6T'; 
+        const ANCHORED_SUPABASE_ANON_KEY = ''; 
         const ANCHORED_GAS_URL = ''; 
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
@@ -1408,17 +1408,18 @@
         };
 
         window.bootstrapGlobalConfigFromCloud = async function() {
+            const savedSupaKey = window.getStorageItem('API_SUPABASE_KEY') || ANCHORED_SUPABASE_ANON_KEY;
             window.state.supabaseUrl = ANCHORED_SUPABASE_URL;
-            window.state.supabaseAnonKey = ANCHORED_SUPABASE_ANON_KEY;
+            window.state.supabaseAnonKey = savedSupaKey;
             window.state.appId = ANCHORED_APP_ID;
 
             serverApiConfig.supabaseUrl = ANCHORED_SUPABASE_URL;
-            serverApiConfig.supabaseAnonKey = ANCHORED_SUPABASE_ANON_KEY;
+            serverApiConfig.supabaseAnonKey = savedSupaKey;
             serverApiConfig.appId = ANCHORED_APP_ID;
 
-            if (window.supabase) {
+            if (window.supabase && savedSupaKey) {
                 try {
-                    supabaseClient = window.supabase.createClient(ANCHORED_SUPABASE_URL, ANCHORED_SUPABASE_ANON_KEY);
+                    supabaseClient = window.supabase.createClient(ANCHORED_SUPABASE_URL, savedSupaKey);
                     
                     const { data, error } = await supabaseClient
                         .from('system_config')
@@ -1428,7 +1429,6 @@
                         .maybeSingle();
                     
                     if (data && !error) {
-                        console.log("[Cloud System Config Detected]:", data);
                         if (data.gas_url) {
                             window.state.gasUrl = data.gas_url;
                             serverApiConfig.gasUrl = data.gas_url;
@@ -1449,23 +1449,6 @@
                             window.setStorageItem('API_SYSTEM_PASSWORD', data.system_password);
                         }
                     }
-
-                    // Pull Master References & Drive Links Map directly from Supabase
-                    const { data: driveData } = await supabaseClient
-                        .from('pegawai_directory')
-                        .select('nip, drive_urls, verifikasi_status, verifikasi_catatan');
-                    
-                    if (driveData && Array.isArray(driveData)) {
-                        driveData.forEach(d => {
-                            const found = masterPegawaiDb.find(p => p.nip === d.nip);
-                            if (found) {
-                                if (d.drive_urls) found.linksMap = d.drive_urls;
-                                if (d.verifikasi_status) found.verifikasiStatus = d.verifikasi_status;
-                                if (d.verifikasi_catatan) found.verifikasiCatatan = d.verifikasi_catatan;
-                            }
-                        });
-                    }
-
                 } catch(e) {
                     console.warn("[Bootstrap Cloud Exception]:", e);
                 }
@@ -1473,14 +1456,15 @@
         };
 
         window.setupSupabaseListeners = async function() {
-            if (!window.supabase || !window.state.supabaseUrl || !window.state.supabaseAnonKey) {
-                window.updateWsBadge('offline', 'Terputus (Cek Konfigurasi)');
+            const currentAnonKey = window.state.supabaseAnonKey || window.getStorageItem('API_SUPABASE_KEY');
+            if (!window.supabase || !window.state.supabaseUrl || !currentAnonKey) {
+                window.updateWsBadge('offline', 'Terputus (Isi Supabase Anon Key)');
                 return;
             }
 
             try {
                 if (!supabaseClient) {
-                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
+                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, currentAnonKey);
                 }
 
                 if (realtimeChannel) {
@@ -1492,24 +1476,13 @@
                         'postgres_changes',
                         { event: '*', schema: 'public', table: 'system_config' },
                         (payload) => {
-                            console.log('[Realtime WebSocket Signal Received]:', payload);
                             window.updateWsBadge('online', 'Sinyal Realtime Diterima');
                             setTimeout(() => {
                                 window.pullAllDataFromGas(false);
                             }, 1500);
                         }
                     )
-                    .on(
-                        'postgres_changes',
-                        { event: '*', schema: 'public', table: 'pegawai_directory' },
-                        (payload) => {
-                            console.log('[Realtime Directory / Drive URL Received]:', payload);
-                            window.updateWsBadge('online', 'Perubahan Berkas Drive Diterima');
-                            window.bootstrapGlobalConfigFromCloud().then(() => window.renderActiveView());
-                        }
-                    )
                     .subscribe((status, err) => {
-                        console.log('[Supabase Channel Connection Status]:', status, err);
                         if (status === 'SUBSCRIBED') {
                             window.updateWsBadge('online', 'Otomatis Terhubung Cloud');
                         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
