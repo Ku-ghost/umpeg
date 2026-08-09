@@ -1273,9 +1273,10 @@
     <!-- MAIN SCRIPT -->
     <script>
         // JANGKAR UTAMA BACKEND (AUTOMATIC CROSS-DEVICE SYNC CONSTANTS)
+        // Kredensial dasar ini digunakan sebagai pintu masuk universal bagi perangkat baru
         const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
-        const ANCHORED_SUPABASE_ANON_KEY = 'MASUKKAN_SUPABASE_ANON_KEY_ASLI_DI_SINI'; 
-        const ANCHORED_GAS_URL = 'MASUKKAN_URL_GAS_ASLI_DI_SINI';
+        const ANCHORED_SUPABASE_ANON_KEY = 'sb_publishable_jAvDxk31RmP2dhRu6T'; // Supabase Anon/Publishable Key asli
+        const ANCHORED_GAS_URL = 'https://script.google.com/macros/s/AKfycb.../exec'; // URL GAS default
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
         // STORAGE KEYS & DEFAULTS
@@ -1427,12 +1428,13 @@
         };
 
         window.bootstrapGlobalConfigFromCloud = async function() {
+            // 1. Ambil dari localStorage jika perangkat ini pernah menyimpan kustomisasi
             const localSupaUrl = window.getStorageItem('API_SUPABASE_URL');
             const localSupaKey = window.getStorageItem('API_SUPABASE_KEY');
             const localGasUrl = window.getStorageItem('API_GAS_URL');
             const localAppId = window.getStorageItem('API_APP_ID');
 
-            // Tetapkan nilai state utama dari localStorage atau fallback ke konstanta bawaan
+            // 2. Tetapkan nilai state awal (Utamakan LocalStorage -> Fallback ke ANCHORED)
             window.state.supabaseUrl = localSupaUrl || ANCHORED_SUPABASE_URL;
             window.state.supabaseAnonKey = localSupaKey || ANCHORED_SUPABASE_ANON_KEY;
             window.state.gasUrl = localGasUrl || ANCHORED_GAS_URL;
@@ -1443,11 +1445,15 @@
             serverApiConfig.gasUrl = window.state.gasUrl;
             serverApiConfig.appId = window.state.appId;
 
-            if (window.supabase && window.state.supabaseUrl && window.state.supabaseAnonKey && !window.state.supabaseAnonKey.includes('MASUKKAN_') && window.state.supabaseAnonKey.length > 10) {
+            // 3. Tarik Konfigurasi Pusat dari Supabase Cloud (System Config)
+            // Ini memastikan perangkat B (perangkat baru) langsung memperoleh gas_url terbaru dari Cloud
+            if (window.supabase && window.state.supabaseUrl && window.state.supabaseAnonKey && !window.state.supabaseAnonKey.includes('MASUKKAN_')) {
                 try {
                     supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
                     const { data, error } = await supabaseClient.from('system_config').select('*').limit(1).maybeSingle();
+                    
                     if (data && !error) {
+                        // Perbarui state secara dinamis dari database cloud Supabase
                         if (data.gas_url) {
                             window.state.gasUrl = data.gas_url;
                             serverApiConfig.gasUrl = data.gas_url;
@@ -1474,43 +1480,34 @@
                         }
                     }
                 } catch(e) {
-                    console.warn("Bootstrap config error:", e);
+                    console.warn("Bootstrap config Cloud Error:", e);
                 }
-            }
-        };
-
-        window.initCloudConnectionAndRealtime = async function() {
-            await window.bootstrapGlobalConfigFromCloud();
-            await window.setupSupabaseListeners();
-            if (!autoSyncTimer) {
-                autoSyncTimer = setInterval(() => {
-                    window.pullAllDataFromGas(false);
-                }, window.state.autoSyncIntervalMs || 300000);
             }
         };
 
         window.setupSupabaseListeners = async function() {
-            if (!supabaseClient || !window.state.supabaseUrl || !window.state.supabaseAnonKey || window.state.supabaseAnonKey.includes('MASUKKAN_')) {
-                window.updateWsBadge('offline', 'Modus Lokal (Belum Terhubung)');
+            if (!window.supabase || !window.state.supabaseUrl || !window.state.supabaseAnonKey || window.state.supabaseAnonKey.includes('MASUKKAN_')) {
+                window.updateWsBadge('offline', 'Terputus (Cek Konfigurasi)');
                 return;
             }
 
             try {
-                if (realtimeChannel) {
-                    supabaseClient.removeChannel(realtimeChannel);
+                if (!supabaseClient) {
+                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
                 }
 
-                window.updateWsBadge('polling', 'Menghubungkan WebSocket...');
+                if (realtimeChannel) {
+                    try { supabaseClient.removeChannel(realtimeChannel); } catch(e){}
+                }
 
-                realtimeChannel = supabaseClient.channel('realtime_system_config')
+                realtimeChannel = supabaseClient.channel('umpeg-realtime-signal')
                     .on(
                         'postgres_changes',
                         { event: '*', schema: 'public', table: 'system_config' },
                         (payload) => {
-                            console.log('Realtime Signal Received:', payload);
-                            window.updateWsBadge('online', 'Realtime Signal Diterima');
+                            window.updateWsBadge('online', 'Sinyal Realtime Diterima');
                             setTimeout(() => {
-                                window.pullAllDataFromGas(true);
+                                window.pullAllDataFromGas(false);
                             }, 2000);
                         }
                     )
@@ -1518,12 +1515,24 @@
                         if (status === 'SUBSCRIBED') {
                             window.updateWsBadge('online', 'Otomatis Terhubung Cloud');
                         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                            window.updateWsBadge('polling', 'Mode Polling Terpasang');
+                            window.updateWsBadge('polling', 'Modus Backup Polling');
                         }
                     });
             } catch (err) {
-                console.warn("Realtime error:", err);
-                window.updateWsBadge('polling', 'Mode Polling Terpasang');
+                console.warn("Setup Supabase Listeners Error:", err);
+                window.updateWsBadge('polling', 'Modus Backup Polling');
+            }
+        };
+
+        window.initCloudConnectionAndRealtime = async function() {
+            // Tarik konfigurasi Cloud terlebih dahulu sebelum menginisialisasi listener & penarikan GAS
+            await window.bootstrapGlobalConfigFromCloud();
+            await window.setupSupabaseListeners();
+            
+            if (!autoSyncTimer) {
+                autoSyncTimer = setInterval(() => {
+                    window.pullAllDataFromGas(false);
+                }, window.state.autoSyncIntervalMs || 300000);
             }
         };
 
