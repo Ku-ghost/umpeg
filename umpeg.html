@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Admin UMPEG RSUD Sinjai - Realtime Cloud Engine</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,7 +24,6 @@
         }
     </script>
     
-    <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -161,7 +159,6 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
-    <!-- HEADER -->
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-3 lg:px-6 py-2 shrink-0">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
@@ -184,14 +181,14 @@
                 <!-- Status Realtime WebSocket / Polling Supabase -->
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
-                    <span id="ws-status-text">Otomatis Terhubung Cloud</span>
+                    <span id="ws-status-text">Menghubungkan Cloud...</span>
                 </div>
 
                 <!-- Indikator Auto Sync Aktif -->
-                <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
+                <button onclick="window.pullAllDataFromGas(true)" id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-emerald-100 font-extrabold text-[10px] shadow-2xs cursor-pointer transition-all" title="Klik untuk Muat Ulang Data Manually">
                     <i class="fa-solid fa-rotate animate-spin text-emerald-300 text-xs" id="auto-sync-spinner"></i>
                     <span id="auto-sync-text" class="hidden sm:inline">Auto-Sync Aktif</span>
-                </div>
+                </button>
 
                 <div class="flex items-center gap-1.5 pl-2 border-l border-emerald-200 text-[10px] text-emerald-900 font-mono hidden md:flex">
                     <i class="fa-regular fa-clock text-emerald-600"></i>
@@ -1007,7 +1004,7 @@
 
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Google Apps Script (GAS) Web App Executable URL Asli</label>
-                    <input type="url" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
+                    <input type="url" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
 
                 <div>
@@ -1272,14 +1269,13 @@
 
     <!-- MAIN SCRIPT -->
     <script>
-        // JANGKAR UTAMA BACKEND (AUTOMATIC CROSS-DEVICE SYNC CONSTANTS)
-        // Kredensial dasar ini digunakan sebagai pintu masuk universal bagi perangkat baru
+        // JANGKAR UTAMA BACKEND (UNIVERSAL ANCHOR CREDENTIALS)
         const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
-        const ANCHORED_SUPABASE_ANON_KEY = 'sb_publishable_jAvDxk31RmP2dhRu6T'; // Supabase Anon/Publishable Key asli
-        const ANCHORED_GAS_URL = 'https://script.google.com/macros/s/AKfycb.../exec'; // URL GAS default
+        const ANCHORED_SUPABASE_ANON_KEY = 'sb_publishable_jAvDxk31RmP2dhRu6T'; 
+        const ANCHORED_GAS_URL = ''; 
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
-        // STORAGE KEYS & DEFAULTS
+        // STORAGE KEYS
         const MASTER_PEGAWAI_DB_KEY = 'UMPEG_MASTER_PEGAWAI_DB_V2';
         const MASTER_RUANGAN_STORAGE_KEY = 'UMPEG_MASTER_RUANGAN_V2';
         const MASTER_JABATAN_STORAGE_KEY = 'UMPEG_MASTER_JABATAN_V2';
@@ -1331,7 +1327,6 @@
             { code: 'H', title: 'Form H: Informasi Pendukung', items: [{ id: 'h_01', name: 'KTP & Kartu Keluarga' }, { id: 'h_02', name: 'Pas Foto Terbaru' }] }
         ];
 
-        // GLOBAL STATE & VARIABLES
         window.state = {
             appId: ANCHORED_APP_ID,
             supabaseUrl: ANCHORED_SUPABASE_URL,
@@ -1369,7 +1364,6 @@
         let pendingDeleteMaster = { type: null, category: null, index: null, targetNip: null, targetId: null };
         let activePrintLayoutMode = 'portrait';
 
-        // HELPER FUNCTIONS
         window.getStorageItem = function(key) {
             try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; }
         };
@@ -1404,7 +1398,7 @@
             }
 
             box.classList.remove('hidden');
-            setTimeout(() => { box.classList.add('hidden'); }, 3500);
+            setTimeout(() => { box.classList.add('hidden'); }, 4000);
         };
 
         window.updateWsBadge = function(status, text) {
@@ -1428,32 +1422,27 @@
         };
 
         window.bootstrapGlobalConfigFromCloud = async function() {
-            // 1. Ambil dari localStorage jika perangkat ini pernah menyimpan kustomisasi
-            const localSupaUrl = window.getStorageItem('API_SUPABASE_URL');
-            const localSupaKey = window.getStorageItem('API_SUPABASE_KEY');
-            const localGasUrl = window.getStorageItem('API_GAS_URL');
-            const localAppId = window.getStorageItem('API_APP_ID');
+            window.state.supabaseUrl = ANCHORED_SUPABASE_URL;
+            window.state.supabaseAnonKey = ANCHORED_SUPABASE_ANON_KEY;
+            window.state.appId = ANCHORED_APP_ID;
 
-            // 2. Tetapkan nilai state awal (Utamakan LocalStorage -> Fallback ke ANCHORED)
-            window.state.supabaseUrl = localSupaUrl || ANCHORED_SUPABASE_URL;
-            window.state.supabaseAnonKey = localSupaKey || ANCHORED_SUPABASE_ANON_KEY;
-            window.state.gasUrl = localGasUrl || ANCHORED_GAS_URL;
-            window.state.appId = localAppId || ANCHORED_APP_ID;
+            serverApiConfig.supabaseUrl = ANCHORED_SUPABASE_URL;
+            serverApiConfig.supabaseAnonKey = ANCHORED_SUPABASE_ANON_KEY;
+            serverApiConfig.appId = ANCHORED_APP_ID;
 
-            serverApiConfig.supabaseUrl = window.state.supabaseUrl;
-            serverApiConfig.supabaseAnonKey = window.state.supabaseAnonKey;
-            serverApiConfig.gasUrl = window.state.gasUrl;
-            serverApiConfig.appId = window.state.appId;
-
-            // 3. Tarik Konfigurasi Pusat dari Supabase Cloud (System Config)
-            // Ini memastikan perangkat B (perangkat baru) langsung memperoleh gas_url terbaru dari Cloud
-            if (window.supabase && window.state.supabaseUrl && window.state.supabaseAnonKey && !window.state.supabaseAnonKey.includes('MASUKKAN_')) {
+            if (window.supabase) {
                 try {
-                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
-                    const { data, error } = await supabaseClient.from('system_config').select('*').limit(1).maybeSingle();
+                    supabaseClient = window.supabase.createClient(ANCHORED_SUPABASE_URL, ANCHORED_SUPABASE_ANON_KEY);
+                    
+                    const { data, error } = await supabaseClient
+                        .from('system_config')
+                        .select('*')
+                        .order('last_updated_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
                     
                     if (data && !error) {
-                        // Perbarui state secara dinamis dari database cloud Supabase
+                        console.log("[Cloud System Config Detected]:", data);
                         if (data.gas_url) {
                             window.state.gasUrl = data.gas_url;
                             serverApiConfig.gasUrl = data.gas_url;
@@ -1469,24 +1458,26 @@
                             serverApiConfig.supabaseAnonKey = data.supabase_anon_key;
                             window.setStorageItem('API_SUPABASE_KEY', data.supabase_anon_key);
                         }
-                        if (data.app_id) {
-                            window.state.appId = data.app_id;
-                            serverApiConfig.appId = data.app_id;
-                            window.setStorageItem('API_APP_ID', data.app_id);
-                        }
                         if (data.system_password) {
                             serverApiConfig.password = data.system_password;
                             window.setStorageItem('API_SYSTEM_PASSWORD', data.system_password);
                         }
+                    } else {
+                        console.warn("[Cloud Boot Warning]: Returning to fallback local cache.", error);
+                        const localGas = window.getStorageItem('API_GAS_URL');
+                        if (localGas) {
+                            window.state.gasUrl = localGas;
+                            serverApiConfig.gasUrl = localGas;
+                        }
                     }
                 } catch(e) {
-                    console.warn("Bootstrap config Cloud Error:", e);
+                    console.warn("[Bootstrap Cloud Exception]:", e);
                 }
             }
         };
 
         window.setupSupabaseListeners = async function() {
-            if (!window.supabase || !window.state.supabaseUrl || !window.state.supabaseAnonKey || window.state.supabaseAnonKey.includes('MASUKKAN_')) {
+            if (!window.supabase || !window.state.supabaseUrl || !window.state.supabaseAnonKey) {
                 window.updateWsBadge('offline', 'Terputus (Cek Konfigurasi)');
                 return;
             }
@@ -1505,13 +1496,15 @@
                         'postgres_changes',
                         { event: '*', schema: 'public', table: 'system_config' },
                         (payload) => {
+                            console.log('[Realtime WebSocket Signal Received]:', payload);
                             window.updateWsBadge('online', 'Sinyal Realtime Diterima');
                             setTimeout(() => {
                                 window.pullAllDataFromGas(false);
-                            }, 2000);
+                            }, 1500);
                         }
                     )
-                    .subscribe((status) => {
+                    .subscribe((status, err) => {
+                        console.log('[Supabase Channel Connection Status]:', status, err);
                         if (status === 'SUBSCRIBED') {
                             window.updateWsBadge('online', 'Otomatis Terhubung Cloud');
                         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
@@ -1525,7 +1518,6 @@
         };
 
         window.initCloudConnectionAndRealtime = async function() {
-            // Tarik konfigurasi Cloud terlebih dahulu sebelum menginisialisasi listener & penarikan GAS
             await window.bootstrapGlobalConfigFromCloud();
             await window.setupSupabaseListeners();
             
@@ -1537,8 +1529,12 @@
         };
 
         window.pullAllDataFromGas = async function(showNotification = false) {
-            if (!window.state.gasUrl || window.state.gasUrl.includes('MASUKKAN_')) {
-                if (showNotification) window.showToast("URL GAS belum dikonfigurasi!", "error");
+            const currentGasUrl = window.state.gasUrl || serverApiConfig.gasUrl || window.getStorageItem('API_GAS_URL');
+            
+            if (!currentGasUrl || currentGasUrl.trim() === '' || currentGasUrl.includes('...')) {
+                if (showNotification) {
+                    window.showToast("URL Google Apps Script belum lengkap di database cloud. Silakan buka menu Konfigurasi!", "error");
+                }
                 return;
             }
 
@@ -1547,7 +1543,13 @@
             if (spinner) spinner.classList.add('animate-spin');
 
             try {
-                const resp = await fetch(`${window.state.gasUrl}?action=getAllPegawai`);
+                const targetUrl = `${currentGasUrl}${currentGasUrl.includes('?') ? '&' : '?'}action=getAllPegawai`;
+                const resp = await fetch(targetUrl);
+                
+                if (!resp.ok) {
+                    throw new Error(`HTTP Error Status: ${resp.status}`);
+                }
+
                 const json = await resp.json();
                 if (json && (json.status === 'success' || Array.isArray(json.data) || Array.isArray(json))) {
                     const dataArr = Array.isArray(json) ? json : (json.data || []);
@@ -1556,17 +1558,24 @@
                         window.setStorageItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
                         window.renderActiveView();
                         if (showNotification) window.showToast("Data Kepegawaian Berhasil Disinkronkan!", "success");
+                    } else {
+                        if (showNotification) window.showToast("Data GAS berhasil dikontak tetapi belum ada data pegawai.", "info");
                     }
+                } else if (json && json.status === 'error') {
+                    throw new Error(json.message || "Pesan Error dari GAS");
                 }
             } catch (err) {
                 console.warn("Pull GAS Error:", err);
+                if (showNotification) {
+                    window.showToast(`Gagal Menarik Data GAS: ${err.message || 'Cek URL Executable GAS'}`, "error");
+                }
             } finally {
                 window.state.isSyncing = false;
                 if (spinner) spinner.classList.remove('animate-spin');
             }
         };
 
-        window.pingSupabase = async function(actionName = 'PING', targetNip = '') {
+        window.pingSupabase = async function(actionName = 'PING') {
             if (!supabaseClient) return;
             try {
                 const targetRowId = window.state.appId || ANCHORED_APP_ID;
@@ -1612,7 +1621,7 @@
                     if (document.getElementById('cfg-app-id')) document.getElementById('cfg-app-id').value = window.state.appId || ANCHORED_APP_ID;
                     if (document.getElementById('cfg-supabase-url')) document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || ANCHORED_SUPABASE_URL;
                     if (document.getElementById('cfg-supabase-anon-key')) document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
-                    if (document.getElementById('cfg-gas-url')) document.getElementById('cfg-gas-url').value = window.state.gasUrl || ANCHORED_GAS_URL;
+                    if (document.getElementById('cfg-gas-url')) document.getElementById('cfg-gas-url').value = window.state.gasUrl || '';
                     if (document.getElementById('cfg-system-password')) document.getElementById('cfg-system-password').value = savedPwd;
                     sModal.classList.remove('hidden');
                 }
@@ -1627,8 +1636,13 @@
             const appIdVal = document.getElementById('cfg-app-id')?.value.trim() || ANCHORED_APP_ID;
             const supaUrlVal = document.getElementById('cfg-supabase-url')?.value.trim() || ANCHORED_SUPABASE_URL;
             const supaAnonVal = document.getElementById('cfg-supabase-anon-key')?.value.trim() || ANCHORED_SUPABASE_ANON_KEY;
-            const gasUrlVal = document.getElementById('cfg-gas-url')?.value.trim() || ANCHORED_GAS_URL;
+            const gasUrlVal = document.getElementById('cfg-gas-url')?.value.trim() || '';
             const pwdVal = document.getElementById('cfg-system-password')?.value.trim() || 'kugoskom36';
+
+            if (gasUrlVal.includes('...')) {
+                window.showToast("URL GAS tidak boleh mengandung tanda titik-titik '...'. Mohon salin URL utuh!", "error");
+                return;
+            }
 
             serverApiConfig.appId = appIdVal;
             serverApiConfig.supabaseUrl = supaUrlVal;
@@ -1641,7 +1655,6 @@
             window.state.supabaseAnonKey = supaAnonVal;
             window.state.gasUrl = gasUrlVal;
 
-            // Simpan ke localStorage agar tersimpan di browser
             window.setStorageItem('API_SUPABASE_URL', supaUrlVal);
             window.setStorageItem('API_SUPABASE_KEY', supaAnonVal);
             window.setStorageItem('API_GAS_URL', gasUrlVal);
@@ -1650,7 +1663,7 @@
 
             window.closeServerConfigModal();
 
-            if (supaUrlVal && supaAnonVal && window.supabase && !supaAnonVal.includes('MASUKKAN_')) {
+            if (supaUrlVal && supaAnonVal && window.supabase) {
                 try {
                     supabaseClient = window.supabase.createClient(supaUrlVal, supaAnonVal);
                     
@@ -1671,7 +1684,7 @@
                 }
             }
 
-            window.showToast("Konfigurasi Berhasil Tersimpan & Tersambung!", "success");
+            window.showToast("Konfigurasi Berhasil Tersimpan di Perangkat & Cloud!", "success");
             await window.initCloudConnectionAndRealtime();
             await window.pullAllDataFromGas(true);
         };
@@ -1774,6 +1787,7 @@
         };
 
         window.loadAllMasterData = function() {
+            masterPegawaiDb = window.getStorageItem(MASTER_PEGAWAI_DB_KEY) || [];
             masterRuanganList = window.getStorageItem(MASTER_RUANGAN_STORAGE_KEY) || [...DEFAULT_RUANGAN];
             masterJabatanList = window.getStorageItem(MASTER_JABATAN_STORAGE_KEY) || JSON.parse(JSON.stringify(DEFAULT_JABATAN));
             masterEselonList = window.getStorageItem(MASTER_ESELON_STORAGE_KEY) || [...DEFAULT_ESELON];
@@ -2183,7 +2197,7 @@
                 } catch(err) {}
             }
             
-            await window.pingSupabase('AUDIT_DECISION', activeAuditNip);
+            await window.pingSupabase('AUDIT_DECISION');
             
             window.closeAuditModal();
             window.showToast("Keputusan Audit Disimpan & Dipancarkan!", "success");
@@ -2260,7 +2274,7 @@
                 } catch(err) {}
             }
 
-            await window.pingSupabase('UPDATE_STAF_ADMIN', targetNip);
+            await window.pingSupabase('UPDATE_STAF_ADMIN');
             
             window.closeEditStafAdminModal();
             window.showToast("Data Staf Disimpan & Dipancarkan Realtime!", "success");
@@ -2302,7 +2316,7 @@
                         } catch(err) {}
                     }
 
-                    await window.pingSupabase('DELETE_PEGAWAI', targetNip);
+                    await window.pingSupabase('DELETE_PEGAWAI');
                     
                     window.renderActiveView();
                     window.closeConfirmDeleteModal();
@@ -2908,7 +2922,6 @@
             await window.pingSupabase('UPDATE_KOP_CONFIG');
         };
 
-        // EVENT BOOTSTRAPPER UTAMA
         window.onload = async function() {
             setInterval(() => {
                 const now = new Date();
