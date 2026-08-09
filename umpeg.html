@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Realtime Cloud Engine</title>
+    <title>Portal UMPEG RSUD Sinjai - Hybrid Cloud Engine</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -167,21 +167,21 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <h1 class="text-xs sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase">PORTAL UMPEG RSUD SINJAI</h1>
-                        <button onclick="window.openConfigAuthModal()" class="text-[9px] px-2.5 py-0.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs" title="Konfigurasi Server Sync API & Cloud">
+                        <h1 class="text-xs sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase">PORTAL UMPEG & PEGAWAI RSUD SINJAI</h1>
+                        <button onclick="window.openConfigAuthModal()" class="text-[9px] px-2.5 py-0.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs" title="Konfigurasi Server Sync API & Supabase">
                             <i class="fa-solid fa-gears text-emerald-700"></i>
                             <span>Konfigurasi Sistem</span>
                         </button>
                     </div>
-                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Pub/Sub Antena, Auto Background Sync & Master Data Kepegawaian</p>
+                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Antena Terpusat & GAS LockService Queue Data Engine</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 text-xs">
-                <!-- Status Realtime WebSocket / Polling Supabase -->
+                <!-- Status Realtime WebSocket / Supabase -->
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
-                    <span id="ws-status-text">Menghubungkan Cloud...</span>
+                    <span id="ws-status-text">Menghubungkan Supabase...</span>
                 </div>
 
                 <!-- Indikator Auto Sync Aktif -->
@@ -206,7 +206,6 @@
             <span id="toast-msg" class="font-semibold text-[11px]"></span>
         </div>
 
-        <!-- MAIN TABS -->
         <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200/90 text-xs overflow-x-auto shadow-xs">
             <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-chart-pie"></i>
@@ -219,7 +218,7 @@
             </button>
             <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-address-book text-emerald-700"></i>
-                <span class="truncate">Buku Induk & ID Drive</span>
+                <span class="truncate">Buku Induk & Portal Pegawai</span>
             </button>
             <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-file-invoice text-emerald-700"></i>
@@ -227,11 +226,10 @@
             </button>
             <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-database text-emerald-700"></i>
-                <span class="truncate">Kelola Master UMPEG</span>
+                <span class="truncate">Kelola Master UMPEG (Supabase)</span>
             </button>
         </div>
 
-        <!-- DASHBOARD VIEW -->
         <div id="admin-view-dashboard" class="space-y-4">
             <section class="space-y-3">
                 <div class="flex items-center justify-between border-b border-emerald-200/80 pb-2">
@@ -480,7 +478,6 @@
             </section>
         </div>
 
-        <!-- VERIFIKASI VIEW -->
         <div id="admin-view-verifikasi" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
@@ -489,7 +486,7 @@
                             <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Verifikasi & Audit Ceklist Bundel Digital (Form A s/d H)
                             <span id="filter-verif-count-badge" class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[9px] ml-1">0 Pegawai</span>
                         </h3>
-                        <p class="text-[10px] text-slate-600">Inspeksi dokumen fisik/digital pegawai berdasarkan Ceklist Kertas Kuning UMPEG RSUD Sinjai.</p>
+                        <p class="text-[10px] text-slate-600">Inspeksi dokumen fisik/digital pegawai berdasarkan Tautan Drive Supabase & Ceklist UMPEG.</p>
                     </div>
 
                     <button onclick="window.resetVerifikasiFilters()" class="h-8 px-3 rounded-lg text-[10px] text-emerald-800 font-extrabold hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-2xs cursor-pointer">
@@ -544,7 +541,7 @@
                             <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 sticky top-0 z-10 uppercase tracking-wide">
                                 <th class="p-2.5">ID Unik & Nama Staf</th>
                                 <th class="p-2.5">Map & Status</th>
-                                <th class="p-2.5 text-center">Tautan Drive Digital</th>
+                                <th class="p-2.5 text-center">Tautan Drive Digital (Supabase)</th>
                                 <th class="p-2.5 text-center">Status Audit UMPEG</th>
                                 <th class="p-2.5">Catatan / Keterangan Audit</th>
                                 <th class="p-2.5 text-center w-28">Aksi Audit</th>
@@ -556,15 +553,14 @@
             </section>
         </div>
 
-        <!-- DIREKTORI BUKU INDUK VIEW -->
         <div id="admin-view-direktori" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
                     <div>
                         <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-address-book text-emerald-600"></i> Buku Induk Digital, ID Drive Acak (`RSUD-PEG-XXXXXXXX`) & Direct WA
+                            <i class="fa-solid fa-address-book text-emerald-600"></i> Buku Induk Digital, Portal Pegawai (`RSUD-PEG-XXXXXXXX`) & Direct WA
                         </h3>
-                        <p class="text-[10px] text-slate-600">ID Unik Acak terenkripsi otomatis per pegawai untuk keamanan data di Supabase & Google Drive.</p>
+                        <p class="text-[10px] text-slate-600">ID Unik Pegawai terenkripsi otomatis per pegawai untuk sinkronisasi Supabase & Google Drive.</p>
                     </div>
 
                     <div class="relative w-full sm:w-64">
@@ -589,7 +585,6 @@
             </section>
         </div>
 
-        <!-- LAPORAN VIEW -->
         <div id="admin-view-laporan" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3" id="print-matrix-area">
                 
@@ -731,7 +726,6 @@
             </section>
         </div>
 
-        <!-- MASTER DATA VIEW -->
         <div id="admin-view-master-data" class="hidden space-y-3 fade-in">
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs">
                 <button type="button" onclick="window.switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
@@ -763,7 +757,7 @@
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                                 <i class="fa-solid fa-folder-plus text-emerald-600"></i> Kelola Master Persyaratan Berkas Digital (Form Ceklist A s/d H)
                             </h3>
-                            <p class="text-[9.5px] text-slate-600">Tambah/hapus dokumen persyaratan berkas yang akan disinkronkan ke seluruh formulir pegawai & Supabase.</p>
+                            <p class="text-[9.5px] text-slate-600">Disinkronkan secara realtime ke Supabase Cloud untuk seluruh formulir pegawai.</p>
                         </div>
                     </div>
 
@@ -957,7 +951,6 @@
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System 24/7)
     </footer>
 
-    <!-- MODAL AUTH CONFIG -->
     <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-emerald-950 uppercase border-b pb-1.5">Administrator System Access</h3>
@@ -970,7 +963,6 @@
         </div>
     </div>
 
-    <!-- MODAL SERVER CONFIG -->
     <div id="modal-config-server" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1020,7 +1012,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT STAF ADMIN -->
     <div id="modal-edit-staf-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1120,7 +1111,6 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRM DELETE -->
     <div id="modal-confirm-delete" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-rose-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-rose-950 uppercase border-b pb-1.5">Konfirmasi Hapus Data</h3>
@@ -1132,7 +1122,6 @@
         </div>
     </div>
 
-    <!-- MODAL AUDIT PEGAWAI -->
     <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl h-[88vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1167,7 +1156,6 @@
         </div>
     </div>
 
-    <!-- MODAL DOCUMENT VIEWER -->
     <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1175,7 +1163,7 @@
                     <i class="fa-solid fa-file-pdf text-amber-400 text-base shrink-0"></i>
                     <div class="min-w-0">
                         <h3 id="modal-doc-title" class="text-xs font-extrabold tracking-wide truncate">Pratinjau Berkas Digital</h3>
-                        <p id="modal-doc-subtitle" class="text-[9px] text-emerald-200 truncate">E-Arsip Berkas Digital RSUD Sinjai</p>
+                        <p id="modal-doc-subtitle" class="text-[9px] text-emerald-200 truncate">E-Arsip Berkas Digital RSUD Sinjai (Drive Link)</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -1194,7 +1182,6 @@
         </div>
     </div>
 
-    <!-- MODAL PRINT PROFILE -->
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-6xl h-[94vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
@@ -1267,7 +1254,6 @@
         </div>
     </div>
 
-    <!-- MAIN SCRIPT -->
     <script>
         // JANGKAR UTAMA BACKEND (UNIVERSAL ANCHOR CREDENTIALS)
         const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
@@ -1462,14 +1448,24 @@
                             serverApiConfig.password = data.system_password;
                             window.setStorageItem('API_SYSTEM_PASSWORD', data.system_password);
                         }
-                    } else {
-                        console.warn("[Cloud Boot Warning]: Returning to fallback local cache.", error);
-                        const localGas = window.getStorageItem('API_GAS_URL');
-                        if (localGas) {
-                            window.state.gasUrl = localGas;
-                            serverApiConfig.gasUrl = localGas;
-                        }
                     }
+
+                    // Pull Master References & Drive Links Map directly from Supabase
+                    const { data: driveData } = await supabaseClient
+                        .from('pegawai_directory')
+                        .select('nip, drive_urls, verifikasi_status, verifikasi_catatan');
+                    
+                    if (driveData && Array.isArray(driveData)) {
+                        driveData.forEach(d => {
+                            const found = masterPegawaiDb.find(p => p.nip === d.nip);
+                            if (found) {
+                                if (d.drive_urls) found.linksMap = d.drive_urls;
+                                if (d.verifikasi_status) found.verifikasiStatus = d.verifikasi_status;
+                                if (d.verifikasi_catatan) found.verifikasiCatatan = d.verifikasi_catatan;
+                            }
+                        });
+                    }
+
                 } catch(e) {
                     console.warn("[Bootstrap Cloud Exception]:", e);
                 }
@@ -1503,6 +1499,15 @@
                             }, 1500);
                         }
                     )
+                    .on(
+                        'postgres_changes',
+                        { event: '*', schema: 'public', table: 'pegawai_directory' },
+                        (payload) => {
+                            console.log('[Realtime Directory / Drive URL Received]:', payload);
+                            window.updateWsBadge('online', 'Perubahan Berkas Drive Diterima');
+                            window.bootstrapGlobalConfigFromCloud().then(() => window.renderActiveView());
+                        }
+                    )
                     .subscribe((status, err) => {
                         console.log('[Supabase Channel Connection Status]:', status, err);
                         if (status === 'SUBSCRIBED') {
@@ -1533,7 +1538,7 @@
             
             if (!currentGasUrl || currentGasUrl.trim() === '' || currentGasUrl.includes('...')) {
                 if (showNotification) {
-                    window.showToast("URL Google Apps Script belum lengkap di database cloud. Silakan buka menu Konfigurasi!", "error");
+                    window.showToast("URL Google Apps Script belum lengkap. Silakan buka menu Konfigurasi Sistem!", "error");
                 }
                 return;
             }
@@ -1556,10 +1561,11 @@
                     if (dataArr.length > 0) {
                         masterPegawaiDb = dataArr;
                         window.setStorageItem(MASTER_PEGAWAI_DB_KEY, masterPegawaiDb);
+                        await window.bootstrapGlobalConfigFromCloud(); // Merge Supabase Drive URLs
                         window.renderActiveView();
-                        if (showNotification) window.showToast("Data Kepegawaian Berhasil Disinkronkan!", "success");
+                        if (showNotification) window.showToast("Data Kepegawaian Berhasil Disinkronkan dari GAS!", "success");
                     } else {
-                        if (showNotification) window.showToast("Data GAS berhasil dikontak tetapi belum ada data pegawai.", "info");
+                        if (showNotification) window.showToast("Data GAS dikontak tetapi belum ada data pegawai.", "info");
                     }
                 } else if (json && json.status === 'error') {
                     throw new Error(json.message || "Pesan Error dari GAS");
@@ -1640,7 +1646,7 @@
             const pwdVal = document.getElementById('cfg-system-password')?.value.trim() || 'kugoskom36';
 
             if (gasUrlVal.includes('...')) {
-                window.showToast("URL GAS tidak boleh mengandung tanda titik-titik '...'. Mohon salin URL utuh!", "error");
+                window.showToast("URL GAS tidak boleh mengandung tanda titik-titik '...'. Salin URL utuh!", "error");
                 return;
             }
 
@@ -1684,7 +1690,7 @@
                 }
             }
 
-            window.showToast("Konfigurasi Berhasil Tersimpan di Perangkat & Cloud!", "success");
+            window.showToast("Konfigurasi Berhasil Tersimpan di Perangkat & Cloud Supabase!", "success");
             await window.initCloudConnectionAndRealtime();
             await window.pullAllDataFromGas(true);
         };
@@ -2053,7 +2059,7 @@
                             <div class="text-[9px] text-slate-500 font-mono">NIP: ${p.nip}</div>
                         </td>
                         <td class="p-2.5">${mapBadge}</td>
-                        <td class="p-2.5 text-center font-mono font-bold text-emerald-900">${Object.keys(p.linksMap || {}).length} Tautan</td>
+                        <td class="p-2.5 text-center font-mono font-bold text-emerald-900">${Object.keys(p.linksMap || {}).length} Tautan (Supabase Drive)</td>
                         <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-extrabold border ${badgeClass}">${p.verifikasiStatus || 'PENDING'}</span></td>
                         <td class="p-2.5 text-slate-700 text-[10px]">${p.verifikasiCatatan || '-'}</td>
                         <td class="p-2.5 text-center">
@@ -2148,7 +2154,7 @@
                                         </div>
                                         ${hasDoc ? `
                                             <button onclick="window.openDocViewer('${it.name.replace(/'/g, "\\'")}', '${docUrl}')" class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9.5px] shrink-0 cursor-pointer flex items-center gap-1">
-                                                <i class="fa-solid fa-eye"></i> Liat
+                                                <i class="fa-solid fa-eye"></i> Liat Drive
                                             </button>
                                         ` : `
                                             <span class="text-[9px] font-bold text-slate-400 shrink-0">Belum Ada</span>
@@ -2186,6 +2192,18 @@
             const target = masterPegawaiDb[idx];
             
             window.renderActiveView();
+
+            // Save to Supabase peg_directory
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('pegawai_directory').upsert({
+                        nip: target.nip,
+                        verifikasi_status: selStatus,
+                        verifikasi_catatan: inputCatatan,
+                        last_updated_at: new Date().toISOString()
+                    });
+                } catch(e) {}
+            }
             
             if (serverApiConfig.gasUrl) {
                 try {
@@ -2200,7 +2218,7 @@
             await window.pingSupabase('AUDIT_DECISION');
             
             window.closeAuditModal();
-            window.showToast("Keputusan Audit Disimpan & Dipancarkan!", "success");
+            window.showToast("Keputusan Audit Disimpan & Dipancarkan ke Supabase!", "success");
             window.pullAllDataFromGas(false);
         };
 
@@ -2277,7 +2295,7 @@
             await window.pingSupabase('UPDATE_STAF_ADMIN');
             
             window.closeEditStafAdminModal();
-            window.showToast("Data Staf Disimpan & Dipancarkan Realtime!", "success");
+            window.showToast("Data Staf Disimpan ke GAS & Dipancarkan Supabase!", "success");
             window.pullAllDataFromGas(false);
         };
 
@@ -2287,7 +2305,7 @@
             pendingDeleteMaster = { type: 'pegawai', targetNip: nip, targetId: p.idPegawai };
             const msgEl = document.getElementById('confirm-delete-msg');
             if (msgEl) {
-                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen dari Gudang Data Sheet & Supabase!</span>`;
+                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus dari Google Sheets & Supabase!</span>`;
             }
             document.getElementById('modal-confirm-delete').classList.remove('hidden');
         };
@@ -2702,7 +2720,7 @@
             document.getElementById('input-new-checklist-name').value = '';
             window.renderMasterChecklistConfig();
             await window.pingSupabase('UPDATE_MASTER_CHECKLIST');
-            window.showToast(`Persyaratan Berkas Baru Ditambahkan ke Form ${catCode}!`, "success");
+            window.showToast(`Persyaratan Berkas Baru Ditambahkan!`, "success");
         };
 
         window.deleteMasterChecklistItem = async function(catCode, itemIdx) {
