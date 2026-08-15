@@ -2793,56 +2793,91 @@
             if (modal) modal.classList.remove('hidden');
         };
 
+        window.closeServerConfigModal = function() {
+            const modal = document.getElementById('modal-config-server');
+            if (modal) modal.classList.add('hidden');
+        };
+
         window.saveServerConfig = async function(e) {
             if (e) e.preventDefault();
 
-            const appId = document.getElementById('cfg-app-id').value.trim() || ANCHORED_APP_ID;
-            const supaUrl = document.getElementById('cfg-supabase-url').value.trim() || ANCHORED_SUPABASE_URL;
-            const supaKey = document.getElementById('cfg-supabase-anon-key').value.trim();
-            const gasUrl = document.getElementById('cfg-gas-url').value.trim();
-            const sysPass = document.getElementById('cfg-system-password').value.trim();
-
-            if (!supaKey) {
-                window.showToast("Supabase Anon Key Asli Wajib Diisi!", "error");
-                return;
+            const submitBtn = e && e.target ? e.target.querySelector('button[type="submit"]') : null;
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menyimpan...';
             }
 
-            window.state.appId = appId;
-            window.state.supabaseUrl = supaUrl;
-            window.state.supabaseAnonKey = supaKey;
-            window.state.gasUrl = gasUrl;
+            try {
+                const appId = (document.getElementById('cfg-app-id')?.value || '').trim() || ANCHORED_APP_ID;
+                const supaUrl = (document.getElementById('cfg-supabase-url')?.value || '').trim() || ANCHORED_SUPABASE_URL;
+                const supaKey = (document.getElementById('cfg-supabase-anon-key')?.value || '').trim();
+                const gasUrl = (document.getElementById('cfg-gas-url')?.value || '').trim();
+                const sysPass = (document.getElementById('cfg-system-password')?.value || '').trim() || 'kugoskom36';
 
-            serverApiConfig.appId = appId;
-            serverApiConfig.supabaseUrl = supaUrl;
-            serverApiConfig.supabaseAnonKey = supaKey;
-            serverApiConfig.gasUrl = gasUrl;
-            serverApiConfig.password = sysPass;
+                // 1. Simpan ke variabel JavaScript (RAM) & LocalStorage
+                window.state.appId = appId;
+                window.state.supabaseUrl = supaUrl;
+                window.state.supabaseAnonKey = supaKey;
+                window.state.gasUrl = gasUrl;
 
-            if (window.supabase) {
-                try {
-                    supabaseClient = window.supabase.createClient(supaUrl, supaKey);
-                    
-                    // Upsert Mengunci Baris id = ANCHORED_APP_ID
-                    await supabaseClient.from('system_config').upsert({
-                        id: ANCHORED_APP_ID,
-                        app_id: appId,
-                        supabase_url: supaUrl,
-                        supabase_anon_key: supaKey,
-                        gas_url: gasUrl,
-                        system_password: sysPass,
-                        last_updated_at: new Date().toISOString(),
-                        action_type: 'MANUAL_SERVER_CONFIG'
-                    });
+                serverApiConfig.appId = appId;
+                serverApiConfig.supabaseUrl = supaUrl;
+                serverApiConfig.supabaseAnonKey = supaKey;
+                serverApiConfig.gasUrl = gasUrl;
+                serverApiConfig.password = sysPass;
 
-                    await window.setupSupabaseListeners();
-                } catch(err) {
-                    console.warn("Gagal simpan system_config ke Supabase:", err);
+                localStorage.setItem('supabase_url', supaUrl);
+                localStorage.setItem('supabase_anon_key', supaKey);
+                localStorage.setItem('gas_url', gasUrl);
+
+                // 2. Inisialisasi Supabase Client jika URL & Key tersedia
+                if (window.supabase && supaUrl && supaKey) {
+                    try {
+                        supabaseClient = window.supabase.createClient(supaUrl, supaKey);
+
+                        // Gunakan timeout 4 detik agar UI tidak macet jika koneksi lambat
+                        const upsertPromise = supabaseClient.from('system_config').upsert({
+                            id: ANCHORED_APP_ID,
+                            app_id: appId,
+                            supabase_url: supaUrl,
+                            supabase_anon_key: supaKey,
+                            gas_url: gasUrl,
+                            system_password: sysPass,
+                            last_updated_at: new Date().toISOString(),
+                            action_type: 'MANUAL_SERVER_CONFIG'
+                        });
+
+                        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 4000));
+                        await Promise.race([upsertPromise, timeoutPromise]);
+                    } catch (supaErr) {
+                        console.warn("Koneksi Supabase Upsert Notice:", supaErr);
+                    }
+
+                    try {
+                        window.setupSupabaseListeners();
+                    } catch (listenerErr) {
+                        console.warn("Setup Listeners Notice:", listenerErr);
+                    }
+                }
+
+                // 3. Selalu tutup modal dan berikan notifikasi sukses tanpa menunggu background fetch
+                window.closeServerConfigModal();
+                window.showToast("Konfigurasi Berhasil Disimpan!", "success");
+
+                // 4. Jalankan background sync non-blocking
+                if (gasUrl) {
+                    window.pullAllDataFromGas(false).catch(err => console.warn("Background pull error:", err));
+                }
+            } catch (err) {
+                console.error("Save config error:", err);
+                window.showToast("Gagal menyimpan konfigurasi: " + (err.message || "Error tidak diketahui"), "error");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
                 }
             }
-
-            window.closeServerConfigModal();
-            window.showToast("Konfigurasi Tersimpan Permanen di Cloud!", "success");
-            await window.pullAllDataFromGas(true);
         };
 
         window.onload = async function() {
