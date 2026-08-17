@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Realtime Cloud Engine</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Multi-Table Realtime Engine</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,13 +24,10 @@
         }
     </script>
     
-    <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Supabase JS Client v2 for Realtime Signaling & Cloud Sync -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -78,16 +74,14 @@
         @media print {
             header, footer, .no-print,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
-            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer {
+            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer, #modal-print-profile {
                 display: none !important;
             }
-
             body {
                 background: white !important;
                 color: black !important;
                 font-size: 9pt;
             }
-
             body.print-mode-matrix @page { size: A4 landscape; margin: 6mm 8mm; }
             body.print-mode-matrix #admin-view-dashboard,
             body.print-mode-matrix #admin-view-verifikasi,
@@ -95,12 +89,10 @@
             body.print-mode-matrix #admin-view-master-data {
                 display: none !important;
             }
-
             body.print-mode-matrix #admin-view-laporan {
                 display: block !important;
                 visibility: visible !important;
             }
-
             body.print-mode-matrix #print-matrix-area {
                 border: none !important;
                 box-shadow: none !important;
@@ -110,7 +102,6 @@
                 position: static !important;
                 width: 100% !important;
             }
-
             body.print-mode-profile @page { size: A4 portrait; margin: 6mm 8mm; }
             body.print-mode-profile #admin-view-dashboard,
             body.print-mode-profile #admin-view-verifikasi,
@@ -119,7 +110,6 @@
             body.print-mode-profile #admin-view-master-data {
                 display: none !important;
             }
-
             body.print-mode-profile #modal-print-profile {
                 display: block !important;
                 position: static !important;
@@ -129,7 +119,6 @@
                 max-width: 100% !important;
                 height: auto !important;
             }
-
             body.print-mode-profile-landscape @page { size: A4 landscape; margin: 5mm 8mm; }
             body.print-mode-profile-landscape #admin-view-dashboard,
             body.print-mode-profile-landscape #admin-view-verifikasi,
@@ -138,7 +127,6 @@
             body.print-mode-profile-landscape #admin-view-master-data {
                 display: none !important;
             }
-
             body.print-mode-profile-landscape #modal-print-profile {
                 display: block !important;
                 position: static !important;
@@ -148,12 +136,10 @@
                 max-width: 100% !important;
                 height: auto !important;
             }
-
             .table-scroll-container {
                 max-height: none !important;
                 overflow: visible !important;
             }
-
             .no-print { display: none !important; }
             .break-inside-avoid { break-inside: avoid !important; page-break-inside: avoid !important; }
         }
@@ -161,7 +147,6 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
-    <!-- HEADER -->
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-3 lg:px-6 py-2 shrink-0">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
@@ -176,18 +161,16 @@
                             <span>Konfigurasi Sistem</span>
                         </button>
                     </div>
-                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Pub/Sub Antena, Auto Background Sync & Master Data Kepegawaian</p>
+                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Realtime 3-Tabel Listener (system_config, pegawai_lemari_digital, master_umpeg_config)</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 text-xs">
-                <!-- Status Realtime WebSocket / Polling Supabase -->
-                <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
-                    <span id="ws-status-text">Mengecek Koneksi Cloud...</span>
+                <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
+                    <span id="ws-status-text">🔴 Konfigurasi Belum Diisi</span>
                 </div>
 
-                <!-- Indikator Auto Sync Aktif -->
                 <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
                     <i class="fa-solid fa-rotate text-emerald-300 text-xs" id="auto-sync-spinner"></i>
                     <span id="auto-sync-text" class="hidden sm:inline">Auto-Sync Siap</span>
@@ -208,7 +191,6 @@
             <span id="toast-msg" class="font-semibold text-[11px]"></span>
         </div>
 
-        <!-- MAIN TABS -->
         <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200/90 text-xs overflow-x-auto shadow-xs">
             <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-chart-pie"></i>
@@ -233,14 +215,13 @@
             </button>
         </div>
 
-        <!-- DASHBOARD VIEW -->
         <div id="admin-view-dashboard" class="space-y-4">
             <section class="space-y-3">
                 <div class="flex items-center justify-between border-b border-emerald-200/80 pb-2">
                     <h2 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i> Ringkasan Eksekutif Kepegawaian RSUD Sinjai
                     </h2>
-                    <span class="text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Supabase Realtime Antenna Bridge</span>
+                    <span class="text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Production Mode - Realtime Active</span>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
@@ -482,7 +463,6 @@
             </section>
         </div>
 
-        <!-- VERIFIKASI VIEW -->
         <div id="admin-view-verifikasi" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
@@ -558,7 +538,6 @@
             </section>
         </div>
 
-        <!-- DIREKTORI BUKU INDUK VIEW -->
         <div id="admin-view-direktori" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
@@ -591,7 +570,6 @@
             </section>
         </div>
 
-        <!-- LAPORAN VIEW -->
         <div id="admin-view-laporan" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3" id="print-matrix-area">
                 
@@ -733,7 +711,6 @@
             </section>
         </div>
 
-        <!-- MASTER DATA VIEW -->
         <div id="admin-view-master-data" class="hidden space-y-3 fade-in">
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs">
                 <button type="button" onclick="window.switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
@@ -954,12 +931,11 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide no-print border-t border-emerald-700 shadow-lg">
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System 24/7)
     </footer>
 
-    <!-- MODAL AUTH CONFIG -->
+    <!-- Modal Config Auth -->
     <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-emerald-950 uppercase border-b pb-1.5">Administrator System Access</h3>
@@ -972,7 +948,7 @@
         </div>
     </div>
 
-    <!-- MODAL SERVER CONFIG -->
+    <!-- Modal Config Server -->
     <div id="modal-config-server" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -980,7 +956,7 @@
                     <i class="fa-solid fa-tower-broadcast text-emerald-300 text-sm"></i>
                     <div>
                         <h3 class="text-xs font-extrabold uppercase">Konfigurasi Antena Supabase & GAS Engine</h3>
-                        <p class="text-[9px] text-emerald-200">Koneksi Langsung Instant & Queue Sync Anti-Hang</p>
+                        <p class="text-[9px] text-emerald-200">Koneksi Multi-Table Realtime (system_config, pegawai_lemari_digital, master_umpeg_config)</p>
                     </div>
                 </div>
                 <button onclick="window.closeServerConfigModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
@@ -996,7 +972,7 @@
 
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">URL Supabase Project Endpoint</label>
-                    <input type="url" id="cfg-supabase-url" placeholder="https://ohktlpuywpnxmqbrswhs.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
+                    <input type="url" id="cfg-supabase-url" placeholder="https://xyz.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
 
                 <div>
@@ -1022,16 +998,70 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT STAF ADMIN -->
+    <!-- Modal Audit Pegawai -->
+    <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+        <div class="glass-panel w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
+            <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
+                <div>
+                    <h3 class="text-xs font-extrabold uppercase" id="modal-audit-nama">Audit Bundel Digital</h3>
+                    <p class="text-[9.5px] text-emerald-200 font-mono" id="modal-audit-nip">NIP: -</p>
+                </div>
+                <button onclick="window.closeAuditModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-1">Keputusan Audit UMPEG</label>
+                        <select id="modal-audit-status-select" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-xs text-slate-900 focus:outline-none">
+                            <option value="PENDING">🟡 PENDING (Menunggu Verifikasi)</option>
+                            <option value="TERVERIFIKASI">🟢 TERVERIFIKASI (Dokumen Lengkap)</option>
+                            <option value="PERLU_PERBAIKAN">🔴 PERLU PERBAIKAN (Berkas Kurang)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-1">Catatan Tambahan untuk Pegawai</label>
+                        <input type="text" id="modal-audit-catatan" placeholder="Contoh: Lampirkan STR terbaru versi legalisir..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-900 focus:outline-none">
+                    </div>
+                </div>
+
+                <div id="modal-audit-checklist-container" class="space-y-3"></div>
+            </div>
+
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 shrink-0">
+                <button onclick="window.closeAuditModal()" class="h-9 px-4 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+                <button onclick="window.saveAuditDecision()" class="h-9 px-5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs cursor-pointer">Simpan Hasil Audit & Broadcast Realtime</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Document Viewer -->
+    <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+        <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
+            <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
+                <h3 class="text-xs font-extrabold uppercase truncate pr-2" id="modal-doc-title">Dokumen Pegawai</h3>
+                <div class="flex items-center gap-2">
+                    <a id="modal-doc-external" href="#" target="_blank" class="px-2.5 py-1 rounded bg-emerald-800 hover:bg-emerald-700 text-white text-[10px] font-bold border border-emerald-600 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Tab Baru
+                    </a>
+                    <button onclick="window.closeDocViewer()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <iframe id="modal-doc-iframe" src="about:blank" class="w-full flex-1 border-0"></iframe>
+        </div>
+    </div>
+
+    <!-- Modal Edit Staf Admin (With SessionStorage Draft Engine) -->
     <div id="modal-edit-staf-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-user-pen text-amber-300 text-sm"></i>
-                    <div>
-                        <h3 class="text-xs font-extrabold uppercase">Edit Data & Jalur Jabatan Pegawai</h3>
-                        <p class="text-[9px] text-emerald-200">Perbarui Status, Jalur Jabatan, dan Unit Kerja Staf</p>
-                    </div>
+                <div>
+                    <h3 class="text-xs font-extrabold uppercase">Edit Data Staf Kepegawaian</h3>
+                    <p class="text-[9px] text-emerald-200">Draf Ketikan Tersimpan Otomatis di sessionStorage Mode Sesi</p>
                 </div>
                 <button onclick="window.closeEditStafAdminModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
@@ -1040,153 +1070,81 @@
 
             <form onsubmit="window.saveEditStafAdmin(event)" class="p-4 overflow-y-auto space-y-3 text-xs flex-1">
                 <input type="hidden" id="edit-staf-target-nip">
-
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Nama Lengkap & Gelar</label>
-                        <input type="text" id="edit-staf-nama" required class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">NIP / SK Kedinasan</label>
-                        <input type="text" id="edit-staf-nip" required class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 font-bold text-xs focus:outline-none">
-                    </div>
+                
+                <div>
+                    <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nama Lengkap Pegawai</label>
+                    <input type="text" id="edit-staf-nama" oninput="window.saveFormDraftToSession()" required class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 focus:outline-none">
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 bg-emerald-50/80 p-3 rounded-xl border border-emerald-200">
-                    <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Status Kepegawaian</label>
-                        <select id="edit-staf-status" class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-2 font-bold text-slate-900 text-xs focus:outline-none">
-                        </select>
-                    </div>
+                <div>
+                    <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP / SK Kedinasan</label>
+                    <input type="text" id="edit-staf-nip" oninput="window.saveFormDraftToSession()" required class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono font-bold text-slate-900 focus:outline-none">
+                </div>
 
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Kategori Medis</label>
-                        <select id="edit-staf-sub1" class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-2 font-bold text-slate-900 text-xs focus:outline-none">
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Status Kepegawaian</label>
+                        <select id="edit-staf-status" onchange="window.saveFormDraftToSession()" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none"></select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Sub Kategori 1</label>
+                        <select id="edit-staf-sub1" onchange="window.saveFormDraftToSession()" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none">
                             <option value="MEDIS">MEDIS / NAKES</option>
                             <option value="NONMEDIS">NON-MEDIS</option>
                         </select>
                     </div>
+                </div>
 
+                <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Jalur Jabatan</label>
-                        <select id="edit-staf-sub2" onchange="window.handleAdminEditJalurChange()" class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-2 font-extrabold text-emerald-900 text-xs focus:outline-none">
-                            <option value="FUNGSIONAL">FUNGSIONAL (Pelayanan/Teknis)</option>
-                            <option value="STRUKTURAL">STRUKTURAL (Manajemen)</option>
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jalur Jabatan (Sub 2)</label>
+                        <select id="edit-staf-sub2" onchange="window.handleAdminEditJalurChange(); window.saveFormDraftToSession();" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none">
+                            <option value="FUNGSIONAL">FUNGSIONAL</option>
+                            <option value="STRUKTURAL">STRUKTURAL</option>
                         </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jabatan Kedinasan</label>
+                        <select id="edit-staf-jabatan" onchange="window.saveFormDraftToSession()" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-semibold text-slate-900 focus:outline-none"></select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Nama Jabatan Kedinasan</label>
-                        <select id="edit-staf-jabatan" required class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
-                            <option value="">-- Pilih Jabatan --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Unit Kerja Penempatan</label>
-                        <select id="edit-staf-ruangan" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                        </select>
-                    </div>
+                <div>
+                    <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Unit Kerja / Ruangan Penempatan</label>
+                    <select id="edit-staf-ruangan" onchange="window.saveFormDraftToSession()" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-semibold text-slate-900 focus:outline-none"></select>
                 </div>
 
-                <div class="pt-2.5 flex items-center justify-end gap-1.5 border-t border-emerald-200">
-                    <button type="button" onclick="window.closeEditStafAdminModal()" class="h-9 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
-                    <button type="submit" class="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs cursor-pointer">Simpan Perubahan Staf</button>
+                <div class="pt-2 flex justify-end gap-2 border-t border-emerald-200">
+                    <button type="button" onclick="window.closeEditStafAdminModal()" class="h-9 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold cursor-pointer">Batal</button>
+                    <button type="submit" class="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold shadow-2xs cursor-pointer">Simpan & Broadcast Sinyal</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL CONFIRM DELETE -->
+    <!-- Modal Confirm Delete -->
     <div id="modal-confirm-delete" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
-        <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-rose-300 shadow-2xl p-4 space-y-3 bg-white">
-            <h3 class="text-xs font-extrabold text-rose-950 uppercase border-b pb-1.5">Konfirmasi Hapus Data</h3>
-            <p id="confirm-delete-msg" class="text-slate-700 text-[11px] font-medium">Apakah Anda yakin ingin menghapus data ini?</p>
+        <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-rose-300 shadow-2xl bg-white p-4 space-y-3">
+            <div class="flex items-center gap-2 text-rose-700 font-extrabold text-xs uppercase border-b pb-1.5">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 text-base"></i>
+                <span>Konfirmasi Penghapusan</span>
+            </div>
+            <p id="confirm-delete-msg" class="text-xs text-slate-700 font-medium">Apakah Anda yakin ingin menghapus data ini?</p>
             <div class="flex gap-2 pt-1">
                 <button type="button" onclick="window.closeConfirmDeleteModal()" class="flex-1 h-9 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
-                <button type="button" onclick="window.executeDeleteMasterItem()" class="flex-1 h-9 bg-rose-600 text-white font-bold rounded-lg text-xs shadow-2xs cursor-pointer">Ya, Hapus</button>
+                <button type="button" onclick="window.executeDeleteMasterItem()" class="flex-1 h-9 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-lg text-xs shadow-2xs cursor-pointer">Hapus Sekarang</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL AUDIT PEGAWAI -->
-    <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
-        <div class="glass-panel w-full max-w-3xl h-[88vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
-            <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
-                <div class="min-w-0">
-                    <h3 id="modal-audit-nama" class="text-xs font-extrabold truncate">Audit Bundel Pegawai</h3>
-                    <p id="modal-audit-nip" class="text-[9px] text-emerald-200 font-mono truncate">NIP / ID: -</p>
-                </div>
-                <button onclick="window.closeAuditModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-4 space-y-3 text-xs bg-slate-50/50">
-                <div class="p-3.5 rounded-xl bg-white border border-emerald-200/90 shadow-2xs space-y-2">
-                    <label class="block font-extrabold text-emerald-950 text-[10px] uppercase">Keputusan Audit UMPEG</label>
-                    <select id="modal-audit-status-select" class="w-full h-9 bg-emerald-50/80 border border-emerald-300 rounded-lg px-3 font-bold text-emerald-950 text-xs">
-                        <option value="PENDING">PENDING (Menunggu Audit)</option>
-                        <option value="TERVERIFIKASI">TERVERIFIKASI (Lengkap & Keabsahan Sesuai)</option>
-                        <option value="PERLU_PERBAIKAN">PERLU PERBAIKAN (Berkas Tidak Sesuai/Kurang)</option>
-                    </select>
-                    <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mt-2">Catatan / Alasan Audit (Dikirim ke Pegawai)</label>
-                    <input type="text" id="modal-audit-catatan" placeholder="Contoh: Lampirkan scan STR berwarna..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none">
-                </div>
-
-                <div id="modal-audit-checklist-container" class="space-y-3"></div>
-            </div>
-
-            <div class="p-3 bg-white border-t border-emerald-200 flex justify-end gap-1.5 shrink-0">
-                <button onclick="window.closeAuditModal()" class="h-9 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
-                <button onclick="window.saveAuditDecision()" class="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-2xs cursor-pointer">Simpan Keputusan Audit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DOCUMENT VIEWER -->
-    <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
-        <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
-            <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
-                    <i class="fa-solid fa-file-pdf text-amber-400 text-base shrink-0"></i>
-                    <div class="min-w-0">
-                        <h3 id="modal-doc-title" class="text-xs font-extrabold tracking-wide truncate">Pratinjau Berkas Digital</h3>
-                        <p id="modal-doc-subtitle" class="text-[9px] text-emerald-200 truncate">E-Arsip Berkas Digital RSUD Sinjai</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <a id="modal-doc-external" href="#" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-1 transition-all shadow-2xs">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        <span>Buka Tab Baru</span>
-                    </a>
-                    <button onclick="window.closeDocViewer()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="flex-1 bg-slate-800 relative flex items-center justify-center overflow-hidden p-2">
-                <iframe id="modal-doc-iframe" src="about:blank" class="w-full h-full border-0 bg-slate-900 rounded-xl"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PRINT PROFILE -->
-    <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm fade-in">
-        <div class="glass-panel w-full max-w-6xl h-[94vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
+    <!-- Modal Print Profile Sheet (DRH/Dossier) -->
+    <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+        <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
+                <h3 class="text-xs font-extrabold uppercase">Preview Cetak DRH / Dossier Pegawai</h3>
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf text-amber-300 text-sm"></i>
-                    <div>
-                        <h3 id="print-modal-header-title" class="text-xs font-extrabold uppercase">Pratinjau Cetak Profil Pegawai A4</h3>
-                        <p id="sheet-print-layout-desc" class="text-[9px] text-emerald-200">Dokumen Resmi Internal RSUD Sinjai</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="window.triggerPrintProfile()" class="h-8 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span>Cetak A4 / Simpan PDF</span>
+                    <button onclick="window.triggerPrintProfile()" class="h-8 px-3 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak A4
                     </button>
                     <button onclick="window.closePrintProfileModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
@@ -1194,70 +1152,48 @@
                 </div>
             </div>
 
-            <div id="print-profile-area" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 text-slate-900 bg-white">
-                <div class="border-b-4 border-double border-slate-900 pb-2.5 flex items-center justify-between gap-3 text-center">
-                    <div id="sheet-logo-container" class="w-16 h-16 flex items-center justify-center shrink-0">
-                        <img id="sheet-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-16 max-w-16 object-contain">
+            <div class="p-6 overflow-y-auto space-y-4 text-xs font-sans text-slate-900 bg-white" id="sheet-content-wrapper">
+                <div class="border-b-2 border-slate-900 pb-2 flex items-center justify-between gap-3 text-center">
+                    <div class="w-16 h-16 flex items-center justify-center shrink-0">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo" class="max-h-16 object-contain">
                     </div>
                     <div class="flex-1 text-center space-y-0.5">
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
                         <h2 class="text-xs sm:text-sm font-black uppercase tracking-widest text-emerald-950">UPT RUMAH SAKIT UMUM DAERAH SINJAI</h2>
-                        <p class="text-[9px] text-slate-700 font-medium leading-tight">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
-                        <p class="text-[8.5px] text-slate-600 font-mono">Website: rsud.sinjaikab.go.id • Email: rsudsinjai@sinjaikab.go.id</p>
+                        <p class="text-[8.5px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Sinjai Utara, Sulawesi Selatan 92611</p>
                     </div>
-                    <div class="w-16 h-16 shrink-0 hidden sm:block"></div>
+                    <div class="w-16 h-16 shrink-0"></div>
                 </div>
 
-                <div class="text-center space-y-0.5 py-0.5">
-                    <h3 id="sheet-main-title" class="text-xs sm:text-sm font-black uppercase tracking-wider underline">DAFTAR RIWAYAT HIDUP PEGAWAI</h3>
-                    <p id="sheet-id-header" class="text-[9px] font-mono font-bold text-slate-600">ID REGISTRASI UMPEG: -</p>
+                <div class="text-center space-y-0.5">
+                    <h3 class="font-black text-xs uppercase underline tracking-wide" id="sheet-main-title">DAFTAR RIWAYAT HIDUP PEGAWAI</h3>
+                    <p class="text-[9px] font-mono font-bold text-slate-600" id="sheet-id-header">ID REGISTRASI UMPEG: -</p>
                 </div>
 
-                <div id="sheet-content-body" class="space-y-2.5 text-[10px]"></div>
+                <div id="sheet-content-body" class="space-y-3"></div>
 
-                <div class="pt-4 grid grid-cols-2 text-center text-[10px] break-inside-avoid">
+                <div class="pt-6 grid grid-cols-2 text-center text-[10px]">
                     <div>
-                        <p class="font-bold mb-12">Pegawai Yang Bersangkutan,</p>
-                        <p id="sheet-sign-nama" class="font-black underline uppercase">( ________________________ )</p>
+                        <p class="font-bold mb-12">Mengetahui,<br><span id="sheet-pejabat-jabatan">Kepala Sub Bagian UMPEG</span></p>
+                        <p class="font-black underline uppercase" id="sheet-pejabat-nama">( ________________________ )</p>
+                        <p class="text-[9px] font-mono text-slate-600" id="sheet-pejabat-nip">NIP. -</p>
                     </div>
                     <div>
                         <p class="font-bold">Sinjai, <span id="sheet-print-date">--/--/2026</span></p>
-                        <p id="sheet-pejabat-jabatan" class="font-semibold text-slate-600 mb-1">Kepala Sub Bagian UMPEG,</p>
-                        <div id="sheet-ttd-container" class="h-12 flex items-center justify-center my-1">
-                            <img id="sheet-ttd-img" src="" alt="TTD Pejabat" class="max-h-12 hidden">
-                        </div>
-                        <p id="sheet-pejabat-nama" class="font-black underline uppercase">( ________________________ )</p>
-                        <p id="sheet-pejabat-nip" class="text-[8.5px] text-slate-500 font-mono">NIP. -</p>
+                        <p class="font-bold mb-12">Pegawai Yang Bersangkutan,</p>
+                        <p class="font-black underline uppercase" id="sheet-sign-nama">( ________________________ )</p>
                     </div>
-                </div>
-            </div>
-
-            <div class="p-2.5 bg-slate-100 border-t flex items-center justify-between no-print">
-                <span class="text-[10px] text-slate-600 font-semibold" id="sheet-print-layout-desc-footer">Modus: A4 Landscape Dossier PDF Lengkap</span>
-                <div class="flex items-center gap-2">
-                    <button onclick="window.closePrintProfileModal()" class="h-8 px-3.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
-                    <button onclick="window.triggerPrintProfile()" class="h-8 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span>Cetak A4 / Simpan PDF</span>
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN SCRIPT -->
     <script>
-        // Anchor Supabase Endpoint Baseline
-        const ANCHORED_SUPABASE_URL = 'https://ohktlpuywpnxmqbrswhs.supabase.co';
-        const ANCHORED_SUPABASE_ANON_KEY = 'sb_publishable_kWlQfSk1H7e60OBuQD6_Cw_n2Zy4iXn';
-        const ANCHORED_GAS_URL = 'https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec';
-        const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
-
         window.state = {
-            gasUrl: ANCHORED_GAS_URL,
-            supabaseUrl: ANCHORED_SUPABASE_URL,
-            supabaseAnonKey: ANCHORED_SUPABASE_ANON_KEY,
-            appId: ANCHORED_APP_ID,
+            gasUrl: "",
+            supabaseUrl: "",
+            supabaseAnonKey: "",
+            appId: "RSUD_SINJAI_UMPEG_APP",
             pegawai: [],
             isSyncing: false
         };
@@ -1364,10 +1300,10 @@
         };
         
         let serverApiConfig = { 
-            appId: ANCHORED_APP_ID, 
-            supabaseUrl: ANCHORED_SUPABASE_URL, 
-            supabaseAnonKey: ANCHORED_SUPABASE_ANON_KEY, 
-            gasUrl: ANCHORED_GAS_URL, 
+            appId: 'RSUD_SINJAI_UMPEG_APP', 
+            supabaseUrl: '', 
+            supabaseAnonKey: '', 
+            gasUrl: '', 
             password: 'kugoskom36' 
         };
 
@@ -1379,6 +1315,7 @@
         let activePrintLayoutMode = 'portrait';
         let supabaseClient = null;
         let realtimeChannel = null;
+        let pollingTimer = null;
 
         window.setText = function(id, val) { 
             const el = document.getElementById(id); 
@@ -1390,7 +1327,7 @@
             const icon = document.getElementById('toast-icon');
             if (!toast) return;
             window.setText('toast-msg', msg);
-            if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600 text-sm" : "fa-solid fa-circle-info text-emerald-600 text-sm";
+            if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600 text-sm" : type === 'error' ? "fa-solid fa-circle-exclamation text-rose-600 text-sm" : "fa-solid fa-circle-info text-emerald-600 text-sm";
             toast.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl bg-white border-emerald-300 text-slate-800 flex items-center gap-2 border";
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3200);
@@ -1404,111 +1341,43 @@
 
             if (state === 'online') {
                 dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                txt.innerText = text || "Realtime Pub/Sub Online";
+                txt.innerText = text || "🟢 Realtime 3 Tabel Active";
                 badge.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             } else if (state === 'polling') {
                 dot.className = "w-2 h-2 rounded-full bg-teal-500 animate-pulse";
-                txt.innerText = text || "Auto-Sync Polling Active";
+                txt.innerText = text || "Polling Fallback Active";
                 badge.className = "px-2.5 py-1 rounded-full bg-teal-100 text-teal-900 border border-teal-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-amber-500";
-                txt.innerText = text || "Terputus (Isi Supabase Anon Key)";
+                txt.innerText = text || "🔴 Konfigurasi Belum Diisi";
                 badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             }
         };
 
-        window.bootstrapGlobalConfigFromCloud = async function() {
-            const key = window.state.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
-            const url = window.state.supabaseUrl || ANCHORED_SUPABASE_URL;
-
-            if (window.supabase && key && !key.startsWith('sb_publishable_dummy')) {
-                try {
-                    supabaseClient = window.supabase.createClient(url, key);
-                } catch(e) {
-                    console.warn("Inisialisasi Supabase Client awal:", e);
-                }
+        window.pingSupabaseTable = async function(tableName = 'system_config') {
+            if (!supabaseClient) return;
+            const nowIso = new Date().toISOString();
+            try {
+                await supabaseClient
+                    .from(tableName)
+                    .upsert({
+                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        last_updated_at: nowIso,
+                        action_type: `REALTIME_BROADCAST_${tableName.toUpperCase()}`
+                    });
+            } catch(e) {
+                console.warn(`Ping Supabase notice on table ${tableName}:`, e);
             }
+        };
 
-            if (supabaseClient) {
-                try {
-                    // 1. Handshake Terpusat ke Baris id = 'RSUD_SINJAI_UMPEG_APP'
-                    const { data: sysData, error: sysErr } = await supabaseClient
-                        .from('system_config')
-                        .select('*')
-                        .eq('id', ANCHORED_APP_ID)
-                        .maybeSingle();
+        window.pingSupabase = async function() {
+            await window.pingSupabaseTable('system_config');
+        };
 
-                    if (sysData && !sysErr) {
-                        if (sysData.gas_url) { 
-                            window.state.gasUrl = sysData.gas_url; 
-                            serverApiConfig.gasUrl = sysData.gas_url; 
-                        }
-                        if (sysData.app_id) { window.state.appId = sysData.app_id; serverApiConfig.appId = sysData.app_id; }
-                        if (sysData.supabase_url) { window.state.supabaseUrl = sysData.supabase_url; serverApiConfig.supabaseUrl = sysData.supabase_url; }
-                        if (sysData.supabase_anon_key) { 
-                            window.state.supabaseAnonKey = sysData.supabase_anon_key; 
-                            serverApiConfig.supabaseAnonKey = sysData.supabase_anon_key; 
-                        }
-                        if (sysData.system_password) { serverApiConfig.password = sysData.system_password; }
-
-                        // Re-connect jika Anon Key dari DB valid dan berbeda
-                        if (sysData.supabase_url && sysData.supabase_anon_key) {
-                            try {
-                                supabaseClient = window.supabase.createClient(sysData.supabase_url, sysData.supabase_anon_key);
-                            } catch(e){}
-                        }
-                    }
-
-                    // 2. Baca Master Data Referensi (master_umpeg_config)
-                    const { data: masterData, error: masterErr } = await supabaseClient
-                        .from('master_umpeg_config')
-                        .select('*')
-                        .eq('id', ANCHORED_APP_ID)
-                        .maybeSingle();
-
-                    if (masterData && !masterErr) {
-                        if (masterData.master_ruangan) masterRuanganList = masterData.master_ruangan;
-                        if (masterData.master_jabatan) masterJabatanList = masterData.master_jabatan;
-                        if (masterData.master_eselon) masterEselonList = masterData.master_eselon;
-                        if (masterData.master_status) masterStatusPegList = masterData.master_status;
-                        if (masterData.master_edu) masterEducationList = masterData.master_edu;
-                        if (masterData.master_golongan) masterGolonganList = masterData.master_golongan;
-                        if (masterData.master_org) masterOrgList = masterData.master_org;
-                        if (masterData.master_checklist) masterChecklistConfig = masterData.master_checklist;
-                        if (masterData.kop_config) masterKopConfig = masterData.kop_config;
-                        window.populateAdminMasterDropdowns();
-                    }
-
-                    // 3. Baca Data Lemari Digital Pegawai
-                    const { data: pegData, error: pegErr } = await supabaseClient
-                        .from('pegawai_lemari_digital')
-                        .select('*');
-
-                    if (pegData && pegData.length > 0 && !pegErr) {
-                        masterPegawaiDb = pegData.map(item => ({
-                            idPegawai: item.id_pegawai,
-                            nip: item.nip,
-                            username: item.username,
-                            nama: item.nama,
-                            status: item.status_kepegawaian,
-                            sub1: item.sub1,
-                            sub2: item.sub2,
-                            jabatan: item.jabatan,
-                            ruangan: item.ruangan,
-                            linksMap: item.link_url_drive || {},
-                            detailPersonal: item.detail_personal || {},
-                            detailJabatan: item.detail_jabatan || {},
-                            detailMedis: item.detail_medis || {},
-                            riwayatPendidikan: item.riwayat_pendidikan || [],
-                            verifikasiStatus: item.verifikasi_status || 'PENDING',
-                            verifikasiCatatan: item.verifikasi_catatan || ''
-                        }));
-                        window.renderActiveView();
-                    }
-                } catch(err) {
-                    console.warn("Gagal bootstrap config/data dari Supabase DB:", err);
-                }
-            }
+        window.handleIncomingSignal = function(tableName = 'system_config') {
+            console.log(`⚡ Sinyal Realtime diterima dari tabel Supabase: [${tableName}]`);
+            window.pullAllDataFromGas(false);
         };
 
         window.setupSupabaseListeners = async function() {
@@ -1518,31 +1387,185 @@
                 if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
 
                 realtimeChannel = supabaseClient
-                    .channel('perubahan-konfigurasi-admin')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, payload => {
-                        const randomDelay = Math.floor(Math.random() * 3000) + 500;
-                        setTimeout(() => {
-                            window.pullAllDataFromGas(false);
-                        }, randomDelay);
-                    })
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, payload => {
-                        const randomDelay = Math.floor(Math.random() * 3000) + 500;
-                        setTimeout(() => {
-                            window.bootstrapGlobalConfigFromCloud();
-                        }, randomDelay);
-                    })
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, payload => {
-                        window.bootstrapGlobalConfigFromCloud();
-                    })
+                    .channel('public:umpeg_multi_tables')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, () => window.handleIncomingSignal('system_config'))
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, () => window.handleIncomingSignal('pegawai_lemari_digital'))
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, () => window.handleIncomingSignal('master_umpeg_config'))
                     .subscribe((status) => {
                         if (status === 'SUBSCRIBED') {
-                            window.updateWsBadge('online', 'Realtime Pub/Sub Online');
+                            window.updateWsBadge('online', '🟢 Realtime 3 Tabel Active');
                         } else {
-                            window.updateWsBadge('polling', 'Auto-Sync Polling Active');
+                            window.activatePollingFallback();
                         }
                     });
             } catch (e) {
-                window.updateWsBadge('polling', 'Auto-Sync Polling Active');
+                window.activatePollingFallback();
+            }
+        };
+
+        window.activatePollingFallback = function() {
+            window.updateWsBadge('polling', 'Polling Fallback Active');
+            if (pollingTimer) clearInterval(pollingTimer);
+            pollingTimer = setInterval(() => {
+                window.pullAllDataFromGas(false);
+            }, 12000);
+        };
+
+        window.saveFormDraftToSession = function() {
+            const targetNip = document.getElementById('edit-staf-target-nip')?.value;
+            if (!targetNip) return;
+
+            const draftData = {
+                nama: document.getElementById('edit-staf-nama')?.value || '',
+                nip: document.getElementById('edit-staf-nip')?.value || '',
+                status: document.getElementById('edit-staf-status')?.value || '',
+                sub1: document.getElementById('edit-staf-sub1')?.value || '',
+                sub2: document.getElementById('edit-staf-sub2')?.value || '',
+                jabatan: document.getElementById('edit-staf-jabatan')?.value || '',
+                ruangan: document.getElementById('edit-staf-ruangan')?.value || '',
+                lastModified: new Date().getTime()
+            };
+
+            try {
+                sessionStorage.setItem(`DRAFT_EDIT_STAF_${targetNip}`, JSON.stringify(draftData));
+            } catch(e) {}
+        };
+
+        window.loadFormDraftFromSession = function(nip) {
+            try {
+                const raw = sessionStorage.getItem(`DRAFT_EDIT_STAF_${nip}`);
+                if (raw) return JSON.parse(raw);
+            } catch(e) {}
+            return null;
+        };
+
+        window.clearFormDraftSession = function(nip) {
+            try {
+                if (nip) {
+                    sessionStorage.removeItem(`DRAFT_EDIT_STAF_${nip}`);
+                }
+            } catch(e) {}
+        };
+
+        window.loadLocalServerConfig = function() {
+            try {
+                const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    serverApiConfig = { ...serverApiConfig, ...parsed };
+                    window.state.appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
+                    window.state.supabaseUrl = serverApiConfig.supabaseUrl || '';
+                    window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || '';
+                    window.state.gasUrl = serverApiConfig.gasUrl || '';
+                }
+            } catch(e) {}
+        };
+
+        window.saveLocalServerConfig = function() {
+            try {
+                localStorage.setItem('RSUD_UMPEG_SERVER_CONFIG', JSON.stringify(serverApiConfig));
+            } catch(e) {}
+        };
+
+        window.openConfigAuthModal = function() {
+            const inputPass = document.getElementById('input-config-password');
+            if (inputPass) inputPass.value = '';
+            const modal = document.getElementById('modal-config-auth');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeConfigAuthModal = function() {
+            const modal = document.getElementById('modal-config-auth');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.verifyConfigPassword = function(e) {
+            if (e && e.key && e.key !== 'Enter') return;
+            const inputPass = document.getElementById('input-config-password')?.value || '';
+            if (inputPass === serverApiConfig.password) {
+                window.closeConfigAuthModal();
+                window.openServerConfigModal();
+            } else {
+                window.showToast("Sandi Akses Salah!", "error");
+            }
+        };
+
+        window.openServerConfigModal = function() {
+            document.getElementById('cfg-app-id').value = window.state.appId || 'RSUD_SINJAI_UMPEG_APP';
+            document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || '';
+            document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || '';
+            document.getElementById('cfg-gas-url').value = window.state.gasUrl || '';
+            document.getElementById('cfg-system-password').value = serverApiConfig.password || 'kugoskom36';
+
+            const modal = document.getElementById('modal-config-server');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeServerConfigModal = function() {
+            const modal = document.getElementById('modal-config-server');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.saveServerConfig = async function(e) {
+            if (e) e.preventDefault();
+
+            const submitBtn = e && e.target ? e.target.querySelector('button[type="submit"]') : null;
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menyimpan...';
+            }
+
+            try {
+                const appId = (document.getElementById('cfg-app-id')?.value || '').trim() || 'RSUD_SINJAI_UMPEG_APP';
+                const supaUrl = (document.getElementById('cfg-supabase-url')?.value || '').trim();
+                const supaKey = (document.getElementById('cfg-supabase-anon-key')?.value || '').trim();
+                const gasUrl = (document.getElementById('cfg-gas-url')?.value || '').trim();
+                const sysPass = (document.getElementById('cfg-system-password')?.value || '').trim() || 'kugoskom36';
+
+                window.state.appId = appId;
+                window.state.supabaseUrl = supaUrl;
+                window.state.supabaseAnonKey = supaKey;
+                window.state.gasUrl = gasUrl;
+
+                serverApiConfig.appId = appId;
+                serverApiConfig.supabaseUrl = supaUrl;
+                serverApiConfig.supabaseAnonKey = supaKey;
+                serverApiConfig.gasUrl = gasUrl;
+                serverApiConfig.password = sysPass;
+
+                window.saveLocalServerConfig();
+
+                if (window.supabase && supaUrl && supaKey) {
+                    supabaseClient = window.supabase.createClient(supaUrl, supaKey);
+                    await window.pingSupabaseTable('system_config');
+                    window.setupSupabaseListeners();
+                }
+
+                if (gasUrl) {
+                    try {
+                        fetch(gasUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'saveSystemConfig',
+                                data: { supabaseUrl: supaUrl, supabaseAnonKey: supaKey, gasUrl: gasUrl, appId: appId }
+                            })
+                        }).catch(e => console.warn("GAS config notice:", e));
+                    } catch(e) {}
+                }
+
+                window.closeServerConfigModal();
+                window.showToast("Konfigurasi Berhasil Disimpan & Terkoneksi ke Realtime Engine!", "success");
+                window.pullAllDataFromGas(true);
+            } catch (err) {
+                console.error("Save config error:", err);
+                window.showToast("Gagal menyimpan: " + (err.message || "Error tidak diketahui"), "error");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
             }
         };
 
@@ -1584,10 +1607,10 @@
                         verifikasiCatatan: item.verifikasiCatatan || item.verifikasi_catatan || ''
                     }));
                     window.renderActiveView();
-                    if (showToastNotice) window.showToast("Data Otomatis Diperbarui dari Cloud!", "success");
+                    if (showToastNotice) window.showToast("Data Diperbarui Otomatis!", "success");
                 }
             } catch(e) {
-                console.warn("Gagal auto-pull data dari GAS:", e);
+                console.warn("Gagal pull data dari GAS:", e);
             } finally {
                 window.state.isSyncing = false;
                 const spinner = document.getElementById('auto-sync-spinner');
@@ -1915,54 +1938,21 @@
             masterPegawaiDb[idx].verifikasiCatatan = inputCatatan;
             
             const target = masterPegawaiDb[idx];
-            
             window.renderActiveView();
 
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('pegawai_lemari_digital').upsert({
-                        id_pegawai: target.idPegawai,
-                        nip: target.nip,
-                        username: target.username || '',
-                        nama: target.nama,
-                        status_kepegawaian: target.status,
-                        sub1: target.sub1,
-                        sub2: target.sub2,
-                        jabatan: target.jabatan,
-                        ruangan: target.ruangan,
-                        link_url_drive: target.linksMap,
-                        detail_personal: target.detailPersonal,
-                        detail_jabatan: target.detailJabatan,
-                        detail_medis: target.detailMedis,
-                        riwayat_pendidikan: target.riwayatPendidikan,
-                        verifikasi_status: selStatus,
-                        verifikasi_catatan: inputCatatan,
-                        updated_at: new Date().toISOString()
-                    });
-                } catch(err) {
-                    console.warn("Gagal update Supabase pegawai_lemari_digital:", err);
-                }
-            }
-            
-            let gasSuccess = false;
             if (serverApiConfig.gasUrl) {
                 try {
-                    const res = await fetch(serverApiConfig.gasUrl, {
+                    await fetch(serverApiConfig.gasUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: 'saveAudit', data: target })
                     });
-                    const json = await res.json();
-                    if (json && json.status === 'success') gasSuccess = true;
                 } catch(err) {}
             }
-
-            if (gasSuccess || !serverApiConfig.gasUrl) {
-                await window.pingSupabase('AUDIT_DECISION', activeAuditNip);
-            }
             
+            await window.pingSupabaseTable('pegawai_lemari_digital');
             window.closeAuditModal();
-            window.showToast("Keputusan Audit Disimpan & Dipancarkan!", "success");
+            window.showToast("Hasil Audit Disimpan & Dipancarkan Realtime!", "success");
             window.pullAllDataFromGas(false);
         };
 
@@ -1986,12 +1976,32 @@
         window.openEditStafAdminModal = function(nip) {
             const p = masterPegawaiDb.find(x => x.nip === nip);
             if (!p) return;
+
             document.getElementById('edit-staf-target-nip').value = p.nip;
-            document.getElementById('edit-staf-nama').value = p.nama || '';
-            document.getElementById('edit-staf-nip').value = p.nip || '';
-            document.getElementById('edit-staf-sub1').value = p.sub1 || 'MEDIS';
-            document.getElementById('edit-staf-sub2').value = p.sub2 || 'FUNGSIONAL';
-            window.handleAdminEditJalurChange();
+            
+            // Check if active draft exists in sessionStorage
+            const draft = window.loadFormDraftFromSession(p.nip);
+            if (draft) {
+                document.getElementById('edit-staf-nama').value = draft.nama || p.nama || '';
+                document.getElementById('edit-staf-nip').value = draft.nip || p.nip || '';
+                document.getElementById('edit-staf-sub1').value = draft.sub1 || p.sub1 || 'MEDIS';
+                document.getElementById('edit-staf-sub2').value = draft.sub2 || p.sub2 || 'FUNGSIONAL';
+                window.handleAdminEditJalurChange();
+                document.getElementById('edit-staf-status').value = draft.status || p.status || 'PNS';
+                document.getElementById('edit-staf-jabatan').value = draft.jabatan || p.jabatan || '';
+                document.getElementById('edit-staf-ruangan').value = draft.ruangan || p.ruangan || '';
+                window.showToast("Draf ketikan terulih dari sessionStorage", "info");
+            } else {
+                document.getElementById('edit-staf-nama').value = p.nama || '';
+                document.getElementById('edit-staf-nip').value = p.nip || '';
+                document.getElementById('edit-staf-sub1').value = p.sub1 || 'MEDIS';
+                document.getElementById('edit-staf-sub2').value = p.sub2 || 'FUNGSIONAL';
+                window.handleAdminEditJalurChange();
+                document.getElementById('edit-staf-status').value = p.status || 'PNS';
+                document.getElementById('edit-staf-jabatan').value = p.jabatan || '';
+                document.getElementById('edit-staf-ruangan').value = p.ruangan || '';
+            }
+
             document.getElementById('modal-edit-staf-admin').classList.remove('hidden');
         };
 
@@ -2023,34 +2033,7 @@
             masterPegawaiDb[idx].ruangan = document.getElementById('edit-staf-ruangan').value;
 
             const target = masterPegawaiDb[idx];
-
             window.renderActiveView();
-
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('pegawai_lemari_digital').upsert({
-                        id_pegawai: target.idPegawai,
-                        nip: target.nip,
-                        username: target.username || '',
-                        nama: target.nama,
-                        status_kepegawaian: target.status,
-                        sub1: target.sub1,
-                        sub2: target.sub2,
-                        jabatan: target.jabatan,
-                        ruangan: target.ruangan,
-                        link_url_drive: target.linksMap,
-                        detail_personal: target.detailPersonal,
-                        detail_jabatan: target.detailJabatan,
-                        detail_medis: target.detailMedis,
-                        riwayat_pendidikan: target.riwayatPendidikan,
-                        verifikasi_status: target.verifikasiStatus,
-                        verifikasi_catatan: target.verifikasiCatatan,
-                        updated_at: new Date().toISOString()
-                    });
-                } catch(err) {
-                    console.warn("Gagal save Supabase pegawai_lemari_digital:", err);
-                }
-            }
 
             if (serverApiConfig.gasUrl) {
                 try {
@@ -2061,11 +2044,14 @@
                     });
                 } catch(err) {}
             }
-
-            await window.pingSupabase('UPDATE_STAF_ADMIN', targetNip);
             
+            await window.pingSupabaseTable('pegawai_lemari_digital');
+            
+            // Clear sessionStorage draft session once saved to Cloud
+            window.clearFormDraftSession(targetNip);
+
             window.closeEditStafAdminModal();
-            window.showToast("Data Staf Disimpan & Dipancarkan Realtime!", "success");
+            window.showToast("Data Staf Disimpan, Sesi Draf Diakhiri & Sinyal Realtime Dipancarkan!", "success");
             window.pullAllDataFromGas(false);
         };
 
@@ -2075,7 +2061,7 @@
             pendingDeleteMaster = { type: 'pegawai', targetNip: nip, targetId: p.idPegawai };
             const msgEl = document.getElementById('confirm-delete-msg');
             if (msgEl) {
-                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen dari Gudang Data Sheet & Supabase!</span>`;
+                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen dari Gudang Data Google Sheets!</span>`;
             }
             document.getElementById('modal-confirm-delete').classList.remove('hidden');
         };
@@ -2093,12 +2079,6 @@
                     const removedPeg = masterPegawaiDb[idx];
                     masterPegawaiDb.splice(idx, 1);
 
-                    if (supabaseClient) {
-                        try {
-                            await supabaseClient.from('pegawai_lemari_digital').delete().eq('nip', targetNip);
-                        } catch(e){}
-                    }
-
                     if (serverApiConfig.gasUrl) {
                         try {
                             await fetch(serverApiConfig.gasUrl, {
@@ -2108,9 +2088,8 @@
                             });
                         } catch(err) {}
                     }
-
-                    await window.pingSupabase('DELETE_PEGAWAI', targetNip);
                     
+                    await window.pingSupabaseTable('pegawai_lemari_digital');
                     window.renderActiveView();
                     window.closeConfirmDeleteModal();
                     window.showToast(`Data Pegawai (${removedPeg.nama}) Berhasil Dihapus!`, "success");
@@ -2119,32 +2098,21 @@
                 }
             }
 
-            if (type === 'ruangan' && index !== null) {
-                masterRuanganList.splice(index, 1);
-            } else if (type === 'jabatan' && category && index !== null) {
-                masterJabatanList[category].splice(index, 1);
-            } else if (type === 'eselon' && index !== null) {
-                masterEselonList.splice(index, 1);
-            } else if (type === 'statusPeg' && index !== null) {
-                masterStatusPegList.splice(index, 1);
-            } else if (type === 'edu' && index !== null) {
-                masterEducationList.splice(index, 1);
-            } else if (type === 'golongan' && index !== null) {
-                masterGolonganList.splice(index, 1);
-            } else if (type === 'org' && index !== null) {
-                masterOrgList.splice(index, 1);
-            }
+            if (type === 'ruangan' && index !== null) masterRuanganList.splice(index, 1);
+            else if (type === 'jabatan' && category && index !== null) masterJabatanList[category].splice(index, 1);
+            else if (type === 'eselon' && index !== null) masterEselonList.splice(index, 1);
+            else if (type === 'statusPeg' && index !== null) masterStatusPegList.splice(index, 1);
+            else if (type === 'edu' && index !== null) masterEducationList.splice(index, 1);
+            else if (type === 'golongan' && index !== null) masterGolonganList.splice(index, 1);
+            else if (type === 'org' && index !== null) masterOrgList.splice(index, 1);
 
-            window.saveMasterConfigToSupabase();
+            window.saveMasterConfigToGAS();
             window.populateAdminMasterDropdowns();
             window.closeConfirmDeleteModal();
             window.showToast("Item Master Berhasil Dihapus!", "info");
         };
 
-        window.saveMasterConfigToSupabase = async function() {
-            if (!supabaseClient) return;
-            const targetRowId = window.state.appId || 'RSUD_SINJAI_UMPEG_APP';
-
+        window.saveMasterConfigToGAS = async function() {
             const masterDataPayload = {
                 master_ruangan: masterRuanganList,
                 master_jabatan: masterJabatanList,
@@ -2157,30 +2125,16 @@
                 kop_config: masterKopConfig
             };
 
-            try {
-                // 1. Simpan ke Supabase SQL (Anchor)
-                await supabaseClient.from('master_umpeg_config').upsert({
-                    id: targetRowId,
-                    ...masterDataPayload,
-                    updated_at: new Date().toISOString()
-                });
-
-                // 2. Simpan ke Gudang Google Sheets (Tabel MASTER_CONFIG) bypass CORS
-                if (serverApiConfig.gasUrl) {
-                    try {
-                        await fetch(serverApiConfig.gasUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ action: 'saveMaster', data: masterDataPayload })
-                        });
-                    } catch(err) { console.warn("Gagal Sync Master ke GAS:", err); }
-                }
-
-                // 3. Pancarkan Sinyal WebSocket ke seluruh perangkat
-                await window.pingSupabase('UPDATE_MASTER_CONFIG');
-            } catch(e) {
-                console.warn("Gagal simpan master_umpeg_config ke Supabase:", e);
+            if (serverApiConfig.gasUrl) {
+                try {
+                    await fetch(serverApiConfig.gasUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'saveMaster', data: masterDataPayload })
+                    });
+                } catch(err) { console.warn("Sync Master GAS Notice:", err); }
             }
+            await window.pingSupabaseTable('master_umpeg_config');
         };
 
         window.openPrintProfileSheet = function(nip) {
@@ -2523,7 +2477,7 @@
 
             document.getElementById('input-new-checklist-name').value = '';
             window.renderMasterChecklistConfig();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast(`Persyaratan Berkas Baru Ditambahkan ke Form ${catCode}!`, "success");
         };
 
@@ -2535,7 +2489,7 @@
             cat.items.splice(itemIdx, 1);
 
             window.renderMasterChecklistConfig();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast(`Dokumen (${removedName}) Berhasil Dihapus!`, "info");
         };
 
@@ -2645,12 +2599,6 @@
             const selStatus = document.getElementById('edit-staf-status');
             if (selStatus) selStatus.innerHTML = masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
 
-            const selGol = document.getElementById('edit-staf-golongan');
-            if (selGol) selGol.innerHTML = masterGolonganList.map(g => `<option value="${g}">${g}</option>`).join('');
-
-            const selEselon = document.getElementById('edit-staf-eselon');
-            if (selEselon) selEselon.innerHTML = masterEselonList.map(e => `<option value="${e}">${e}</option>`).join('');
-
             const selVerifStatus = document.getElementById('filter-verif-status');
             if (selVerifStatus) selVerifStatus.innerHTML = `<option value="ALL">Semua Status Kepegawaian</option>` + masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
         };
@@ -2662,7 +2610,7 @@
             document.getElementById('input-new-ruangan').value = '';
             window.renderMasterRuanganCards();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Unit Kerja Ditambahkan!", "success");
         };
 
@@ -2675,7 +2623,7 @@
             document.getElementById('input-new-jabatan').value = '';
             window.renderMasterJabatanGrid();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Jabatan Ditambahkan!", "success");
         };
 
@@ -2686,7 +2634,7 @@
             document.getElementById('input-new-eselon').value = '';
             window.renderMasterEselonGrid();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Eselon Ditambahkan!", "success");
         };
 
@@ -2697,7 +2645,7 @@
             document.getElementById('input-new-status-peg').value = '';
             window.renderMasterStatusPegGrid();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Status Pegawai Ditambahkan!", "success");
         };
 
@@ -2708,7 +2656,7 @@
             document.getElementById('input-new-edu').value = '';
             window.renderMasterEducationBadges();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Pendidikan Ditambahkan!", "success");
         };
 
@@ -2719,7 +2667,7 @@
             document.getElementById('input-new-golongan').value = '';
             window.renderMasterGolonganBadges();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Golongan Ditambahkan!", "success");
         };
 
@@ -2730,7 +2678,7 @@
             document.getElementById('input-new-org').value = '';
             window.renderMasterOrgBadges();
             window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToSupabase();
+            await window.saveMasterConfigToGAS();
             window.showToast("Organisasi Profesi Ditambahkan!", "success");
         };
 
@@ -2755,129 +2703,8 @@
             ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
             ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
 
-            await window.saveMasterConfigToSupabase();
-            window.showToast("Konfigurasi Pejabat & Kop Disimpan ke Cloud!", "success");
-        };
-
-        window.openConfigAuthModal = function() {
-            const inputPass = document.getElementById('input-config-password');
-            if (inputPass) inputPass.value = '';
-            const modal = document.getElementById('modal-config-auth');
-            if (modal) modal.classList.remove('hidden');
-        };
-
-        window.closeConfigAuthModal = function() {
-            const modal = document.getElementById('modal-config-auth');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        window.verifyConfigPassword = function(e) {
-            if (e && e.key && e.key !== 'Enter') return;
-            const inputPass = document.getElementById('input-config-password')?.value || '';
-            if (inputPass === serverApiConfig.password) {
-                window.closeConfigAuthModal();
-                window.openServerConfigModal();
-            } else {
-                window.showToast("Sandi Akses Salah!", "error");
-            }
-        };
-
-        window.openServerConfigModal = function() {
-            document.getElementById('cfg-app-id').value = window.state.appId || ANCHORED_APP_ID;
-            document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || ANCHORED_SUPABASE_URL;
-            document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || '';
-            document.getElementById('cfg-gas-url').value = window.state.gasUrl || '';
-            document.getElementById('cfg-system-password').value = serverApiConfig.password;
-
-            const modal = document.getElementById('modal-config-server');
-            if (modal) modal.classList.remove('hidden');
-        };
-
-        window.closeServerConfigModal = function() {
-            const modal = document.getElementById('modal-config-server');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        window.saveServerConfig = async function(e) {
-            if (e) e.preventDefault();
-
-            const submitBtn = e && e.target ? e.target.querySelector('button[type="submit"]') : null;
-            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menyimpan...';
-            }
-
-            try {
-                const appId = (document.getElementById('cfg-app-id')?.value || '').trim() || ANCHORED_APP_ID;
-                const supaUrl = (document.getElementById('cfg-supabase-url')?.value || '').trim() || ANCHORED_SUPABASE_URL;
-                const supaKey = (document.getElementById('cfg-supabase-anon-key')?.value || '').trim();
-                const gasUrl = (document.getElementById('cfg-gas-url')?.value || '').trim();
-                const sysPass = (document.getElementById('cfg-system-password')?.value || '').trim() || 'kugoskom36';
-
-                // 1. Simpan ke variabel JavaScript (RAM) & LocalStorage
-                window.state.appId = appId;
-                window.state.supabaseUrl = supaUrl;
-                window.state.supabaseAnonKey = supaKey;
-                window.state.gasUrl = gasUrl;
-
-                serverApiConfig.appId = appId;
-                serverApiConfig.supabaseUrl = supaUrl;
-                serverApiConfig.supabaseAnonKey = supaKey;
-                serverApiConfig.gasUrl = gasUrl;
-                serverApiConfig.password = sysPass;
-
-                localStorage.setItem('supabase_url', supaUrl);
-                localStorage.setItem('supabase_anon_key', supaKey);
-                localStorage.setItem('gas_url', gasUrl);
-
-                // 2. Inisialisasi Supabase Client jika URL & Key tersedia
-                if (window.supabase && supaUrl && supaKey) {
-                    try {
-                        supabaseClient = window.supabase.createClient(supaUrl, supaKey);
-
-                        // Gunakan timeout 4 detik agar UI tidak macet jika koneksi lambat
-                        const upsertPromise = supabaseClient.from('system_config').upsert({
-                            id: ANCHORED_APP_ID,
-                            app_id: appId,
-                            supabase_url: supaUrl,
-                            supabase_anon_key: supaKey,
-                            gas_url: gasUrl,
-                            system_password: sysPass,
-                            last_updated_at: new Date().toISOString(),
-                            action_type: 'MANUAL_SERVER_CONFIG'
-                        });
-
-                        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 4000));
-                        await Promise.race([upsertPromise, timeoutPromise]);
-                    } catch (supaErr) {
-                        console.warn("Koneksi Supabase Upsert Notice:", supaErr);
-                    }
-
-                    try {
-                        window.setupSupabaseListeners();
-                    } catch (listenerErr) {
-                        console.warn("Setup Listeners Notice:", listenerErr);
-                    }
-                }
-
-                // 3. Selalu tutup modal dan berikan notifikasi sukses tanpa menunggu background fetch
-                window.closeServerConfigModal();
-                window.showToast("Konfigurasi Berhasil Disimpan!", "success");
-
-                // 4. Jalankan background sync non-blocking
-                if (gasUrl) {
-                    window.pullAllDataFromGas(false).catch(err => console.warn("Background pull error:", err));
-                }
-            } catch (err) {
-                console.error("Save config error:", err);
-                window.showToast("Gagal menyimpan konfigurasi: " + (err.message || "Error tidak diketahui"), "error");
-            } finally {
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHtml;
-                }
-            }
+            await window.saveMasterConfigToGAS();
+            window.showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
         };
 
         window.onload = async function() {
@@ -2889,10 +2716,25 @@
                 }
             }, 1000);
 
+            window.loadLocalServerConfig();
             window.populateAdminMasterDropdowns();
-            await window.bootstrapGlobalConfigFromCloud();
-            await window.setupSupabaseListeners();
-            await window.pullAllDataFromGas(false);
+
+            if (window.state.supabaseUrl && window.state.supabaseAnonKey && window.supabase) {
+                try {
+                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
+                    await window.setupSupabaseListeners();
+                } catch(e) {
+                    window.activatePollingFallback();
+                }
+            } else {
+                window.updateWsBadge('offline', '🔴 Konfigurasi Belum Diisi');
+            }
+
+            if (window.state.gasUrl) {
+                window.pullAllDataFromGas(false);
+            }
+
+            window.renderActiveView();
         };
     </script>
 </body>
