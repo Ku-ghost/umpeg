@@ -1538,6 +1538,22 @@
 
                 if (window.supabase && supaUrl && supaKey) {
                     supabaseClient = window.supabase.createClient(supaUrl, supaKey);
+                    
+                    try {
+                        await supabaseClient.from('system_config').upsert({
+                            id: appId,
+                            app_id: appId,
+                            supabase_url: supaUrl,
+                            supabase_anon_key: supaKey,
+                            gas_url: gasUrl,
+                            system_password: sysPass,
+                            last_updated_at: new Date().toISOString(),
+                            action_type: 'UPDATE_SYSTEM_CONFIG'
+                        });
+                    } catch (dbErr) {
+                        console.warn("Gagal menyimpan konfigurasi ke tabel system_config:", dbErr);
+                    }
+
                     await window.pingSupabaseTable('system_config');
                     window.setupSupabaseListeners();
                 }
@@ -2124,6 +2140,20 @@
                 master_checklist: masterChecklistConfig,
                 kop_config: masterKopConfig
             };
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('master_umpeg_config').upsert({
+                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        config_data: masterDataPayload,
+                        last_updated_at: new Date().toISOString(),
+                        action_type: 'UPDATE_MASTER_CONFIG'
+                    });
+                } catch(e) {
+                    console.warn("Gagal menyimpan ke tabel master_umpeg_config:", e);
+                }
+            }
 
             if (serverApiConfig.gasUrl) {
                 try {
@@ -2722,6 +2752,24 @@
             if (window.state.supabaseUrl && window.state.supabaseAnonKey && window.supabase) {
                 try {
                     supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
+                    
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('system_config')
+                            .select('gas_url, system_password')
+                            .eq('id', window.state.appId)
+                            .single();
+                            
+                        if (data && data.gas_url) {
+                            window.state.gasUrl = data.gas_url;
+                            serverApiConfig.gasUrl = data.gas_url;
+                            if (data.system_password) serverApiConfig.password = data.system_password;
+                            window.saveLocalServerConfig();
+                        }
+                    } catch (syncErr) {
+                        console.warn("Gagal menarik konfigurasi dari Supabase:", syncErr);
+                    }
+
                     await window.setupSupabaseListeners();
                 } catch(e) {
                     window.activatePollingFallback();
