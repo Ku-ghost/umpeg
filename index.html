@@ -719,15 +719,22 @@
     </div>
 
     <script>
+        // ==========================================
+        // KREDENSIAL TERTANAM INDUK (SELARAS DENGAN PORTAL ADMIN)
+        // ==========================================
         const ANCHORED_SUPABASE_URL = "https://ohktlpuywpnxmqbrswhs.supabase.co"; 
-        const ANCHORED_SUPABASE_ANON_KEY = "";
+        const ANCHORED_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oa3RscHV5d3BueG1xYnJzd2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEyMzg4NDAsImV4cCI6MjAyNjgxNDg0MH0.PLACEHOLDER_ANON_KEY";
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
+        // Variabel global untuk menyimpan URL GAS aktif di memori browser perangkat
+        let ACTIVE_GAS_URL = localStorage.getItem('gas_url') || '';
+
         let serverApiConfig = { 
-            gasUrl: localStorage.getItem('gas_url') || '', 
+            gasUrl: ACTIVE_GAS_URL, 
             supabaseUrl: localStorage.getItem('supabase_url') || ANCHORED_SUPABASE_URL, 
-            supabaseAnonKey: localStorage.getItem('supabase_anon_key') || '' 
+            supabaseAnonKey: localStorage.getItem('supabase_anon_key') || ANCHORED_SUPABASE_ANON_KEY 
         };
+
         const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
         const DEFAULT_JABATAN = {
             STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG", "Kepala Sub Bagian Keuangan", "Kepala Bidang Pelayanan", "Kepala Bidang Keperawatan"],
@@ -824,14 +831,6 @@
         let masterGolonganList = [...DEFAULT_GOLONGAN];
         let masterOrgList = [...DEFAULT_ORG_PROFESI];
 
-        window.cleanAndFixGasUrl = function(url) {
-            if (!url) return "";
-            let clean = String(url).trim();
-            if (clean.includes('/edit')) clean = clean.replace(/\/edit.*$/, '/exec');
-            if (clean.includes('/dev')) clean = clean.replace(/\/dev.*$/, '/exec');
-            return clean;
-        };
-
         window.isMatchingKey = function(val1, val2) {
             if (!val1 || !val2) return false;
             return String(val1).trim().toLowerCase() === String(val2).trim().toLowerCase();
@@ -858,14 +857,38 @@
             setTimeout(() => toast.classList.add('hidden'), 3500);
         };
 
-        // MEMANCAHKAN SINYAL MINIMAL KE SUPABASE & PROFIL UTUH KE GOOGLE SHEETS (GAS) - ISOLATED USER ONLY
+        // ==========================================
+        // 1. TRANSMISI DATA KE GOOGLE SHEETS VIA ACTIVE_GAS_URL
+        // ==========================================
+        window.kirimKeGoogleSheets = async function(pegData) {
+            if (!ACTIVE_GAS_URL) {
+                console.warn("⚠️ Gagal kirim: URL GAS belum siap atau belum ditarik dari Supabase.");
+                return;
+            }
+
+            try {
+                await fetch(ACTIVE_GAS_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'savePegawai', data: pegData })
+                });
+                console.log("✅ Transmisi data pegawai ke Google Sheets berhasil via:", ACTIVE_GAS_URL);
+            } catch (err) {
+                console.error("❌ Transmisi ke Google Sheets gagal:", err);
+            }
+        };
+
+        // ==========================================
+        // 2. SINKRONISASI DUAL QUEUE (SUPABASE + GAS)
+        // ==========================================
         window.triggerActionDrivenSyncQueue = async function(pegData) {
             if (!pegData || !currentPegawai || !window.isMatchingKey(pegData.nip, currentPegawai.nip)) return;
             
-            // Safe Isolated Local Cache for active employee
+            // Simpan sesi lokal terisolasi
             sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(pegData));
 
-            // 1. Supabase (Minimal Payload: id_pegawai, nip, username, link_url_drive, details)
+            // A. Upsert ke Supabase
             if (supabaseClient) {
                 try {
                     await supabaseClient.from('pegawai_lemari_digital').upsert({
@@ -890,16 +913,8 @@
                 }
             }
 
-            // 2. Google Sheets (Latar Belakang: Simpan Seluruh Detail Profil Pegawai)
-            if (serverApiConfig && serverApiConfig.gasUrl) {
-                try {
-                    fetch(serverApiConfig.gasUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'savePegawai', data: pegData })
-                    }).catch(e => console.warn("GAS save notice:", e));
-                } catch(e) {}
-            }
+            // B. Transmisi ke Google Sheets via ACTIVE_GAS_URL
+            window.kirimKeGoogleSheets(pegData);
         };
 
         window.generateIdPegawai = function(keyInput) {
@@ -926,11 +941,14 @@
             window.renderDashboard();
         };
 
+        // ==========================================
+        // 3. KONEKSI REALTIME & CLOUD-FIRST INITIALIZATION
+        // ==========================================
         window.initCloudConnectionAndRealtime = async function() {
             const finalSupaUrl = serverApiConfig.supabaseUrl || ANCHORED_SUPABASE_URL;
-            const finalAnonKey = serverApiConfig.supabaseAnonKey;
+            const finalAnonKey = serverApiConfig.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
 
-            // Session restore from isolated sessionStorage
+            // Pulihkan sesi aktif dari sessionStorage
             const cachedUser = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
             if (cachedUser && !currentPegawai) {
                 try {
@@ -945,18 +963,59 @@
 
                     const dot = document.getElementById('ws-dot');
                     const txt = document.getElementById('header-sync-status');
-                    if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                    if (txt) txt.innerText = "Sesi Terisolasi & Realtime Aktif";
 
-                    // STRICT USER ISOLATION REALTIME LISTENER
+                    // LANGKAH A: Ambil Konfigurasi Awal via HTTP (system_config & master_umpeg_config)
+                    try {
+                        const { data: sysData } = await supabaseClient
+                            .from('system_config')
+                            .select('gas_url, config_data')
+                            .eq('id', ANCHORED_APP_ID)
+                            .maybeSingle();
+
+                        if (sysData && sysData.gas_url) {
+                            ACTIVE_GAS_URL = sysData.gas_url;
+                            serverApiConfig.gasUrl = sysData.gas_url;
+                            localStorage.setItem('gas_url', sysData.gas_url);
+                            console.log("📥 [Startup] ACTIVE_GAS_URL ditarik dari Supabase:", ACTIVE_GAS_URL);
+                        }
+
+                        const { data: masterData } = await supabaseClient
+                            .from('master_umpeg_config')
+                            .select('config_data')
+                            .eq('id', ANCHORED_APP_ID)
+                            .maybeSingle();
+
+                        if (masterData && masterData.config_data) {
+                            const cfg = masterData.config_data;
+                            if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                            if (cfg.master_status) masterStatusPegList = cfg.master_status;
+                            if (cfg.master_edu) masterEducationList = cfg.master_edu;
+                            if (cfg.master_org) masterOrgList = cfg.master_org;
+                            if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                            window.populateMasterDropdowns();
+                        }
+                    } catch (cloudPullErr) {
+                        console.warn("Cloud-First Startup Pull Notice:", cloudPullErr);
+                    }
+
+                    // LANGKAH B: Aktifkan WebSocket Realtime Channel
                     if (!realtimeChannel) {
                         try {
                             realtimeChannel = supabaseClient
-                                .channel('isolated-pegawai-channel')
+                                .channel('sinkronisasi-konfig-global')
+                                .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, async (payload) => {
+                                    console.log("🔔 [Realtime] Perubahan system_config terdeteksi!", payload);
+                                    if (payload.new && payload.new.gas_url) {
+                                        ACTIVE_GAS_URL = payload.new.gas_url;
+                                        serverApiConfig.gasUrl = payload.new.gas_url;
+                                        localStorage.setItem('gas_url', payload.new.gas_url);
+                                        console.log("🔄 ACTIVE_GAS_URL otomatis diperbarui di perangkat ini menjadi:", ACTIVE_GAS_URL);
+                                        window.showToast("⚡ URL Server GAS diperbarui secara live!", "info");
+                                    }
+                                })
                                 .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
-                                    // REJECT any payload that does NOT belong to currentPegawai NIP or ID!
                                     if (currentPegawai && payload.new && (window.isMatchingKey(payload.new.nip, currentPegawai.nip) || window.isMatchingKey(payload.new.id_pegawai, currentPegawai.idPegawai))) {
-                                        
                                         if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
                                         if (payload.new.verifikasi_status) currentPegawai.verifikasiStatus = payload.new.verifikasi_status;
                                         if (payload.new.verifikasi_catatan) currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan;
@@ -966,14 +1025,10 @@
                                         if (payload.new.sub2) currentPegawai.sub2 = payload.new.sub2;
                                         if (payload.new.jabatan) currentPegawai.jabatan = payload.new.jabatan;
                                         if (payload.new.ruangan) currentPegawai.ruangan = payload.new.ruangan;
-                                        if (payload.new.detail_personal) currentPegawai.detailPersonal = payload.new.detail_personal;
-                                        if (payload.new.detail_jabatan) currentPegawai.detailJabatan = payload.new.detail_jabatan;
-                                        if (payload.new.detail_medis) currentPegawai.detailMedis = payload.new.detail_medis;
-                                        if (payload.new.riwayat_pendidikan) currentPegawai.riwayatPendidikan = payload.new.riwayat_pendidikan;
 
                                         sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
                                         window.renderDashboard();
-                                        window.showToast("⚡ Perubahan data profil/berkas diterima secara live!", "success");
+                                        window.showToast("⚡ Hasil audit/berkas diperbarui secara live!", "success");
                                     }
                                 })
                                 .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
@@ -993,13 +1048,12 @@
                                 })
                                 .subscribe((status) => {
                                     if (status === 'SUBSCRIBED') {
-                                        console.log('🟢 Terhubung ke Supabase Realtime (Sesi Pegawai Terisolasi)');
-                                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                                        setTimeout(() => { realtimeChannel = null; window.initCloudConnectionAndRealtime(); }, 3000);
+                                        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                                        if (txt) txt.innerText = "🌐 WebSocket Realtime Active";
                                     }
                                 });
                         } catch(wsErr) {
-                            console.warn("WebSocket multi-device notice:", wsErr);
+                            console.warn("WebSocket notice:", wsErr);
                         }
                     }
                 } catch (e) { 
@@ -1191,7 +1245,7 @@
             currentPegawai = loadedPegawai;
             sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
             
-            window.triggerActionDrivenSyncQueue(currentPegawai);
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
             window.showDashboardView();
             window.showToast(`Sesi Aktif: ${currentPegawai.nama || currentPegawai.username}`, "success");
         };
