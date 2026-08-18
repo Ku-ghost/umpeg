@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Multi-Table Realtime Engine</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Cloud-First Realtime System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -147,6 +147,17 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
+    <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
+            <i class="fa-solid fa-tower-cell"></i>
+        </div>
+        <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
+        <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-spinner animate-spin"></i>
+            <span>Menarik Data Terbaru dari Cloud Supabase...</span>
+        </p>
+    </div>
+
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-3 lg:px-6 py-2 shrink-0">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
@@ -161,14 +172,14 @@
                             <span>Konfigurasi Sistem</span>
                         </button>
                     </div>
-                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">Supabase Realtime 3-Tabel Listener (system_config, pegawai_lemari_digital, master_umpeg_config)</p>
+                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block truncate max-w-xs md:max-w-md">Sistem Integrasi & Sinkronisasi Kepegawaian Realtime</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 text-xs">
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
                     <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
-                    <span id="ws-status-text">🔴 Konfigurasi Belum Diisi</span>
+                    <span id="ws-status-text">🟡 Menghubungkan ke Cloud...</span>
                 </div>
 
                 <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
@@ -901,23 +912,23 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
                         <div>
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Logo Resmi RSUD Sinjai (PNG Link)</label>
-                            <input type="url" id="cfg-logo-url" onchange="window.updateKopMasterConfig()" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
+                            <input type="url" id="cfg-logo-url" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Tanda Tangan Digital (PNG Link)</label>
-                            <input type="url" id="cfg-ttd-url" onchange="window.updateKopMasterConfig()" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
+                            <input type="url" id="cfg-ttd-url" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Nama Pejabat Penandatangan</label>
-                            <input type="text" id="cfg-pejabat-nama" onchange="window.updateKopMasterConfig()" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
+                            <input type="text" id="cfg-pejabat-nama" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Jabatan Pejabat</label>
-                            <input type="text" id="cfg-pejabat-jabatan" onchange="window.updateKopMasterConfig()" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:outline-none">
+                            <input type="text" id="cfg-pejabat-jabatan" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:outline-none">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">NIP Pejabat</label>
-                            <input type="text" id="cfg-pejabat-nip" onchange="window.updateKopMasterConfig()" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
+                            <input type="text" id="cfg-pejabat-nip" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
                         </div>
                     </div>
                     <div class="pt-2 flex justify-end">
@@ -935,7 +946,6 @@
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System 24/7)
     </footer>
 
-    <!-- Modal Config Auth -->
     <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-emerald-950 uppercase border-b pb-1.5">Administrator System Access</h3>
@@ -948,7 +958,6 @@
         </div>
     </div>
 
-    <!-- Modal Config Server -->
     <div id="modal-config-server" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -959,12 +968,12 @@
                         <p class="text-[9px] text-emerald-200">Koneksi Multi-Table Realtime (system_config, pegawai_lemari_digital, master_umpeg_config)</p>
                     </div>
                 </div>
-                <button onclick="window.closeServerConfigModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
+                <button type="button" onclick="window.closeServerConfigModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <form onsubmit="window.saveServerConfig(event)" class="p-4 overflow-y-auto space-y-3 text-xs flex-1">
+            <form id="form-config-server" onsubmit="window.saveServerConfig(event)" class="p-4 overflow-y-auto space-y-3 text-xs flex-1">
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">ID Web App / ID Aplikasi Unik</label>
                     <input type="text" id="cfg-app-id" placeholder="RSUD_SINJAI_UMPEG_APP" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 font-bold focus:outline-none">
@@ -998,7 +1007,6 @@
         </div>
     </div>
 
-    <!-- Modal Audit Pegawai -->
     <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1037,7 +1045,6 @@
         </div>
     </div>
 
-    <!-- Modal Document Viewer -->
     <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1055,7 +1062,6 @@
         </div>
     </div>
 
-    <!-- Modal Edit Staf Admin (With SessionStorage Draft Engine) -->
     <div id="modal-edit-staf-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -1122,7 +1128,6 @@
         </div>
     </div>
 
-    <!-- Modal Confirm Delete -->
     <div id="modal-confirm-delete" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-rose-300 shadow-2xl bg-white p-4 space-y-3">
             <div class="flex items-center gap-2 text-rose-700 font-extrabold text-xs uppercase border-b pb-1.5">
@@ -1137,7 +1142,6 @@
         </div>
     </div>
 
-    <!-- Modal Print Profile Sheet (DRH/Dossier) -->
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
@@ -1189,11 +1193,23 @@
     </div>
 
     <script>
-        window.state = {
-            gasUrl: "",
-            supabaseUrl: "",
-            supabaseAnonKey: "",
+        /*
+         * Embedded Credentials (Zero-Config Client Architecture)
+         * Allows any device/browser to connect to Supabase & GAS out-of-the-box.
+         */
+        const EMBEDDED_CREDENTIALS = {
             appId: "RSUD_SINJAI_UMPEG_APP",
+            supabaseUrl: "https://ohktlpuywpnxmqbrswhs.supabase.co", 
+            supabaseAnonKey: "", 
+            gasUrl: "https://script.google.com/macros/s/.../exec", 
+            password: "kugoskom36"
+        };
+
+        window.state = {
+            gasUrl: EMBEDDED_CREDENTIALS.gasUrl,
+            supabaseUrl: EMBEDDED_CREDENTIALS.supabaseUrl,
+            supabaseAnonKey: EMBEDDED_CREDENTIALS.supabaseAnonKey,
+            appId: EMBEDDED_CREDENTIALS.appId,
             pegawai: [],
             isSyncing: false
         };
@@ -1207,7 +1223,7 @@
         const DEFAULT_ESELON = ["NON_ESELON", "IV.b", "IV.a", "III.b", "III.a", "II.b", "II.a", "I.b", "I.a"];
         const DEFAULT_STATUS_PEG = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Kontrak", "Honorer", "Sukarela"];
         const DEFAULT_EDUCATION = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
-        const DEFAULT_GOLONGAN = ["IV/e", "IV/d", "IV/c", "IV/b", "IV/a", "III/d", "III/c", "III/b", "III/a", "II/d", "II/c", "II/b", "II/a", "I/d", "I/c", "I/b", "I/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
+        const DEFAULT_GOLONGAN = ["IV/e", "IV/d", "IV/c", "IV/b", "IV/a", "III/d", "III/c", "III/b", "III/a", "II/d", "II/c", "II/b", "II/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
         const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
 
         const DEFAULT_CHECKLIST_CONFIG = [
@@ -1299,13 +1315,7 @@
             ttdUrl: ''
         };
         
-        let serverApiConfig = { 
-            appId: 'RSUD_SINJAI_UMPEG_APP', 
-            supabaseUrl: '', 
-            supabaseAnonKey: '', 
-            gasUrl: '', 
-            password: 'kugoskom36' 
-        };
+        let serverApiConfig = { ...EMBEDDED_CREDENTIALS };
 
         let pendingDeleteMaster = { type: null, category: null, index: null, itemId: null, targetNip: null, targetId: null };
         let activeAuditNip = null;
@@ -1349,7 +1359,7 @@
                 badge.className = "px-2.5 py-1 rounded-full bg-teal-100 text-teal-900 border border-teal-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-amber-500";
-                txt.innerText = text || "🔴 Konfigurasi Belum Diisi";
+                txt.innerText = text || "🟡 Menghubungkan ke Cloud...";
                 badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             }
         };
@@ -1367,17 +1377,17 @@
                         action_type: `REALTIME_BROADCAST_${tableName.toUpperCase()}`
                     });
             } catch(e) {
-                console.warn(`Ping Supabase notice on table ${tableName}:`, e);
+                console.warn(`Ping notice ${tableName}:`, e);
             }
         };
 
-        window.pingSupabase = async function() {
-            await window.pingSupabaseTable('system_config');
-        };
-
         window.handleIncomingSignal = function(tableName = 'system_config') {
-            console.log(`⚡ Sinyal Realtime diterima dari tabel Supabase: [${tableName}]`);
-            window.pullAllDataFromGas(false);
+            console.log(`⚡ Sinyal Realtime Supabase [${tableName}]`);
+            if (tableName === 'system_config' || tableName === 'master_umpeg_config') {
+                window.loadDataOnStartup();
+            } else {
+                window.pullAllDataFromGas(false);
+            }
         };
 
         window.setupSupabaseListeners = async function() {
@@ -1441,9 +1451,7 @@
 
         window.clearFormDraftSession = function(nip) {
             try {
-                if (nip) {
-                    sessionStorage.removeItem(`DRAFT_EDIT_STAF_${nip}`);
-                }
+                if (nip) sessionStorage.removeItem(`DRAFT_EDIT_STAF_${nip}`);
             } catch(e) {}
         };
 
@@ -1453,11 +1461,11 @@
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     serverApiConfig = { ...serverApiConfig, ...parsed };
-                    window.state.appId = serverApiConfig.appId || 'RSUD_SINJAI_UMPEG_APP';
-                    window.state.supabaseUrl = serverApiConfig.supabaseUrl || '';
-                    window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || '';
-                    window.state.gasUrl = serverApiConfig.gasUrl || '';
                 }
+                window.state.appId = serverApiConfig.appId || EMBEDDED_CREDENTIALS.appId;
+                window.state.supabaseUrl = serverApiConfig.supabaseUrl || EMBEDDED_CREDENTIALS.supabaseUrl;
+                window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || EMBEDDED_CREDENTIALS.supabaseAnonKey;
+                window.state.gasUrl = serverApiConfig.gasUrl || EMBEDDED_CREDENTIALS.gasUrl;
             } catch(e) {}
         };
 
@@ -1491,7 +1499,7 @@
         };
 
         window.openServerConfigModal = function() {
-            document.getElementById('cfg-app-id').value = window.state.appId || 'RSUD_SINJAI_UMPEG_APP';
+            document.getElementById('cfg-app-id').value = window.state.appId || EMBEDDED_CREDENTIALS.appId;
             document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || '';
             document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || '';
             document.getElementById('cfg-gas-url').value = window.state.gasUrl || '';
@@ -1517,7 +1525,7 @@
             }
 
             try {
-                const appId = (document.getElementById('cfg-app-id')?.value || '').trim() || 'RSUD_SINJAI_UMPEG_APP';
+                const appId = (document.getElementById('cfg-app-id')?.value || '').trim() || EMBEDDED_CREDENTIALS.appId;
                 const supaUrl = (document.getElementById('cfg-supabase-url')?.value || '').trim();
                 const supaKey = (document.getElementById('cfg-supabase-anon-key')?.value || '').trim();
                 const gasUrl = (document.getElementById('cfg-gas-url')?.value || '').trim();
@@ -1551,32 +1559,20 @@
                             action_type: 'UPDATE_SYSTEM_CONFIG'
                         });
                     } catch (dbErr) {
-                        console.warn("Gagal menyimpan konfigurasi ke tabel system_config:", dbErr);
+                        console.warn("Supabase upsert warning:", dbErr);
                     }
 
-                    await window.pingSupabaseTable('system_config');
-                    window.setupSupabaseListeners();
-                }
-
-                if (gasUrl) {
-                    try {
-                        fetch(gasUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                                action: 'saveSystemConfig',
-                                data: { supabaseUrl: supaUrl, supabaseAnonKey: supaKey, gasUrl: gasUrl, appId: appId }
-                            })
-                        }).catch(e => console.warn("GAS config notice:", e));
-                    } catch(e) {}
+                    await window.setupSupabaseListeners();
+                } else {
+                    window.updateWsBadge('offline', '🔴 Konfigurasi Belum Diisi / Tidak Valid');
                 }
 
                 window.closeServerConfigModal();
-                window.showToast("Konfigurasi Berhasil Disimpan & Terkoneksi ke Realtime Engine!", "success");
+                window.showToast("Konfigurasi Berhasil Disimpan & Konek Langsung!", "success");
                 window.pullAllDataFromGas(true);
             } catch (err) {
                 console.error("Save config error:", err);
-                window.showToast("Gagal menyimpan: " + (err.message || "Error tidak diketahui"), "error");
+                window.showToast("Gagal menyimpan: " + (err.message || "Error"), "error");
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -1995,7 +1991,6 @@
 
             document.getElementById('edit-staf-target-nip').value = p.nip;
             
-            // Check if active draft exists in sessionStorage
             const draft = window.loadFormDraftFromSession(p.nip);
             if (draft) {
                 document.getElementById('edit-staf-nama').value = draft.nama || p.nama || '';
@@ -2062,12 +2057,10 @@
             }
             
             await window.pingSupabaseTable('pegawai_lemari_digital');
-            
-            // Clear sessionStorage draft session once saved to Cloud
             window.clearFormDraftSession(targetNip);
 
             window.closeEditStafAdminModal();
-            window.showToast("Data Staf Disimpan, Sesi Draf Diakhiri & Sinyal Realtime Dipancarkan!", "success");
+            window.showToast("Data Staf Disimpan & Sinyal Realtime Dipancarkan!", "success");
             window.pullAllDataFromGas(false);
         };
 
@@ -2077,7 +2070,7 @@
             pendingDeleteMaster = { type: 'pegawai', targetNip: nip, targetId: p.idPegawai };
             const msgEl = document.getElementById('confirm-delete-msg');
             if (msgEl) {
-                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen dari Gudang Data Google Sheets!</span>`;
+                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen!</span>`;
             }
             document.getElementById('modal-confirm-delete').classList.remove('hidden');
         };
@@ -2126,45 +2119,6 @@
             window.populateAdminMasterDropdowns();
             window.closeConfirmDeleteModal();
             window.showToast("Item Master Berhasil Dihapus!", "info");
-        };
-
-        window.saveMasterConfigToGAS = async function() {
-            const masterDataPayload = {
-                master_ruangan: masterRuanganList,
-                master_jabatan: masterJabatanList,
-                master_eselon: masterEselonList,
-                master_status: masterStatusPegList,
-                master_edu: masterEducationList,
-                master_golongan: masterGolonganList,
-                master_org: masterOrgList,
-                master_checklist: masterChecklistConfig,
-                kop_config: masterKopConfig
-            };
-
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('master_umpeg_config').upsert({
-                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        config_data: masterDataPayload,
-                        last_updated_at: new Date().toISOString(),
-                        action_type: 'UPDATE_MASTER_CONFIG'
-                    });
-                } catch(e) {
-                    console.warn("Gagal menyimpan ke tabel master_umpeg_config:", e);
-                }
-            }
-
-            if (serverApiConfig.gasUrl) {
-                try {
-                    await fetch(serverApiConfig.gasUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'saveMaster', data: masterDataPayload })
-                    });
-                } catch(err) { console.warn("Sync Master GAS Notice:", err); }
-            }
-            await window.pingSupabaseTable('master_umpeg_config');
         };
 
         window.openPrintProfileSheet = function(nip) {
@@ -2737,7 +2691,146 @@
             window.showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
         };
 
-        window.onload = async function() {
+        window.saveMasterConfigToGAS = async function() {
+            const masterDataPayload = {
+                master_ruangan: masterRuanganList,
+                master_jabatan: masterJabatanList,
+                master_eselon: masterEselonList,
+                master_status: masterStatusPegList,
+                master_edu: masterEducationList,
+                master_golongan: masterGolonganList,
+                master_org: masterOrgList,
+                master_checklist: masterChecklistConfig,
+                kop_config: masterKopConfig
+            };
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('master_umpeg_config').upsert({
+                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
+                        config_data: masterDataPayload,
+                        last_updated_at: new Date().toISOString(),
+                        action_type: 'UPDATE_MASTER_CONFIG'
+                    });
+                } catch(e) {
+                    console.warn("Gagal menyimpan ke tabel master_umpeg_config:", e);
+                }
+            }
+
+            if (serverApiConfig.gasUrl) {
+                try {
+                    await fetch(serverApiConfig.gasUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'saveMaster', data: masterDataPayload })
+                    });
+                } catch(err) { console.warn("Sync Master GAS Notice:", err); }
+            }
+            await window.pingSupabaseTable('master_umpeg_config');
+        };
+
+        window.loadDataOnStartup = async function() {
+            const loadingOverlay = document.getElementById('loading-screen');
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden', 'opacity-0');
+
+            try {
+                // 1. Read Local Config override if available, otherwise use embedded defaults
+                window.loadLocalServerConfig();
+
+                const activeSupaUrl = window.state.supabaseUrl || EMBEDDED_CREDENTIALS.supabaseUrl;
+                const activeSupaKey = window.state.supabaseAnonKey || EMBEDDED_CREDENTIALS.supabaseAnonKey;
+
+                // 2. Initialize Supabase Client
+                if (window.supabase && activeSupaUrl && activeSupaKey) {
+                    supabaseClient = window.supabase.createClient(activeSupaUrl, activeSupaKey);
+
+                    // 3. Cloud-First Pull: System Config from Supabase
+                    try {
+                        const { data: sysData, error: sysErr } = await supabaseClient
+                            .from('system_config')
+                            .select('config_data, gas_url, system_password')
+                            .eq('id', window.state.appId)
+                            .single();
+
+                        if (sysData && !sysErr) {
+                            if (sysData.config_data) serverApiConfig = { ...serverApiConfig, ...sysData.config_data };
+                            if (sysData.gas_url) {
+                                window.state.gasUrl = sysData.gas_url;
+                                serverApiConfig.gasUrl = sysData.gas_url;
+                            }
+                            if (sysData.system_password) serverApiConfig.password = sysData.system_password;
+                            window.saveLocalServerConfig();
+                        }
+                    } catch (cloudErr) {
+                        console.warn("Cloud-First fetch system_config fallback to local:", cloudErr);
+                    }
+
+                    // 4. Cloud-First Pull: Master UMPEG Config from Supabase
+                    try {
+                        const { data: masterData, error: masterErr } = await supabaseClient
+                            .from('master_umpeg_config')
+                            .select('config_data')
+                            .eq('id', window.state.appId)
+                            .single();
+
+                        if (masterData && masterData.config_data && !masterErr) {
+                            const cfg = masterData.config_data;
+                            if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                            if (cfg.master_eselon) masterEselonList = cfg.master_eselon;
+                            if (cfg.master_status) masterStatusPegList = cfg.master_status;
+                            if (cfg.master_edu) masterEducationList = cfg.master_edu;
+                            if (cfg.master_golongan) masterGolonganList = cfg.master_golongan;
+                            if (cfg.master_org) masterOrgList = cfg.master_org;
+                            if (cfg.master_checklist) masterChecklistConfig = cfg.master_checklist;
+                            if (cfg.kop_config) {
+                                masterKopConfig = cfg.kop_config;
+                                const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
+                                const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
+                                const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
+                                ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
+                                ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
+                                ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
+                                
+                                const inputLogo = document.getElementById('cfg-logo-url');
+                                if (inputLogo) inputLogo.value = masterKopConfig.logoUrl || '';
+                                const inputTtd = document.getElementById('cfg-ttd-url');
+                                if (inputTtd) inputTtd.value = masterKopConfig.ttdUrl || '';
+                                const inputPjNama = document.getElementById('cfg-pejabat-nama');
+                                if (inputPjNama) inputPjNama.value = masterKopConfig.pejabatNama || '';
+                                const inputPjJabatan = document.getElementById('cfg-pejabat-jabatan');
+                                if (inputPjJabatan) inputPjJabatan.value = masterKopConfig.pejabatJabatan || '';
+                                const inputPjNip = document.getElementById('cfg-pejabat-nip');
+                                if (inputPjNip) inputPjNip.value = masterKopConfig.pejabatNip || '';
+                            }
+                        }
+                    } catch (masterEx) {
+                        console.warn("Cloud-First master_umpeg_config fallback:", masterEx);
+                    }
+
+                    // 5. Setup WebSocket Realtime Subscriptions
+                    await window.setupSupabaseListeners();
+                }
+
+                // 6. Pull Pegawai Data
+                if (window.state.gasUrl) {
+                    await window.pullAllDataFromGas(false);
+                }
+            } catch (err) {
+                console.error("Startup Pipeline Warning:", err);
+            } finally {
+                window.populateAdminMasterDropdowns();
+                window.renderActiveView();
+
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('opacity-0');
+                    setTimeout(() => loadingOverlay.classList.add('hidden'), 300);
+                }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
             setInterval(() => {
                 const now = new Date();
                 const clockEl = document.getElementById('live-clock');
@@ -2746,44 +2839,8 @@
                 }
             }, 1000);
 
-            window.loadLocalServerConfig();
-            window.populateAdminMasterDropdowns();
-
-            if (window.state.supabaseUrl && window.state.supabaseAnonKey && window.supabase) {
-                try {
-                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
-                    
-                    try {
-                        const { data, error } = await supabaseClient
-                            .from('system_config')
-                            .select('gas_url, system_password')
-                            .eq('id', window.state.appId)
-                            .single();
-                            
-                        if (data && data.gas_url) {
-                            window.state.gasUrl = data.gas_url;
-                            serverApiConfig.gasUrl = data.gas_url;
-                            if (data.system_password) serverApiConfig.password = data.system_password;
-                            window.saveLocalServerConfig();
-                        }
-                    } catch (syncErr) {
-                        console.warn("Gagal menarik konfigurasi dari Supabase:", syncErr);
-                    }
-
-                    await window.setupSupabaseListeners();
-                } catch(e) {
-                    window.activatePollingFallback();
-                }
-            } else {
-                window.updateWsBadge('offline', '🔴 Konfigurasi Belum Diisi');
-            }
-
-            if (window.state.gasUrl) {
-                window.pullAllDataFromGas(false);
-            }
-
-            window.renderActiveView();
-        };
+            window.loadDataOnStartup();
+        });
     </script>
 </body>
 </html>
