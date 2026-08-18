@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Cloud-First Realtime System</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Realtime Multi-Device System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -77,69 +77,38 @@
             #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer, #modal-print-profile {
                 display: none !important;
             }
-            body {
-                background: white !important;
-                color: black !important;
-                font-size: 9pt;
-            }
+            body { background: white !important; color: black !important; font-size: 9pt; }
             body.print-mode-matrix @page { size: A4 landscape; margin: 6mm 8mm; }
             body.print-mode-matrix #admin-view-dashboard,
             body.print-mode-matrix #admin-view-verifikasi,
             body.print-mode-matrix #admin-view-direktori,
-            body.print-mode-matrix #admin-view-master-data {
-                display: none !important;
-            }
-            body.print-mode-matrix #admin-view-laporan {
-                display: block !important;
-                visibility: visible !important;
-            }
+            body.print-mode-matrix #admin-view-master-data { display: none !important; }
+            body.print-mode-matrix #admin-view-laporan { display: block !important; visibility: visible !important; }
             body.print-mode-matrix #print-matrix-area {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-                position: static !important;
-                width: 100% !important;
+                border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important;
+                background: transparent !important; position: static !important; width: 100% !important;
             }
             body.print-mode-profile @page { size: A4 portrait; margin: 6mm 8mm; }
             body.print-mode-profile #admin-view-dashboard,
             body.print-mode-profile #admin-view-verifikasi,
             body.print-mode-profile #admin-view-direktori,
             body.print-mode-profile #admin-view-laporan,
-            body.print-mode-profile #admin-view-master-data {
-                display: none !important;
-            }
+            body.print-mode-profile #admin-view-master-data { display: none !important; }
             body.print-mode-profile #modal-print-profile {
-                display: block !important;
-                position: static !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-                max-width: 100% !important;
-                height: auto !important;
+                display: block !important; position: static !important; background: transparent !important;
+                box-shadow: none !important; border: none !important; max-width: 100% !important; height: auto !important;
             }
             body.print-mode-profile-landscape @page { size: A4 landscape; margin: 5mm 8mm; }
             body.print-mode-profile-landscape #admin-view-dashboard,
             body.print-mode-profile-landscape #admin-view-verifikasi,
             body.print-mode-profile-landscape #admin-view-direktori,
             body.print-mode-profile-landscape #admin-view-laporan,
-            body.print-mode-profile-landscape #admin-view-master-data {
-                display: none !important;
-            }
+            body.print-mode-profile-landscape #admin-view-master-data { display: none !important; }
             body.print-mode-profile-landscape #modal-print-profile {
-                display: block !important;
-                position: static !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                border: none !important;
-                max-width: 100% !important;
-                height: auto !important;
+                display: block !important; position: static !important; background: transparent !important;
+                box-shadow: none !important; border: none !important; max-width: 100% !important; height: auto !important;
             }
-            .table-scroll-container {
-                max-height: none !important;
-                overflow: visible !important;
-            }
+            .table-scroll-container { max-height: none !important; overflow: visible !important; }
             .no-print { display: none !important; }
             .break-inside-avoid { break-inside: avoid !important; page-break-inside: avoid !important; }
         }
@@ -154,7 +123,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Menarik Data Terbaru dari Cloud Supabase...</span>
+            <span>Menghubungkan ke Network Realtime Multi-Perangkat...</span>
         </p>
     </div>
 
@@ -1193,17 +1162,16 @@
     </div>
 
     <script>
-        /*
-         * Embedded Credentials (Zero-Config Client Architecture)
-         * Allows any device/browser to connect to Supabase & GAS out-of-the-box.
-         */
         const EMBEDDED_CREDENTIALS = {
             appId: "RSUD_SINJAI_UMPEG_APP",
             supabaseUrl: "https://ohktlpuywpnxmqbrswhs.supabase.co", 
-            supabaseAnonKey: "", 
+            supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oa3RscHV5d3BueG1xYnJzd2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEyMzg4NDAsImV4cCI6MjAyNjgxNDg0MH0.PLACEHOLDER_ANON_KEY", 
             gasUrl: "https://script.google.com/macros/s/.../exec", 
             password: "kugoskom36"
         };
+
+        // Memori global untuk menyimpan URL GAS aktif di browser perangkat
+        let ACTIVE_GAS_URL = EMBEDDED_CREDENTIALS.gasUrl;
 
         window.state = {
             gasUrl: EMBEDDED_CREDENTIALS.gasUrl,
@@ -1351,7 +1319,7 @@
 
             if (state === 'online') {
                 dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                txt.innerText = text || "🟢 Realtime 3 Tabel Active";
+                txt.innerText = text || "🟢 Realtime Multi-Device Active";
                 badge.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             } else if (state === 'polling') {
                 dot.className = "w-2 h-2 rounded-full bg-teal-500 animate-pulse";
@@ -1364,32 +1332,6 @@
             }
         };
 
-        window.pingSupabaseTable = async function(tableName = 'system_config') {
-            if (!supabaseClient) return;
-            const nowIso = new Date().toISOString();
-            try {
-                await supabaseClient
-                    .from(tableName)
-                    .upsert({
-                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        last_updated_at: nowIso,
-                        action_type: `REALTIME_BROADCAST_${tableName.toUpperCase()}`
-                    });
-            } catch(e) {
-                console.warn(`Ping notice ${tableName}:`, e);
-            }
-        };
-
-        window.handleIncomingSignal = function(tableName = 'system_config') {
-            console.log(`⚡ Sinyal Realtime Supabase [${tableName}]`);
-            if (tableName === 'system_config' || tableName === 'master_umpeg_config') {
-                window.loadDataOnStartup();
-            } else {
-                window.pullAllDataFromGas(false);
-            }
-        };
-
         window.setupSupabaseListeners = async function() {
             if (!supabaseClient) return;
 
@@ -1397,13 +1339,45 @@
                 if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
 
                 realtimeChannel = supabaseClient
-                    .channel('public:umpeg_multi_tables')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, () => window.handleIncomingSignal('system_config'))
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, () => window.handleIncomingSignal('pegawai_lemari_digital'))
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, () => window.handleIncomingSignal('master_umpeg_config'))
+                    .channel('sinkronisasi-konfig-global')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, (payload) => {
+                        console.log("🔔 [Realtime] Perubahan system_config terdeteksi dari perangkat lain!", payload);
+                        if (payload.new) {
+                            if (payload.new.gas_url) {
+                                ACTIVE_GAS_URL = payload.new.gas_url;
+                                window.state.gasUrl = payload.new.gas_url;
+                                serverApiConfig.gasUrl = payload.new.gas_url;
+                                console.log("🔄 URL GAS otomatis diperbarui di perangkat ini menjadi:", ACTIVE_GAS_URL);
+                            }
+                            if (payload.new.config_data) {
+                                serverApiConfig = { ...serverApiConfig, ...payload.new.config_data };
+                            }
+                        }
+                        window.pullAllDataFromGas(false);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, () => {
+                        window.pullAllDataFromGas(false);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, (payload) => {
+                        if (payload.new && payload.new.config_data) {
+                            const cfg = payload.new.config_data;
+                            if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                            if (cfg.master_eselon) masterEselonList = cfg.master_eselon;
+                            if (cfg.master_status) masterStatusPegList = cfg.master_status;
+                            if (cfg.master_edu) masterEducationList = cfg.master_edu;
+                            if (cfg.master_golongan) masterGolonganList = cfg.master_golongan;
+                            if (cfg.master_org) masterOrgList = cfg.master_org;
+                            if (cfg.master_checklist) masterChecklistConfig = cfg.master_checklist;
+                            if (cfg.kop_config) masterKopConfig = cfg.kop_config;
+
+                            window.populateAdminMasterDropdowns();
+                            window.renderActiveView();
+                        }
+                    })
                     .subscribe((status) => {
                         if (status === 'SUBSCRIBED') {
-                            window.updateWsBadge('online', '🟢 Realtime 3 Tabel Active');
+                            window.updateWsBadge('online', '🟢 Realtime Multi-Device Active');
                         } else {
                             window.activatePollingFallback();
                         }
@@ -1421,52 +1395,23 @@
             }, 12000);
         };
 
-        window.saveFormDraftToSession = function() {
-            const targetNip = document.getElementById('edit-staf-target-nip')?.value;
-            if (!targetNip) return;
-
-            const draftData = {
-                nama: document.getElementById('edit-staf-nama')?.value || '',
-                nip: document.getElementById('edit-staf-nip')?.value || '',
-                status: document.getElementById('edit-staf-status')?.value || '',
-                sub1: document.getElementById('edit-staf-sub1')?.value || '',
-                sub2: document.getElementById('edit-staf-sub2')?.value || '',
-                jabatan: document.getElementById('edit-staf-jabatan')?.value || '',
-                ruangan: document.getElementById('edit-staf-ruangan')?.value || '',
-                lastModified: new Date().getTime()
-            };
-
-            try {
-                sessionStorage.setItem(`DRAFT_EDIT_STAF_${targetNip}`, JSON.stringify(draftData));
-            } catch(e) {}
-        };
-
-        window.loadFormDraftFromSession = function(nip) {
-            try {
-                const raw = sessionStorage.getItem(`DRAFT_EDIT_STAF_${nip}`);
-                if (raw) return JSON.parse(raw);
-            } catch(e) {}
-            return null;
-        };
-
-        window.clearFormDraftSession = function(nip) {
-            try {
-                if (nip) sessionStorage.removeItem(`DRAFT_EDIT_STAF_${nip}`);
-            } catch(e) {}
-        };
-
         window.loadLocalServerConfig = function() {
             try {
                 const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    serverApiConfig = { ...serverApiConfig, ...parsed };
+                    serverApiConfig = { ...EMBEDDED_CREDENTIALS, ...parsed };
+                } else {
+                    serverApiConfig = { ...EMBEDDED_CREDENTIALS };
                 }
-                window.state.appId = serverApiConfig.appId || EMBEDDED_CREDENTIALS.appId;
-                window.state.supabaseUrl = serverApiConfig.supabaseUrl || EMBEDDED_CREDENTIALS.supabaseUrl;
-                window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || EMBEDDED_CREDENTIALS.supabaseAnonKey;
-                window.state.gasUrl = serverApiConfig.gasUrl || EMBEDDED_CREDENTIALS.gasUrl;
-            } catch(e) {}
+            } catch(e) {
+                serverApiConfig = { ...EMBEDDED_CREDENTIALS };
+            }
+            window.state.appId = serverApiConfig.appId || EMBEDDED_CREDENTIALS.appId;
+            window.state.supabaseUrl = serverApiConfig.supabaseUrl || EMBEDDED_CREDENTIALS.supabaseUrl;
+            window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || EMBEDDED_CREDENTIALS.supabaseAnonKey;
+            window.state.gasUrl = serverApiConfig.gasUrl || EMBEDDED_CREDENTIALS.gasUrl;
+            ACTIVE_GAS_URL = window.state.gasUrl;
         };
 
         window.saveLocalServerConfig = function() {
@@ -1535,6 +1480,7 @@
                 window.state.supabaseUrl = supaUrl;
                 window.state.supabaseAnonKey = supaKey;
                 window.state.gasUrl = gasUrl;
+                ACTIVE_GAS_URL = gasUrl;
 
                 serverApiConfig.appId = appId;
                 serverApiConfig.supabaseUrl = supaUrl;
@@ -1582,7 +1528,7 @@
         };
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
-            const url = window.state.gasUrl || serverApiConfig.gasUrl;
+            const url = ACTIVE_GAS_URL || window.state.gasUrl || serverApiConfig.gasUrl;
             if (!url) return;
 
             try {
@@ -1952,9 +1898,9 @@
             const target = masterPegawaiDb[idx];
             window.renderActiveView();
 
-            if (serverApiConfig.gasUrl) {
+            if (ACTIVE_GAS_URL) {
                 try {
-                    await fetch(serverApiConfig.gasUrl, {
+                    await fetch(ACTIVE_GAS_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ action: 'saveAudit', data: target })
@@ -1962,7 +1908,18 @@
                 } catch(err) {}
             }
             
-            await window.pingSupabaseTable('pegawai_lemari_digital');
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('pegawai_lemari_digital').upsert({
+                        id_pegawai: target.idPegawai,
+                        nip: target.nip,
+                        verifikasi_status: selStatus,
+                        verifikasi_catatan: inputCatatan,
+                        updated_at: new Date().toISOString()
+                    });
+                } catch(e) {}
+            }
+
             window.closeAuditModal();
             window.showToast("Hasil Audit Disimpan & Dipancarkan Realtime!", "success");
             window.pullAllDataFromGas(false);
@@ -1985,597 +1942,6 @@
             if (modal) modal.classList.add('hidden');
         };
 
-        window.openEditStafAdminModal = function(nip) {
-            const p = masterPegawaiDb.find(x => x.nip === nip);
-            if (!p) return;
-
-            document.getElementById('edit-staf-target-nip').value = p.nip;
-            
-            const draft = window.loadFormDraftFromSession(p.nip);
-            if (draft) {
-                document.getElementById('edit-staf-nama').value = draft.nama || p.nama || '';
-                document.getElementById('edit-staf-nip').value = draft.nip || p.nip || '';
-                document.getElementById('edit-staf-sub1').value = draft.sub1 || p.sub1 || 'MEDIS';
-                document.getElementById('edit-staf-sub2').value = draft.sub2 || p.sub2 || 'FUNGSIONAL';
-                window.handleAdminEditJalurChange();
-                document.getElementById('edit-staf-status').value = draft.status || p.status || 'PNS';
-                document.getElementById('edit-staf-jabatan').value = draft.jabatan || p.jabatan || '';
-                document.getElementById('edit-staf-ruangan').value = draft.ruangan || p.ruangan || '';
-                window.showToast("Draf ketikan terulih dari sessionStorage", "info");
-            } else {
-                document.getElementById('edit-staf-nama').value = p.nama || '';
-                document.getElementById('edit-staf-nip').value = p.nip || '';
-                document.getElementById('edit-staf-sub1').value = p.sub1 || 'MEDIS';
-                document.getElementById('edit-staf-sub2').value = p.sub2 || 'FUNGSIONAL';
-                window.handleAdminEditJalurChange();
-                document.getElementById('edit-staf-status').value = p.status || 'PNS';
-                document.getElementById('edit-staf-jabatan').value = p.jabatan || '';
-                document.getElementById('edit-staf-ruangan').value = p.ruangan || '';
-            }
-
-            document.getElementById('modal-edit-staf-admin').classList.remove('hidden');
-        };
-
-        window.closeEditStafAdminModal = function() {
-            document.getElementById('modal-edit-staf-admin').classList.add('hidden');
-        };
-
-        window.handleAdminEditJalurChange = function() {
-            const sub2 = document.getElementById('edit-staf-sub2').value;
-            const selectJabatan = document.getElementById('edit-staf-jabatan');
-            if (!selectJabatan) return;
-
-            const list = sub2 === 'STRUKTURAL' ? (masterJabatanList.STRUKTURAL || []) : (masterJabatanList.FUNGSIONAL || []);
-            selectJabatan.innerHTML = `<option value="">-- Pilih Jabatan --</option>` + list.map(j => `<option value="${j}">${j}</option>`).join('');
-        };
-
-        window.saveEditStafAdmin = async function(e) {
-            if (e) e.preventDefault();
-            const targetNip = document.getElementById('edit-staf-target-nip').value;
-            const idx = masterPegawaiDb.findIndex(x => x.nip === targetNip);
-            if (idx === -1) return;
-
-            masterPegawaiDb[idx].nama = document.getElementById('edit-staf-nama').value.trim();
-            masterPegawaiDb[idx].nip = document.getElementById('edit-staf-nip').value.trim();
-            masterPegawaiDb[idx].status = document.getElementById('edit-staf-status').value;
-            masterPegawaiDb[idx].sub1 = document.getElementById('edit-staf-sub1').value;
-            masterPegawaiDb[idx].sub2 = document.getElementById('edit-staf-sub2').value;
-            masterPegawaiDb[idx].jabatan = document.getElementById('edit-staf-jabatan').value;
-            masterPegawaiDb[idx].ruangan = document.getElementById('edit-staf-ruangan').value;
-
-            const target = masterPegawaiDb[idx];
-            window.renderActiveView();
-
-            if (serverApiConfig.gasUrl) {
-                try {
-                    await fetch(serverApiConfig.gasUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'savePegawai', data: target })
-                    });
-                } catch(err) {}
-            }
-            
-            await window.pingSupabaseTable('pegawai_lemari_digital');
-            window.clearFormDraftSession(targetNip);
-
-            window.closeEditStafAdminModal();
-            window.showToast("Data Staf Disimpan & Sinyal Realtime Dipancarkan!", "success");
-            window.pullAllDataFromGas(false);
-        };
-
-        window.confirmDeletePegawai = function(nip) {
-            const p = masterPegawaiDb.find(x => x.nip === nip);
-            if (!p) return;
-            pendingDeleteMaster = { type: 'pegawai', targetNip: nip, targetId: p.idPegawai };
-            const msgEl = document.getElementById('confirm-delete-msg');
-            if (msgEl) {
-                msgEl.innerHTML = `Apakah Anda yakin ingin menghapus data pegawai <strong>${p.nama}</strong> (NIP: ${p.nip})?<br><span class="text-[10px] text-rose-600 font-bold block mt-1">⚠️ Data akan dihapus permanen!</span>`;
-            }
-            document.getElementById('modal-confirm-delete').classList.remove('hidden');
-        };
-
-        window.closeConfirmDeleteModal = function() {
-            document.getElementById('modal-confirm-delete').classList.add('hidden');
-        };
-
-        window.executeDeleteMasterItem = async function() {
-            const { type, category, index, targetNip, targetId } = pendingDeleteMaster;
-            
-            if (type === 'pegawai' && targetNip) {
-                const idx = masterPegawaiDb.findIndex(x => x.nip === targetNip);
-                if (idx !== -1) {
-                    const removedPeg = masterPegawaiDb[idx];
-                    masterPegawaiDb.splice(idx, 1);
-
-                    if (serverApiConfig.gasUrl) {
-                        try {
-                            await fetch(serverApiConfig.gasUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({ action: 'deletePegawai', nip: targetNip, idPegawai: targetId })
-                            });
-                        } catch(err) {}
-                    }
-                    
-                    await window.pingSupabaseTable('pegawai_lemari_digital');
-                    window.renderActiveView();
-                    window.closeConfirmDeleteModal();
-                    window.showToast(`Data Pegawai (${removedPeg.nama}) Berhasil Dihapus!`, "success");
-                    window.pullAllDataFromGas(false);
-                    return;
-                }
-            }
-
-            if (type === 'ruangan' && index !== null) masterRuanganList.splice(index, 1);
-            else if (type === 'jabatan' && category && index !== null) masterJabatanList[category].splice(index, 1);
-            else if (type === 'eselon' && index !== null) masterEselonList.splice(index, 1);
-            else if (type === 'statusPeg' && index !== null) masterStatusPegList.splice(index, 1);
-            else if (type === 'edu' && index !== null) masterEducationList.splice(index, 1);
-            else if (type === 'golongan' && index !== null) masterGolonganList.splice(index, 1);
-            else if (type === 'org' && index !== null) masterOrgList.splice(index, 1);
-
-            window.saveMasterConfigToGAS();
-            window.populateAdminMasterDropdowns();
-            window.closeConfirmDeleteModal();
-            window.showToast("Item Master Berhasil Dihapus!", "info");
-        };
-
-        window.openPrintProfileSheet = function(nip) {
-            activePrintLayoutMode = 'portrait';
-            const p = masterPegawaiDb.find(x => x.nip === nip);
-            if (!p) return;
-            
-            const dp = p.detailPersonal || {};
-            const dj = p.detailJabatan || {};
-            const dm = p.detailMedis || {};
-            
-            window.setText('sheet-main-title', 'DAFTAR RIWAYAT HIDUP PEGAWAI');
-            window.setText('sheet-id-header', `ID REGISTRASI UMPEG: ${p.idPegawai || '-'}`);
-            window.setText('sheet-sign-nama', `( ${p.nama} )`);
-            window.setText('sheet-print-date', new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }));
-            
-            const body = document.getElementById('sheet-content-body');
-            if (body) {
-                const kategoriPelayanan = p.sub1 === 'MEDIS' ? 'MEDIS / NAKES' : 'NON-MEDIS';
-                const jalurJabatanText = p.sub2 === 'STRUKTURAL' ? 'STRUKTURAL (Manajemen)' : 'FUNGSIONAL (Pelayanan/Teknis)';
-
-                body.innerHTML = `
-                    <div class="space-y-3">
-                        <div class="border-b pb-2">
-                            <h4 class="font-black text-emerald-950 uppercase text-[11px] mb-1">I. IDENTITAS PEGAWAI</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><strong>Nama Lengkap:</strong> ${p.nama}</div>
-                                <div><strong>NIP / SK Kedinasan:</strong> ${p.nip}</div>
-                                <div><strong>Status Kepegawaian:</strong> ${p.status || '-'}</div>
-                                <div><strong>Kategori Pelayanan:</strong> ${kategoriPelayanan}</div>
-                                <div><strong>Jalur Jabatan:</strong> ${jalurJabatanText}</div>
-                                <div><strong>Tempat, Tgl Lahir:</strong> ${dp.tmpLahir || '-'}, ${dp.tglLahir || '-'}</div>
-                                <div><strong>Jenis Kelamin:</strong> ${dp.jk || '-'}</div>
-                                <div><strong>Nomor HP / WA:</strong> ${dp.hp || '-'}</div>
-                                <div><strong>Email Resmi:</strong> ${dp.email || '-'}</div>
-                            </div>
-                        </div>
-
-                        <div class="border-b pb-2">
-                            <h4 class="font-black text-emerald-950 uppercase text-[11px] mb-1">II. JABATAN & UNIT KERJA</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><strong>Jabatan Kedinasan:</strong> ${p.jabatan || '-'}</div>
-                                <div><strong>Unit Kerja / Ruangan:</strong> ${p.ruangan || '-'}</div>
-                                <div><strong>Pangkat / Golongan:</strong> ${dp.golongan || '-'}</div>
-                                <div><strong>Eselon / Jenjang:</strong> ${dj.eselon || dj.jenjang || '-'}</div>
-                            </div>
-                        </div>
-
-                        <div class="border-b pb-2">
-                            <h4 class="font-black text-emerald-950 uppercase text-[11px] mb-1">III. LEGALITAS MEDIS & ORGANISASI PROFESI</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><strong>Nomor STR:</strong> ${dm.noStr || '-'}</div>
-                                <div><strong>Masa Berlaku STR:</strong> ${dm.mblStr || '-'}</div>
-                                <div><strong>Nomor SIP RSUD:</strong> ${dm.noSip || '-'}</div>
-                                <div><strong>Organisasi Profesi:</strong> ${dm.orgProfesi || '-'}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            const modal = document.getElementById('modal-print-profile');
-            if (modal) modal.classList.remove('hidden');
-        };
-
-        window.openPrintFullProfileLandscape = function(nip) {
-            activePrintLayoutMode = 'landscape';
-            window.openPrintProfileSheet(nip);
-        };
-
-        window.closePrintProfileModal = function() {
-            const modal = document.getElementById('modal-print-profile');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        window.triggerPrintProfile = function() {
-            document.body.className = activePrintLayoutMode === 'landscape' ? 'print-mode-profile-landscape' : 'print-mode-profile';
-            window.print();
-        };
-
-        window.renderMatrixReport = function() {
-            window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }));
-            const tbody = document.getElementById('matrix-report-tbody');
-            const tfoot = document.getElementById('matrix-report-tfoot');
-            if (!tbody) return;
-
-            const strukturalCats = ["Direksi / Eselon II", "Kepala Bagian / Kabid", "Kepala Sub Bagian / Kasi", "Staf Administrasi & TU"];
-            const fungsionalCats = ["Dokter Spesialis", "Dokter Umum / Dokter Gigi", "Perawat (Ners & D3)", "Bidan", "Apoteker & Tenaga Kefarmasian", "Penunjang Medis & Laboratorium", "Fungsional Lainnya"];
-
-            let html = '';
-            let subStruk = { pns: 0, pppkPw: 0, pppkPwParuh: 0, honorer: 0, kontrak: 0, sukarela: 0, total: 0 };
-            let subFung = { pns: 0, pppkPw: 0, pppkPwParuh: 0, honorer: 0, kontrak: 0, sukarela: 0, total: 0 };
-
-            html += `
-                <tr class="bg-emerald-900 text-white font-extrabold text-[11px] uppercase tracking-wider">
-                    <td colspan="9" class="p-2 border-r border-emerald-800">SECTION A: JALUR STRUKTURAL (MANAJERIAL & TATA USAHA)</td>
-                </tr>
-            `;
-
-            strukturalCats.forEach((cat, i) => {
-                const subDb = masterPegawaiDb.filter(p => p.sub2 === 'STRUKTURAL' && (p.jabatan || '').includes(cat));
-                const pns = subDb.filter(p => p.status === 'PNS').length;
-                const pppkPw = subDb.filter(p => p.status === 'PPPK (Penuh Waktu)').length;
-                const pppkPwParuh = subDb.filter(p => p.status === 'PPPK (Paruh Waktu)').length;
-                const honorer = subDb.filter(p => p.status === 'Honorer').length;
-                const kontrak = subDb.filter(p => p.status === 'Kontrak').length;
-                const sukarela = subDb.filter(p => p.status === 'Sukarela').length;
-                const total = subDb.length;
-
-                subStruk.pns += pns; subStruk.pppkPw += pppkPw; subStruk.pppkPwParuh += pppkPwParuh;
-                subStruk.honorer += honorer; subStruk.kontrak += kontrak; subStruk.sukarela += sukarela;
-                subStruk.total += total;
-
-                html += `
-                    <tr class="hover:bg-emerald-50">
-                        <td class="p-2 border-r text-center font-bold">${i + 1}</td>
-                        <td class="p-2 border-r font-bold text-emerald-950">${cat}</td>
-                        <td class="p-2 border-r text-center font-mono">${pns}</td>
-                        <td class="p-2 border-r text-center font-mono">${pppkPw}</td>
-                        <td class="p-2 border-r text-center font-mono">${pppkPwParuh}</td>
-                        <td class="p-2 border-r text-center font-mono">${honorer}</td>
-                        <td class="p-2 border-r text-center font-mono">${kontrak}</td>
-                        <td class="p-2 border-r text-center font-mono">${sukarela}</td>
-                        <td class="p-2 bg-emerald-100/70 text-center font-mono font-black text-emerald-950">${total}</td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                <tr class="bg-emerald-200/90 font-extrabold text-emerald-950 border-t border-b border-emerald-400">
-                    <td colspan="2" class="p-2 text-right uppercase border-r border-emerald-300">SUBTOTAL JALUR STRUKTURAL:</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pns}</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pppkPw}</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.pppkPwParuh}</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.honorer}</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.kontrak}</td>
-                    <td class="p-2 text-center font-mono border-r border-emerald-300">${subStruk.sukarela}</td>
-                    <td class="p-2 bg-emerald-300/80 text-center font-mono font-black text-emerald-950">${subStruk.total}</td>
-                </tr>
-            `;
-
-            html += `
-                <tr class="bg-teal-900 text-white font-extrabold text-[11px] uppercase tracking-wider">
-                    <td colspan="9" class="p-2 border-r border-teal-800">SECTION B: JALUR FUNGSIONAL (PELAYANAN MEDIK & TEKNIS)</td>
-                </tr>
-            `;
-
-            fungsionalCats.forEach((cat, i) => {
-                const subDb = masterPegawaiDb.filter(p => p.sub2 === 'FUNGSIONAL' && (p.jabatan || '').includes(cat));
-                const pns = subDb.filter(p => p.status === 'PNS').length;
-                const pppkPw = subDb.filter(p => p.status === 'PPPK (Penuh Waktu)').length;
-                const pppkPwParuh = subDb.filter(p => p.status === 'PPPK (Paruh Waktu)').length;
-                const honorer = subDb.filter(p => p.status === 'Honorer').length;
-                const kontrak = subDb.filter(p => p.status === 'Kontrak').length;
-                const sukarela = subDb.filter(p => p.status === 'Sukarela').length;
-                const total = subDb.length;
-
-                subFung.pns += pns; subFung.pppkPw += pppkPw; subFung.pppkPwParuh += pppkPwParuh;
-                subFung.honorer += honorer; subFung.kontrak += kontrak; subFung.sukarela += sukarela;
-                subFung.total += total;
-
-                html += `
-                    <tr class="hover:bg-teal-50">
-                        <td class="p-2 border-r text-center font-bold">${i + 1}</td>
-                        <td class="p-2 border-r font-bold text-teal-950">${cat}</td>
-                        <td class="p-2 border-r text-center font-mono">${pns}</td>
-                        <td class="p-2 border-r text-center font-mono">${pppkPw}</td>
-                        <td class="p-2 border-r text-center font-mono">${pppkPwParuh}</td>
-                        <td class="p-2 border-r text-center font-mono">${honorer}</td>
-                        <td class="p-2 border-r text-center font-mono">${kontrak}</td>
-                        <td class="p-2 border-r text-center font-mono">${sukarela}</td>
-                        <td class="p-2 bg-teal-100/70 text-center font-mono font-black text-teal-950">${total}</td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                <tr class="bg-teal-200/90 font-extrabold text-teal-950 border-t border-b border-teal-400">
-                    <td colspan="2" class="p-2 text-right uppercase border-r border-teal-300">SUBTOTAL JALUR FUNGSIONAL:</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pns}</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pppkPw}</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.pppkPwParuh}</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.honorer}</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.kontrak}</td>
-                    <td class="p-2 text-center font-mono border-r border-teal-300">${subFung.sukarela}</td>
-                    <td class="p-2 bg-teal-300/80 text-center font-mono font-black text-teal-950">${subFung.total}</td>
-                </tr>
-            `;
-
-            tbody.innerHTML = html;
-
-            const grandPns = subStruk.pns + subFung.pns;
-            const grandPppkPw = subStruk.pppkPw + subFung.pppkPw;
-            const grandPppkPwParuh = subStruk.pppkPwParuh + subFung.pppkPwParuh;
-            const grandHonorer = subStruk.honorer + subFung.honorer;
-            const grandKontrak = subStruk.kontrak + subFung.kontrak;
-            const grandSukarela = subStruk.sukarela + subFung.sukarela;
-            const grandTotal = subStruk.total + subFung.total;
-
-            if (tfoot) {
-                tfoot.innerHTML = `
-                    <tr class="bg-emerald-950 text-white font-black text-center uppercase tracking-wide">
-                        <td colspan="2" class="p-3 text-right border-r border-emerald-800">GRAND TOTAL SELURUH SDM RSUD SINJAI:</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPns}</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPppkPw}</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandPppkPwParuh}</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandHonorer}</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandKontrak}</td>
-                        <td class="p-3 border-r border-emerald-800 font-mono text-xs">${grandSukarela}</td>
-                        <td class="p-3 bg-amber-500 text-slate-950 font-black font-mono text-xs">${grandTotal}</td>
-                    </tr>
-                `;
-            }
-        };
-
-        window.renderSubTab2MonitoringKedinasan = function() {
-            const tbody = document.getElementById('monitoring-report-tbody');
-            if (!tbody) return;
-
-            const jalurF = document.getElementById('filter-monitoring-jalur')?.value || 'ALL';
-            const eduF = document.getElementById('filter-monitoring-pendidikan')?.value || 'ALL';
-            const searchF = (document.getElementById('filter-monitoring-search')?.value || '').toLowerCase();
-
-            let list = masterPegawaiDb.filter(p => {
-                if (jalurF !== 'ALL' && p.sub2 !== jalurF) return false;
-                if (eduF !== 'ALL') {
-                    const edu = (p.pendidikan || '').toUpperCase();
-                    if (eduF === 'S2' && !edu.includes('S2') && !edu.includes('SPESIALIS')) return false;
-                    if (eduF === 'S1' && !edu.includes('S1') && !edu.includes('PROFESI')) return false;
-                    if (eduF === 'D3' && !edu.includes('D3') && !edu.includes('D4')) return false;
-                    if (eduF === 'SMA' && !edu.includes('SMA') && !edu.includes('SMK')) return false;
-                }
-                if (searchF && !p.nama.toLowerCase().includes(searchF) && !p.nip.toLowerCase().includes(searchF)) return false;
-                return true;
-            });
-
-            const nowYear = new Date().getFullYear();
-
-            tbody.innerHTML = list.map((p, i) => {
-                const dp = p.detailPersonal || {};
-                const dj = p.detailJabatan || {};
-                let age = '-';
-                let sisaPensiunText = 'Sesuai';
-                let birthYear = 0;
-
-                if (dp.tglLahir) birthYear = parseInt(dp.tglLahir.substring(0, 4), 10);
-                else if (p.nip && p.nip.length >= 8) birthYear = parseInt(p.nip.substring(0, 4), 10);
-
-                if (birthYear > 1940 && birthYear < 2020) {
-                    age = `${nowYear - birthYear} Thn`;
-                    const bup = window.calculateBUP(p);
-                    const retireYear = birthYear + bup;
-                    const rem = retireYear - nowYear;
-                    if (rem <= 0) sisaPensiunText = `<span class="text-rose-700 font-extrabold">BUP (${retireYear})</span>`;
-                    else sisaPensiunText = `<span class="text-emerald-800 font-bold">${rem} Thn (${retireYear})</span>`;
-                }
-
-                const golEselon = `${dp.golongan || '-'} | ${dj.eselon || dj.jenjang || '-'}`;
-                const kpStatus = p.status === 'PNS' ? `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-extrabold text-[9px]">Sesuai (PNS)</span>` : `<span class="text-slate-400 font-mono text-[9px]">-</span>`;
-
-                return `
-                    <tr class="hover:bg-emerald-50 border-b border-emerald-100">
-                        <td class="p-2 border-r text-center font-bold">${i + 1}</td>
-                        <td class="p-2 border-r font-bold text-slate-900">
-                            <div>${p.nama}</div>
-                            <div class="text-[9px] font-mono text-emerald-800">${p.nip}</div>
-                        </td>
-                        <td class="p-2 border-r">
-                            <div>${p.jabatan || '-'}</div>
-                            <div class="text-[9px] text-slate-500">${p.ruangan || '-'}</div>
-                        </td>
-                        <td class="p-2 border-r text-center font-bold">${p.pendidikan || '-'}</td>
-                        <td class="p-2 border-r text-center font-mono">${golEselon}</td>
-                        <td class="p-2 border-r text-center font-mono font-bold">${age}</td>
-                        <td class="p-2 border-r text-center font-mono text-xs">${sisaPensiunText}</td>
-                        <td class="p-2 text-center">${kpStatus}</td>
-                    </tr>
-                `;
-            }).join('');
-        };
-
-        window.exportMatrixToExcel = function() {
-            const activeTableId = activeLaporanSubTab === 'matriks' ? 'table-export-matriks' : 'table-export-monitoring';
-            const table = document.getElementById(activeTableId);
-            if (!table) return;
-            const html = table.outerHTML;
-            const url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
-            const downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            downloadLink.href = url;
-            downloadLink.download = `Laporan_RSUD_Sinjai_${activeLaporanSubTab}_2026.xls`;
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        };
-
-        window.printMatrixReport = function() { 
-            document.body.className = "print-mode-matrix";
-            window.print(); 
-        };
-
-        window.renderMasterChecklistConfig = function() {
-            const container = document.getElementById('container-master-checklist-list');
-            if (!container) return;
-            container.innerHTML = masterChecklistConfig.map(cat => `
-                <div class="p-3 bg-white border border-emerald-200 rounded-xl space-y-2">
-                    <h4 class="font-extrabold text-emerald-950 text-xs flex items-center justify-between border-b pb-1">
-                        <span>${cat.title} (${cat.items.length} Items)</span>
-                        <span class="text-[9px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.2 rounded font-extrabold">Form Kode ${cat.code}</span>
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                        ${cat.items.map((it, itemIdx) => `
-                            <div class="p-1.5 rounded bg-emerald-50/70 border border-emerald-200 flex items-center justify-between gap-1">
-                                <div class="min-w-0 flex-1 pr-1">
-                                    <div class="font-semibold text-slate-800 text-[10.5px] truncate">${it.name}</div>
-                                    <div class="text-[8.5px] font-mono text-emerald-700 font-extrabold">${it.id}</div>
-                                </div>
-                                <button type="button" onclick="window.deleteMasterChecklistItem('${cat.code}', ${itemIdx})" class="text-rose-600 hover:text-rose-800 text-xs p-1 shrink-0 cursor-pointer" title="Hapus Dokumen Persyaratan ini">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        };
-
-        window.addNewMasterChecklistItem = async function() {
-            const catCode = document.getElementById('input-new-checklist-cat')?.value;
-            const nameVal = document.getElementById('input-new-checklist-name')?.value.trim();
-            if (!nameVal) {
-                window.showToast("Isi nama persyaratan berkas baru terlebih dahulu!", "error");
-                return;
-            }
-
-            const cat = masterChecklistConfig.find(c => c.code === catCode);
-            if (!cat) return;
-
-            const newId = `${catCode.toLowerCase()}_${Date.now().toString().slice(-4)}`;
-            cat.items.push({ id: newId, name: nameVal });
-
-            document.getElementById('input-new-checklist-name').value = '';
-            window.renderMasterChecklistConfig();
-            await window.saveMasterConfigToGAS();
-            window.showToast(`Persyaratan Berkas Baru Ditambahkan ke Form ${catCode}!`, "success");
-        };
-
-        window.deleteMasterChecklistItem = async function(catCode, itemIdx) {
-            const cat = masterChecklistConfig.find(c => c.code === catCode);
-            if (!cat || !cat.items[itemIdx]) return;
-
-            const removedName = cat.items[itemIdx].name;
-            cat.items.splice(itemIdx, 1);
-
-            window.renderMasterChecklistConfig();
-            await window.saveMasterConfigToGAS();
-            window.showToast(`Dokumen (${removedName}) Berhasil Dihapus!`, "info");
-        };
-
-        window.renderMasterRuanganCards = function() {
-            const container = document.getElementById('container-master-ruangan-list');
-            const badge = document.getElementById('badge-master-ruangan-count');
-            if (badge) badge.innerText = `${masterRuanganList.length} Unit`;
-            if (!container) return;
-
-            container.innerHTML = masterRuanganList.map((r, i) => `
-                <div class="p-2 bg-white border border-emerald-200 rounded-lg flex items-center justify-between text-xs font-semibold">
-                    <span class="truncate pr-1">${r}</span>
-                    <button onclick="window.deleteMasterItem('ruangan', null, ${i})" class="text-rose-600 hover:text-rose-800 shrink-0 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
-        window.renderMasterJabatanGrid = function() {
-            const container = document.getElementById('container-master-jabatan-grid');
-            if (!container) return;
-
-            const stList = (masterJabatanList.STRUKTURAL || []).map((j, i) => `
-                <div class="p-2 bg-emerald-50/60 border border-emerald-200 rounded-lg flex items-center justify-between">
-                    <span class="font-semibold text-slate-900">${j}</span>
-                    <button onclick="window.deleteMasterItem('jabatan', 'STRUKTURAL', ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-
-            const fnList = (masterJabatanList.FUNGSIONAL || []).map((j, i) => `
-                <div class="p-2 bg-teal-50/60 border border-teal-200 rounded-lg flex items-center justify-between">
-                    <span class="font-semibold text-slate-900">${j}</span>
-                    <button onclick="window.deleteMasterItem('jabatan', 'FUNGSIONAL', ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-
-            container.innerHTML = `
-                <div class="p-3 bg-white rounded-xl border border-emerald-200 space-y-2">
-                    <h4 class="font-extrabold text-emerald-950 text-xs uppercase border-b pb-1">Jalur Struktural</h4>
-                    <div class="space-y-1 max-h-48 overflow-y-auto">${stList}</div>
-                </div>
-                <div class="p-3 bg-white rounded-xl border border-emerald-200 space-y-2">
-                    <h4 class="font-extrabold text-emerald-950 text-xs uppercase border-b pb-1">Jalur Fungsional</h4>
-                    <div class="space-y-1 max-h-48 overflow-y-auto">${fnList}</div>
-                </div>
-            `;
-        };
-
-        window.renderMasterEselonGrid = function() {
-            const container = document.getElementById('container-master-eselon-grid');
-            if (!container) return;
-            container.innerHTML = masterEselonList.map((e, i) => `
-                <div class="p-1.5 bg-emerald-50 rounded border border-emerald-200 flex items-center justify-between text-xs">
-                    <span class="font-bold text-emerald-950">${e}</span>
-                    <button onclick="window.deleteMasterItem('eselon', null, ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
-        window.renderMasterStatusPegGrid = function() {
-            const container = document.getElementById('container-master-status-peg-grid');
-            if (!container) return;
-            container.innerHTML = masterStatusPegList.map((s, i) => `
-                <div class="p-1.5 bg-emerald-50 rounded border border-emerald-200 flex items-center justify-between text-xs">
-                    <span class="font-bold text-emerald-950">${s}</span>
-                    <button onclick="window.deleteMasterItem('statusPeg', null, ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
-        window.renderMasterEducationBadges = function() {
-            const container = document.getElementById('container-master-edu-list');
-            if (!container) return;
-            container.innerHTML = masterEducationList.map((ed, i) => `
-                <div class="p-1.5 bg-emerald-50 rounded border border-emerald-200 flex items-center justify-between">
-                    <span class="font-bold text-emerald-950">${ed}</span>
-                    <button onclick="window.deleteMasterItem('edu', null, ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
-        window.renderMasterGolonganBadges = function() {
-            const container = document.getElementById('container-master-golongan-list');
-            if (!container) return;
-            container.innerHTML = masterGolonganList.map((g, i) => `
-                <div class="p-1.5 bg-amber-50 rounded border border-amber-200 flex items-center justify-between">
-                    <span class="font-bold text-amber-950">${g}</span>
-                    <button onclick="window.deleteMasterItem('golongan', null, ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
-        window.renderMasterOrgBadges = function() {
-            const container = document.getElementById('container-master-org-list');
-            if (!container) return;
-            container.innerHTML = masterOrgList.map((o, i) => `
-                <div class="p-1.5 bg-sky-50 rounded border border-sky-200 flex items-center justify-between">
-                    <span class="font-bold text-sky-950">${o}</span>
-                    <button onclick="window.deleteMasterItem('org', null, ${i})" class="text-rose-600 hover:text-rose-800 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `).join('');
-        };
-
         window.populateAdminMasterDropdowns = function() {
             const selRuangan = document.getElementById('edit-staf-ruangan');
             if (selRuangan) selRuangan.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
@@ -2587,192 +1953,49 @@
             if (selVerifStatus) selVerifStatus.innerHTML = `<option value="ALL">Semua Status Kepegawaian</option>` + masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
         };
 
-        window.addNewMasterRuangan = async function() {
-            const val = document.getElementById('input-new-ruangan').value.trim();
-            if (!val) return;
-            masterRuanganList.push(val);
-            document.getElementById('input-new-ruangan').value = '';
-            window.renderMasterRuanganCards();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Unit Kerja Ditambahkan!", "success");
-        };
-
-        window.addNewMasterJabatan = async function() {
-            const type = document.getElementById('select-new-jabatan-type').value;
-            const val = document.getElementById('input-new-jabatan').value.trim();
-            if (!val) return;
-            if (!masterJabatanList[type]) masterJabatanList[type] = [];
-            masterJabatanList[type].push(val);
-            document.getElementById('input-new-jabatan').value = '';
-            window.renderMasterJabatanGrid();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Jabatan Ditambahkan!", "success");
-        };
-
-        window.addNewMasterEselon = async function() {
-            const val = document.getElementById('input-new-eselon').value.trim();
-            if (!val) return;
-            masterEselonList.push(val);
-            document.getElementById('input-new-eselon').value = '';
-            window.renderMasterEselonGrid();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Eselon Ditambahkan!", "success");
-        };
-
-        window.addNewMasterStatusPegawai = async function() {
-            const val = document.getElementById('input-new-status-peg').value.trim();
-            if (!val) return;
-            masterStatusPegList.push(val);
-            document.getElementById('input-new-status-peg').value = '';
-            window.renderMasterStatusPegGrid();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Status Pegawai Ditambahkan!", "success");
-        };
-
-        window.addNewMasterEducation = async function() {
-            const val = document.getElementById('input-new-edu').value.trim();
-            if (!val) return;
-            masterEducationList.push(val);
-            document.getElementById('input-new-edu').value = '';
-            window.renderMasterEducationBadges();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Pendidikan Ditambahkan!", "success");
-        };
-
-        window.addNewMasterGolongan = async function() {
-            const val = document.getElementById('input-new-golongan').value.trim();
-            if (!val) return;
-            masterGolonganList.push(val);
-            document.getElementById('input-new-golongan').value = '';
-            window.renderMasterGolonganBadges();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Golongan Ditambahkan!", "success");
-        };
-
-        window.addNewMasterOrgProfesi = async function() {
-            const val = document.getElementById('input-new-org').value.trim();
-            if (!val) return;
-            masterOrgList.push(val);
-            document.getElementById('input-new-org').value = '';
-            window.renderMasterOrgBadges();
-            window.populateAdminMasterDropdowns();
-            await window.saveMasterConfigToGAS();
-            window.showToast("Organisasi Profesi Ditambahkan!", "success");
-        };
-
-        window.deleteMasterItem = function(type, category, index) {
-            pendingDeleteMaster = { type, category, index };
-            document.getElementById('confirm-delete-msg').innerText = "Apakah Anda yakin ingin menghapus item master data ini?";
-            document.getElementById('modal-confirm-delete').classList.remove('hidden');
-        };
-
-        window.updateKopMasterConfig = async function() {
-            masterKopConfig.logoUrl = document.getElementById('cfg-logo-url').value.trim();
-            masterKopConfig.ttdUrl = document.getElementById('cfg-ttd-url').value.trim();
-            masterKopConfig.pejabatNama = document.getElementById('cfg-pejabat-nama').value.trim();
-            masterKopConfig.pejabatJabatan = document.getElementById('cfg-pejabat-jabatan').value.trim();
-            masterKopConfig.pejabatNip = document.getElementById('cfg-pejabat-nip').value.trim();
-
-            const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
-            const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
-            const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
-
-            ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
-            ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
-            ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
-
-            await window.saveMasterConfigToGAS();
-            window.showToast("Konfigurasi Pejabat & Kop Disimpan!", "success");
-        };
-
-        window.saveMasterConfigToGAS = async function() {
-            const masterDataPayload = {
-                master_ruangan: masterRuanganList,
-                master_jabatan: masterJabatanList,
-                master_eselon: masterEselonList,
-                master_status: masterStatusPegList,
-                master_edu: masterEducationList,
-                master_golongan: masterGolonganList,
-                master_org: masterOrgList,
-                master_checklist: masterChecklistConfig,
-                kop_config: masterKopConfig
-            };
-
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('master_umpeg_config').upsert({
-                        id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        app_id: window.state.appId || 'RSUD_SINJAI_UMPEG_APP',
-                        config_data: masterDataPayload,
-                        last_updated_at: new Date().toISOString(),
-                        action_type: 'UPDATE_MASTER_CONFIG'
-                    });
-                } catch(e) {
-                    console.warn("Gagal menyimpan ke tabel master_umpeg_config:", e);
-                }
-            }
-
-            if (serverApiConfig.gasUrl) {
-                try {
-                    await fetch(serverApiConfig.gasUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'saveMaster', data: masterDataPayload })
-                    });
-                } catch(err) { console.warn("Sync Master GAS Notice:", err); }
-            }
-            await window.pingSupabaseTable('master_umpeg_config');
-        };
-
+        // Cloud-First Startup Pipeline
         window.loadDataOnStartup = async function() {
             const loadingOverlay = document.getElementById('loading-screen');
             if (loadingOverlay) loadingOverlay.classList.remove('hidden', 'opacity-0');
 
             try {
-                // 1. Read Local Config override if available, otherwise use embedded defaults
                 window.loadLocalServerConfig();
 
                 const activeSupaUrl = window.state.supabaseUrl || EMBEDDED_CREDENTIALS.supabaseUrl;
                 const activeSupaKey = window.state.supabaseAnonKey || EMBEDDED_CREDENTIALS.supabaseAnonKey;
 
-                // 2. Initialize Supabase Client
                 if (window.supabase && activeSupaUrl && activeSupaKey) {
                     supabaseClient = window.supabase.createClient(activeSupaUrl, activeSupaKey);
 
-                    // 3. Cloud-First Pull: System Config from Supabase
+                    // Langkah A: Ambil data awal dari Supabase
                     try {
                         const { data: sysData, error: sysErr } = await supabaseClient
                             .from('system_config')
-                            .select('config_data, gas_url, system_password')
+                            .select('*')
                             .eq('id', window.state.appId)
-                            .single();
+                            .maybeSingle();
 
                         if (sysData && !sysErr) {
                             if (sysData.config_data) serverApiConfig = { ...serverApiConfig, ...sysData.config_data };
                             if (sysData.gas_url) {
+                                ACTIVE_GAS_URL = sysData.gas_url;
                                 window.state.gasUrl = sysData.gas_url;
                                 serverApiConfig.gasUrl = sysData.gas_url;
+                                console.log("📥 Data awal URL GAS ditarik dari Supabase:", ACTIVE_GAS_URL);
                             }
                             if (sysData.system_password) serverApiConfig.password = sysData.system_password;
                             window.saveLocalServerConfig();
                         }
                     } catch (cloudErr) {
-                        console.warn("Cloud-First fetch system_config fallback to local:", cloudErr);
+                        console.warn("Cloud-First fetch system_config fallback:", cloudErr);
                     }
 
-                    // 4. Cloud-First Pull: Master UMPEG Config from Supabase
                     try {
                         const { data: masterData, error: masterErr } = await supabaseClient
                             .from('master_umpeg_config')
                             .select('config_data')
                             .eq('id', window.state.appId)
-                            .single();
+                            .maybeSingle();
 
                         if (masterData && masterData.config_data && !masterErr) {
                             const cfg = masterData.config_data;
@@ -2784,37 +2007,18 @@
                             if (cfg.master_golongan) masterGolonganList = cfg.master_golongan;
                             if (cfg.master_org) masterOrgList = cfg.master_org;
                             if (cfg.master_checklist) masterChecklistConfig = cfg.master_checklist;
-                            if (cfg.kop_config) {
-                                masterKopConfig = cfg.kop_config;
-                                const displayNama = masterKopConfig.pejabatNama || '( ________________________ )';
-                                const displayNip = masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -';
-                                const displayJabatan = masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG';
-                                ['matrix-pejabat-nama', 'sheet-pejabat-nama'].forEach(id => window.setText(id, displayNama));
-                                ['matrix-pejabat-nip', 'sheet-pejabat-nip'].forEach(id => window.setText(id, displayNip));
-                                ['matrix-pejabat-jabatan', 'sheet-pejabat-jabatan'].forEach(id => window.setText(id, displayJabatan));
-                                
-                                const inputLogo = document.getElementById('cfg-logo-url');
-                                if (inputLogo) inputLogo.value = masterKopConfig.logoUrl || '';
-                                const inputTtd = document.getElementById('cfg-ttd-url');
-                                if (inputTtd) inputTtd.value = masterKopConfig.ttdUrl || '';
-                                const inputPjNama = document.getElementById('cfg-pejabat-nama');
-                                if (inputPjNama) inputPjNama.value = masterKopConfig.pejabatNama || '';
-                                const inputPjJabatan = document.getElementById('cfg-pejabat-jabatan');
-                                if (inputPjJabatan) inputPjJabatan.value = masterKopConfig.pejabatJabatan || '';
-                                const inputPjNip = document.getElementById('cfg-pejabat-nip');
-                                if (inputPjNip) inputPjNip.value = masterKopConfig.pejabatNip || '';
-                            }
+                            if (cfg.kop_config) masterKopConfig = cfg.kop_config;
                         }
                     } catch (masterEx) {
                         console.warn("Cloud-First master_umpeg_config fallback:", masterEx);
                     }
 
-                    // 5. Setup WebSocket Realtime Subscriptions
+                    // Langkah B: Aktifkan WebSocket Realtime Subscription
                     await window.setupSupabaseListeners();
                 }
 
-                // 6. Pull Pegawai Data
-                if (window.state.gasUrl) {
+                // Langkah C: Tarik data pegawai dari Google Sheets via ACTIVE_GAS_URL
+                if (ACTIVE_GAS_URL) {
                     await window.pullAllDataFromGas(false);
                 }
             } catch (err) {
@@ -2830,7 +2034,7 @@
             }
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.onload = function() {
             setInterval(() => {
                 const now = new Date();
                 const clockEl = document.getElementById('live-clock');
@@ -2840,7 +2044,7 @@
             }, 1000);
 
             window.loadDataOnStartup();
-        });
+        };
     </script>
 </body>
 </html>
