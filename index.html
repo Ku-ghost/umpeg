@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Pegawai RSUD Sinjai - Self-Service & E-Arsip Digital</title>
+    <title>Portal Pegawai RSUD Sinjai - Self-Service & E-Arsip Digital (Isolated Session)</title>
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,12 +24,14 @@
             }
         }
     </script>
+    
+    <!-- Google Fonts & FontAwesome Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS Client for Realtime Sync -->
+    <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -64,12 +68,12 @@
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf">
-                    <i class="fa-solid fa-user-gear"></i>
+                    <i class="fa-solid fa-user-lock"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-xs sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase">PORTAL PEGAWAI RSUD SINJAI</h1>
-                        <span class="text-[9px] px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold">Self-Service & E-Arsip</span>
+                        <span class="text-[9px] px-2 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold">Sesi Terisolasi & Safe-Lock</span>
                     </div>
                     <p class="text-[10px] text-emerald-700 font-medium hidden sm:block">UPT Rumah Sakit Umum Daerah Kabupaten Sinjai</p>
                 </div>
@@ -77,10 +81,10 @@
 
             <div id="user-header-profile" class="hidden flex items-center gap-2">
                 <div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-extrabold text-[9.5px]">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
-                    <span id="header-sync-status">Standby Sync</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
+                    <span id="header-sync-status">Sesi Mandiri Aktif</span>
                 </div>
-                <button onclick="logoutSession()" class="h-8 px-3 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10px] border border-rose-300 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs">
+                <button onclick="window.logoutSession()" class="h-8 px-3 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10px] border border-rose-300 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs" title="Keluar dari akun pegawai ini">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Keluar Sesi</span>
                 </button>
@@ -102,18 +106,22 @@
             <div class="glass-panel p-5 rounded-2xl border border-emerald-200/90 shadow-xl space-y-4">
                 <div class="text-center space-y-1">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-md glow-leaf mb-2">
-                        <i class="fa-solid fa-address-card"></i>
+                        <i class="fa-solid fa-user-shield"></i>
                     </div>
                     <h2 class="text-sm font-black text-emerald-950 uppercase tracking-wide">Akses Portal Pegawai Mandiri</h2>
                     <p class="text-[10px] text-slate-600">Masukkan NIP 18 Digit (PNS/PPPK) atau Nomor SK Kedinasan (Non-ASN) Anda</p>
+                    <div class="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[9.5px] text-amber-900 font-semibold flex items-center gap-1.5 justify-center mt-1">
+                        <i class="fa-solid fa-lock text-amber-600"></i>
+                        <span>Keamanan Sesi: Data Anda terisolasi & tidak dapat diakses pegawai lain.</span>
+                    </div>
                 </div>
 
                 <div class="flex bg-emerald-100/80 p-1 rounded-xl border border-emerald-200 text-xs font-bold">
-                    <button type="button" onclick="switchAuthTab('login')" id="btn-auth-tab-login" class="flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer">Masuk Sesi NIP/SK</button>
-                    <button type="button" onclick="switchAuthTab('register')" id="btn-auth-tab-register" class="flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer">Registrasi Profil Baru</button>
+                    <button type="button" onclick="window.switchAuthTab('login')" id="btn-auth-tab-login" class="flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer">Masuk Sesi NIP/SK</button>
+                    <button type="button" onclick="window.switchAuthTab('register')" id="btn-auth-tab-register" class="flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer">Registrasi Profil Baru</button>
                 </div>
 
-                <form id="form-auth-login" onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Username / Nama Akun Login</label>
                         <input type="text" id="login-username-input" required placeholder="Ketik Username / Nama Akun Anda..." class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
@@ -124,11 +132,11 @@
                     </div>
                     <button type="submit" class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-right-to-bracket"></i>
-                        <span>Buka Profil Pegawai</span>
+                        <span>Buka Profil Pegawai Saya</span>
                     </button>
                 </form>
 
-                <form id="form-auth-register" onsubmit="handleAuthSubmit(event)" class="hidden space-y-3">
+                <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Nama Akun (Username Login)</label>
                         <input type="text" id="auth-username" required placeholder="Contoh: username_anda" class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
@@ -136,7 +144,7 @@
 
                     <div>
                         <label id="lbl-auth-key" class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Nomor NIP (18 Digit) / Nomor SK Kedinasan</label>
-                        <input type="text" id="auth-key-input" onkeyup="parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="auth-key-input" onkeyup="window.parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                         
                         <div id="auth-parse-box" class="hidden mt-1.5 p-2 rounded-lg bg-emerald-100/90 border border-emerald-300 text-[10px] text-emerald-950 font-medium">
                             <span id="auth-parse-detail"></span>
@@ -145,7 +153,7 @@
 
                     <button type="submit" class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 pt-1">
                         <i class="fa-solid fa-user-plus"></i>
-                        <span>Buat Akun Pegawai</span>
+                        <span>Buat Profil Pegawai Baru</span>
                     </button>
                 </form>
             </div>
@@ -183,11 +191,11 @@
                     </div>
 
                     <div class="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
-                        <button onclick="copyIdPegawai()" class="h-8 px-2.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-[10px] border border-emerald-300 transition-all flex items-center gap-1 shadow-2xs cursor-pointer">
+                        <button onclick="window.copyIdPegawai()" class="h-8 px-2.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-[10px] border border-emerald-300 transition-all flex items-center gap-1 shadow-2xs cursor-pointer">
                             <i class="fa-regular fa-copy"></i>
                             <span>Salin ID</span>
                         </button>
-                        <button onclick="openEditProfileModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
+                        <button onclick="window.openEditProfileModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
                             <i class="fa-solid fa-user-pen"></i>
                             <span>Edit Akun & NIP</span>
                         </button>
@@ -200,11 +208,11 @@
 
             <!-- SUB-TAB SWITCHER -->
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs shadow-2xs">
-                <button type="button" onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <button type="button" onclick="window.switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-folder-tree"></i>
                     <span>Lemari Berkas Digital (Form A - H)</span>
                 </button>
-                <button type="button" onclick="switchTab('form-profil')" id="tab-btn-form" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <button type="button" onclick="window.switchTab('form-profil')" id="tab-btn-form" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-file-pen"></i>
                     <span>Formulir Detail Profil & Kedinasan</span>
                 </button>
@@ -216,16 +224,16 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
                         <div>
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-box-archive text-emerald-600"></i> Repositori Berkas Digital (Ceklist Kertas Kuning UMPEG)
+                                <i class="fa-solid fa-box-archive text-emerald-600"></i> REPOSITORI BERKAS DIGITAL (CEKLIST KERTAS KUNING UMPEG)
                             </h3>
                             <p class="text-[10px] text-slate-600">Kelola tautan Google Drive dokumen fisik Anda sesuai standar form A s/d H RSUD Sinjai.</p>
                         </div>
                         
                         <div class="flex items-center gap-1.5 w-full sm:w-auto">
                             <div class="relative flex-1 sm:w-64">
-                                <input type="text" id="search-earsip-item" onkeyup="filterEarsipItems()" placeholder="Cari nama berkas digital..." class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                <input type="text" id="search-earsip-item" onkeyup="window.filterEarsipItems()" placeholder="Cari nama berkas digital..." class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
                             </div>
-                            <button type="button" onclick="toggleExpandAllCategories()" class="h-8 px-2.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-extrabold text-[10px] border border-emerald-300 shrink-0 cursor-pointer">
+                            <button type="button" onclick="window.toggleExpandAllCategories()" class="h-8 px-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-extrabold text-[10px] border border-emerald-300 shrink-0 cursor-pointer">
                                 Buka/Tutup Semua
                             </button>
                         </div>
@@ -237,7 +245,7 @@
 
             <!-- TAB 2: FORM DETAIL PROFIL & KEDINASAN -->
             <div id="tab-content-form-profil" class="hidden space-y-4">
-                <form onsubmit="saveDetailProfileForm(event)" class="space-y-4">
+                <form onsubmit="window.saveDetailProfileForm(event)" class="space-y-4">
                     
                     <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider border-b border-emerald-100 pb-2 flex items-center gap-2">
@@ -362,7 +370,7 @@
                             </h3>
                             <div class="flex items-center gap-2">
                                 <span id="display-jalur-jabatan" class="text-[9px] bg-emerald-100 text-emerald-950 font-black px-2.5 py-1 rounded border border-emerald-300">Jalur: Fungsional</span>
-                                <button type="button" onclick="toggleJalurJabatanForm()" class="px-2.5 py-1 rounded bg-emerald-700 text-white font-extrabold text-[10px] cursor-pointer hover:bg-emerald-800 transition-all shadow-2xs">
+                                <button type="button" onclick="window.toggleJalurJabatanForm()" class="px-2.5 py-1 rounded bg-emerald-700 text-white font-extrabold text-[10px] cursor-pointer hover:bg-emerald-800 transition-all shadow-2xs">
                                     <i class="fa-solid fa-right-left mr-1"></i> Ubah Jalur
                                 </button>
                             </div>
@@ -560,7 +568,7 @@
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                                 <i class="fa-solid fa-graduation-cap text-emerald-600"></i> IV. Riwayat Pendidikan Formal (SD s/d Terakhir)
                             </h3>
-                            <button type="button" onclick="openAddEducationModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
+                            <button type="button" onclick="window.openAddEducationModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Tambah Riwayat Pendidikan</span>
                             </button>
@@ -585,7 +593,7 @@
 
                     <!-- SUBMIT BUTTON -->
                     <div class="flex items-center justify-end gap-2 pt-2">
-                        <button type="button" onclick="switchTab('dashboard')" class="h-10 px-4 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+                        <button type="button" onclick="window.switchTab('dashboard')" class="h-10 px-4 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
                         <button type="submit" class="h-10 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Simpan Seluruh Profil Kedinasan</span>
@@ -600,7 +608,7 @@
 
     <!-- FOOTER -->
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide border-t border-emerald-700 shadow-lg">
-        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost
+        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System)
     </footer>
 
     <!-- MODAL EDIT PROFILE -->
@@ -614,13 +622,13 @@
                 </div>
                 <div>
                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP / SK Kedinasan</label>
-                    <input type="text" id="edit-nip-input" onkeyup="parseNipOrSkLiveModal()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-mono font-bold text-slate-900 text-xs focus:outline-none">
+                    <input type="text" id="edit-nip-input" onkeyup="window.parseNipOrSkLiveModal()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-mono font-bold text-slate-900 text-xs focus:outline-none">
                     <div id="modal-parse-box" class="hidden mt-1 text-[9.5px] text-emerald-900 font-medium p-1.5 rounded bg-emerald-50 border border-emerald-200"></div>
                 </div>
             </div>
             <div class="flex gap-2 pt-2 border-t">
-                <button type="button" onclick="closeEditProfileModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
-                <button type="button" onclick="saveProfileChanges()" class="flex-1 h-8 bg-emerald-700 text-white font-extrabold rounded-lg text-xs shadow-2xs cursor-pointer">Simpan Perubahan</button>
+                <button type="button" onclick="window.closeEditProfileModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
+                <button type="button" onclick="window.saveProfileChanges()" class="flex-1 h-8 bg-emerald-700 text-white font-extrabold rounded-lg text-xs shadow-2xs cursor-pointer">Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -632,17 +640,17 @@
                 <h3 id="modal-add-link-title" class="text-xs font-black text-emerald-950 uppercase">Tautkan Berkas Digital</h3>
                 <p id="modal-add-link-subtitle" class="text-[9.5px] text-emerald-800 font-medium truncate">Item: -</p>
             </div>
-            <form onsubmit="handleSaveLinkItemSubmit(event)" class="space-y-3 text-xs">
+            <form onsubmit="window.handleSaveLinkItemSubmit(event)" class="space-y-3 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nama / Label Keterangan Berkas</label>
-                    <input type="text" id="m-link-label" required placeholder="Contoh: Scan STR Asli 2026..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                    <input type="text" id="m-link-label" required placeholder="Contoh: Scan STR Asli / Ijazah S1..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">URL Tautan Google Drive / Cloud File</label>
                     <input type="url" id="m-link-url" required placeholder="https://drive.google.com/file/d/..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-[10px] text-slate-900 focus:outline-none">
                 </div>
                 <div class="flex gap-2 pt-1 border-t border-emerald-100">
-                    <button type="button" onclick="closeAddLinkModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
+                    <button type="button" onclick="window.closeAddLinkModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
                     <button type="submit" class="flex-1 h-8 bg-emerald-700 text-white font-extrabold rounded-lg text-xs shadow-2xs cursor-pointer">Simpan Tautan</button>
                 </div>
             </form>
@@ -664,7 +672,7 @@
                     <a id="modal-doc-external" href="#" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-1 transition-all">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Tab Baru
                     </a>
-                    <button onclick="closeDocViewer()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
+                    <button onclick="window.closeDocViewer()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -679,7 +687,7 @@
     <div id="modal-edu-item" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white p-4 space-y-3">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1">Tambah Riwayat Pendidikan</h3>
-            <form onsubmit="handleEducationFormSubmit(event)" class="space-y-2.5 text-xs">
+            <form onsubmit="window.handleEducationFormSubmit(event)" class="space-y-2.5 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Tingkat / Jenjang</label>
                     <select id="m-edu-tingkat" class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-2 font-bold text-slate-900 text-xs focus:outline-none">
@@ -703,40 +711,33 @@
                     <input type="text" id="m-edu-ipk" placeholder="Contoh: 3.75" class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-2.5 font-mono font-bold text-slate-900 text-xs focus:outline-none">
                 </div>
                 <div class="flex gap-2 pt-1 border-t">
-                    <button type="button" onclick="closeAddEducationModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
+                    <button type="button" onclick="window.closeAddEducationModal()" class="flex-1 h-8 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
                     <button type="submit" class="flex-1 h-8 bg-emerald-700 text-white font-extrabold rounded-lg text-xs shadow-2xs cursor-pointer">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC ATTACHED TO GLOBAL SCOPE -->
     <script>
-        // GLOBAL CREDENTIALS (Sistem Antena Supabase Terpusat)
-        const GLOBAL_SUPABASE_URL = ""; 
-        const GLOBAL_SUPABASE_ANON_KEY = ""; 
+        const ANCHORED_SUPABASE_URL = "https://ohktlpuywpnxmqbrswhs.supabase.co"; 
+        const ANCHORED_SUPABASE_ANON_KEY = "";
+        const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
-        const SESSION_STORAGE_KEY = 'RSUD_PORTAL_PEGAWAI_SESSION_V5';
-        const MASTER_PEGAWAI_DB_KEY = 'RSUD_UMPEG_MASTER_DATASET_V1';
-        const MASTER_RUANGAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_RUANGAN_LIST_V1';
-        const MASTER_JABATAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_JABATAN_LIST_V1';
-        const MASTER_GOLONGAN_STORAGE_KEY = 'RSUD_UMPEG_MASTER_GOLONGAN_LIST_V1';
-        const MASTER_STATUS_PEG_STORAGE_KEY = 'RSUD_UMPEG_MASTER_STATUS_PEG_LIST_V1';
-        const MASTER_EDU_STORAGE_KEY = 'RSUD_UMPEG_MASTER_EDU_LIST_V1';
-        const MASTER_ORG_STORAGE_KEY = 'RSUD_UMPEG_MASTER_ORG_LIST_V1';
-        const MASTER_CHECKLIST_CONFIG_KEY = 'RSUD_UMPEG_MASTER_CHECKLIST_CONFIG_V1';
-
-        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)"];
+        let serverApiConfig = { 
+            gasUrl: localStorage.getItem('gas_url') || '', 
+            supabaseUrl: localStorage.getItem('supabase_url') || ANCHORED_SUPABASE_URL, 
+            supabaseAnonKey: localStorage.getItem('supabase_anon_key') || '' 
+        };
+        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
         const DEFAULT_JABATAN = {
-            STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG"],
-            FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker"]
+            STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG", "Kepala Sub Bagian Keuangan", "Kepala Bidang Pelayanan", "Kepala Bidang Keperawatan"],
+            FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker", "Pranata Laboratorium", "Radiografer", "Nutrisionis"]
         };
         const DEFAULT_GOLONGAN = ["IV/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
         const DEFAULT_STATUS_PEG = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Honorer", "Kontrak", "Sukarela"];
         const DEFAULT_EDUCATION = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
         const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
 
-        // FULL 41 CHECKLIST ITEMS ACCORDING TO FORM A-H KERTAS KUNING UMPEG
         let FORM_CHECKLIST_CONFIG = [
             {
                 code: 'A', title: 'A. Kualifikasi & Kompetensi Staf', items: [
@@ -752,16 +753,8 @@
                     { id: 'a_10', name: 'Print Out PDDikti / Forlap Terkini' }
                 ]
             },
-            {
-                code: 'B', title: 'B. Bukti Orientasi', items: [
-                    { id: 'b_1', name: 'Surat Keterangan Orientasi RSUD Sinjai' }
-                ]
-            },
-            {
-                code: 'C', title: 'C. Uraian Tugas', items: [
-                    { id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }
-                ]
-            },
+            { code: 'B', title: 'B. Bukti Orientasi', items: [{ id: 'b_1', name: 'Surat Keterangan Orientasi RSUD Sinjai' }] },
+            { code: 'C', title: 'C. Uraian Tugas', items: [{ id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }] },
             {
                 code: 'D', title: 'D. Riwayat Pekerjaan Staf', items: [
                     { id: 'd_1', name: 'Surat Perintah Melaksanakan Tugas (SPMT)' },
@@ -809,7 +802,7 @@
                     { id: 'h_5', name: 'Akta Kelahiran Anak' },
                     { id: 'h_6', name: 'Kartu Isteri (KARIS) / Kartu Suami (KARSU)' },
                     { id: 'h_7', name: 'Tanda Terima LHKPN / LHKASN' },
-                    { id: 'h_8', name: 'Kartu Anggota Organisasi Profesi (IDI/PPNI/IBI/IAI/HAKLI)' },
+                    { id: 'h_8', name: 'Kartu Anggota Organisasi Profesi (IDI/PPNI/IBI/IAI)' },
                     { id: 'h_9', name: 'Pas Foto Berwarna Terbaru Background Merah' },
                     { id: 'h_10', name: 'Surat Keterangan Catatan Kepolisian (SKCK)' },
                     { id: 'h_11', name: 'Dokumen Pendukung Lainnya' }
@@ -819,29 +812,29 @@
 
         let currentPegawai = null;
         let activeTab = 'dashboard';
-        let expandedCategories = {};
+        let expandedCategories = {}; 
         let activeAddLinkId = null;
-        let serverApiConfig = { gasUrl: '', supabaseUrl: GLOBAL_SUPABASE_URL, supabaseAnonKey: GLOBAL_SUPABASE_ANON_KEY };
         let supabaseClient = null;
         let realtimeChannel = null;
+
+        let masterRuanganList = [...DEFAULT_RUANGAN];
+        let masterJabatanList = JSON.parse(JSON.stringify(DEFAULT_JABATAN));
+        let masterStatusPegList = [...DEFAULT_STATUS_PEG];
+        let masterEducationList = [...DEFAULT_EDUCATION];
+        let masterGolonganList = [...DEFAULT_GOLONGAN];
+        let masterOrgList = [...DEFAULT_ORG_PROFESI];
+
+        window.cleanAndFixGasUrl = function(url) {
+            if (!url) return "";
+            let clean = String(url).trim();
+            if (clean.includes('/edit')) clean = clean.replace(/\/edit.*$/, '/exec');
+            if (clean.includes('/dev')) clean = clean.replace(/\/dev.*$/, '/exec');
+            return clean;
+        };
 
         window.isMatchingKey = function(val1, val2) {
             if (!val1 || !val2) return false;
             return String(val1).trim().toLowerCase() === String(val2).trim().toLowerCase();
-        };
-
-        window.getSessItem = function(key) {
-            const raw = sessionStorage.getItem(key) || localStorage.getItem(key);
-            if (!raw) return null;
-            try { return JSON.parse(raw); } catch(e) { return raw; }
-        };
-
-        window.setSessItem = function(key, val) {
-            const strVal = typeof val === 'string' ? val : JSON.stringify(val);
-            try { 
-                sessionStorage.setItem(key, strVal); 
-                localStorage.setItem(key, strVal);
-            } catch(e){}
         };
 
         window.getVal = function(id) {
@@ -865,171 +858,189 @@
             setTimeout(() => toast.classList.add('hidden'), 3500);
         };
 
+        // MEMANCAHKAN SINYAL MINIMAL KE SUPABASE & PROFIL UTUH KE GOOGLE SHEETS (GAS) - ISOLATED USER ONLY
+        window.triggerActionDrivenSyncQueue = async function(pegData) {
+            if (!pegData || !currentPegawai || !window.isMatchingKey(pegData.nip, currentPegawai.nip)) return;
+            
+            // Safe Isolated Local Cache for active employee
+            sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(pegData));
+
+            // 1. Supabase (Minimal Payload: id_pegawai, nip, username, link_url_drive, details)
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('pegawai_lemari_digital').upsert({
+                        id_pegawai: pegData.idPegawai,
+                        nip: pegData.nip,
+                        username: pegData.username || pegData.nama || '',
+                        nama: pegData.nama || pegData.username,
+                        status: pegData.status || '',
+                        sub1: pegData.sub1 || 'MEDIS',
+                        sub2: pegData.sub2 || 'FUNGSIONAL',
+                        jabatan: pegData.jabatan || '',
+                        ruangan: pegData.ruangan || '',
+                        link_url_drive: pegData.linksMap || {},
+                        detail_personal: pegData.detailPersonal || {},
+                        detail_jabatan: pegData.detailJabatan || {},
+                        detail_medis: pegData.detailMedis || {},
+                        riwayat_pendidikan: pegData.riwayatPendidikan || [],
+                        updated_at: new Date().toISOString()
+                    });
+                } catch(err) {
+                    console.warn("Supabase Isolated Sync Notice:", err);
+                }
+            }
+
+            // 2. Google Sheets (Latar Belakang: Simpan Seluruh Detail Profil Pegawai)
+            if (serverApiConfig && serverApiConfig.gasUrl) {
+                try {
+                    fetch(serverApiConfig.gasUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'savePegawai', data: pegData })
+                    }).catch(e => console.warn("GAS save notice:", e));
+                } catch(e) {}
+            }
+        };
+
         window.generateIdPegawai = function(keyInput) {
             const digits = (keyInput || '').replace(/\D/g, '');
             return 'RSUD-PEG-' + (digits.length >= 8 ? digits.substring(0, 8) : Date.now().toString().slice(-8));
         };
 
+        window.showAuthView = function() {
+            const authSec = document.getElementById('auth-section');
+            const dashSec = document.getElementById('dashboard-section');
+            const headerProf = document.getElementById('user-header-profile');
+            if (authSec) authSec.classList.remove('hidden');
+            if (dashSec) dashSec.classList.add('hidden');
+            if (headerProf) headerProf.classList.add('hidden');
+        };
+
+        window.showDashboardView = function() {
+            const authSec = document.getElementById('auth-section');
+            const dashSec = document.getElementById('dashboard-section');
+            const headerProf = document.getElementById('user-header-profile');
+            if (authSec) authSec.classList.add('hidden');
+            if (dashSec) dashSec.classList.remove('hidden');
+            if (headerProf) headerProf.classList.remove('hidden');
+            window.renderDashboard();
+        };
+
         window.initCloudConnectionAndRealtime = async function() {
-            const savedApi = window.getSessItem('RSUD_UMPEG_SERVER_API_CONFIG_V1');
-            if (savedApi) serverApiConfig = { ...serverApiConfig, ...savedApi };
+            const finalSupaUrl = serverApiConfig.supabaseUrl || ANCHORED_SUPABASE_URL;
+            const finalAnonKey = serverApiConfig.supabaseAnonKey;
 
-            const finalSupaUrl = GLOBAL_SUPABASE_URL || serverApiConfig.supabaseUrl || '';
-            const finalAnonKey = GLOBAL_SUPABASE_ANON_KEY || serverApiConfig.supabaseAnonKey || '';
+            // Session restore from isolated sessionStorage
+            const cachedUser = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
+            if (cachedUser && !currentPegawai) {
+                try {
+                    currentPegawai = JSON.parse(cachedUser);
+                    window.showDashboardView();
+                } catch(e) {}
+            }
 
-            if (finalSupaUrl && finalSupaUrl.startsWith('http') && finalAnonKey && window.supabase) {
+            if (finalSupaUrl && finalAnonKey && window.supabase) {
                 try {
                     supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey);
-                    
-                    const { data: sysConfig } = await supabaseClient
-                        .from('system_config')
-                        .select('gas_url')
-                        .eq('id', 'RSUD_SINJAI_UMPEG_APP')
-                        .maybeSingle();
-
-                    if (sysConfig && sysConfig.gas_url) {
-                        serverApiConfig.gasUrl = sysConfig.gas_url;
-                    }
 
                     const dot = document.getElementById('ws-dot');
                     const txt = document.getElementById('header-sync-status');
                     if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                    if (txt) txt.innerText = "Antena Sky Toll Aktif";
+                    if (txt) txt.innerText = "Sesi Terisolasi & Realtime Aktif";
 
+                    // STRICT USER ISOLATION REALTIME LISTENER
                     if (!realtimeChannel) {
-                        realtimeChannel = supabaseClient
-                            .channel('pegawai-portal-changes')
-                            .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
-                                if (currentPegawai && payload.new && isMatchingKey(payload.new.nip, currentPegawai.nip)) {
-                                    currentPegawai.verifikasiStatus = payload.new.verifikasi_status || 'PENDING';
-                                    currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
-                                    if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
-                                    if (payload.new.detail_personal) currentPegawai.detailPersonal = payload.new.detail_personal;
-                                    
-                                    window.setSessItem(SESSION_STORAGE_KEY, currentPegawai);
-                                    window.updateDatasetMasterRecord(currentPegawai);
-                                    window.renderDashboard();
-                                }
-                            })
-                            .subscribe();
+                        try {
+                            realtimeChannel = supabaseClient
+                                .channel('isolated-pegawai-channel')
+                                .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
+                                    // REJECT any payload that does NOT belong to currentPegawai NIP or ID!
+                                    if (currentPegawai && payload.new && (window.isMatchingKey(payload.new.nip, currentPegawai.nip) || window.isMatchingKey(payload.new.id_pegawai, currentPegawai.idPegawai))) {
+                                        
+                                        if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
+                                        if (payload.new.verifikasi_status) currentPegawai.verifikasiStatus = payload.new.verifikasi_status;
+                                        if (payload.new.verifikasi_catatan) currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan;
+                                        if (payload.new.nama) currentPegawai.nama = payload.new.nama;
+                                        if (payload.new.status) currentPegawai.status = payload.new.status;
+                                        if (payload.new.sub1) currentPegawai.sub1 = payload.new.sub1;
+                                        if (payload.new.sub2) currentPegawai.sub2 = payload.new.sub2;
+                                        if (payload.new.jabatan) currentPegawai.jabatan = payload.new.jabatan;
+                                        if (payload.new.ruangan) currentPegawai.ruangan = payload.new.ruangan;
+                                        if (payload.new.detail_personal) currentPegawai.detailPersonal = payload.new.detail_personal;
+                                        if (payload.new.detail_jabatan) currentPegawai.detailJabatan = payload.new.detail_jabatan;
+                                        if (payload.new.detail_medis) currentPegawai.detailMedis = payload.new.detail_medis;
+                                        if (payload.new.riwayat_pendidikan) currentPegawai.riwayatPendidikan = payload.new.riwayat_pendidikan;
+
+                                        sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
+                                        window.renderDashboard();
+                                        window.showToast("⚡ Perubahan data profil/berkas diterima secara live!", "success");
+                                    }
+                                })
+                                .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
+                                    if (payload.new && payload.new.config_data) {
+                                        const cfg = payload.new.config_data;
+                                        if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                                        if (cfg.master_status) masterStatusPegList = cfg.master_status;
+                                        if (cfg.master_edu) masterEducationList = cfg.master_edu;
+                                        if (cfg.master_org) masterOrgList = cfg.master_org;
+                                        if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                                        
+                                        window.populateMasterDropdowns();
+                                        window.renderDashboard();
+                                        window.showToast("⚡ Master referensi UMPEG diperbarui secara live!", "info");
+                                    }
+                                })
+                                .subscribe((status) => {
+                                    if (status === 'SUBSCRIBED') {
+                                        console.log('🟢 Terhubung ke Supabase Realtime (Sesi Pegawai Terisolasi)');
+                                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                                        setTimeout(() => { realtimeChannel = null; window.initCloudConnectionAndRealtime(); }, 3000);
+                                    }
+                                });
+                        } catch(wsErr) {
+                            console.warn("WebSocket multi-device notice:", wsErr);
+                        }
                     }
                 } catch (e) { 
                     console.warn("Supabase Init Notice:", e); 
                 }
-            } else {
-                const txt = document.getElementById('header-sync-status');
-                if (txt) txt.innerText = "Supabase Standby";
             }
-        };
-
-        window.updateDatasetMasterRecord = function(pegawaiObj) {
-            let masterDb = window.getSessItem(MASTER_PEGAWAI_DB_KEY) || [];
-            if (!Array.isArray(masterDb)) masterDb = [];
-            const idx = masterDb.findIndex(p => window.isMatchingKey(p.nip, pegawaiObj.nip));
-            if (idx !== -1) {
-                masterDb[idx] = { ...masterDb[idx], ...pegawaiObj };
-            } else {
-                masterDb.push(pegawaiObj);
-            }
-            window.setSessItem(MASTER_PEGAWAI_DB_KEY, masterDb);
-        };
-
-        window.triggerActionDrivenSyncQueue = function(recordPayload) {
-            window.setSessItem(SESSION_STORAGE_KEY, recordPayload);
-            window.updateDatasetMasterRecord(recordPayload);
-            window.showToast("Menyimpan & Mensinkronkan ke Cloud...", "info");
-
-            setTimeout(async () => {
-                try {
-                    if (supabaseClient) {
-                        const { error: supaErr } = await supabaseClient.from('pegawai_lemari_digital').upsert({
-                            id_pegawai: recordPayload.idPegawai,
-                            nip: recordPayload.nip,
-                            username: recordPayload.username || recordPayload.nama,
-                            nama: recordPayload.nama,
-                            status_kepegawaian: recordPayload.status || '',
-                            sub1: recordPayload.sub1 || 'MEDIS',
-                            sub2: recordPayload.sub2 || 'FUNGSIONAL',
-                            jabatan: recordPayload.jabatan || '-',
-                            ruangan: recordPayload.ruangan || '-',
-                            link_url_drive: recordPayload.linksMap || {},
-                            detail_personal: recordPayload.detailPersonal || {},
-                            detail_jabatan: recordPayload.detailJabatan || {},
-                            detail_medis: recordPayload.detailMedis || {},
-                            riwayat_pendidikan: recordPayload.riwayatPendidikan || [],
-                            verifikasi_status: recordPayload.verifikasiStatus || 'PENDING',
-                            verifikasi_catatan: recordPayload.verifikasiCatatan || '',
-                            updated_at: new Date().toISOString()
-                        });
-
-                        if (!supaErr) {
-                            await supabaseClient.from('system_config').upsert({
-                                id: 'RSUD_SINJAI_UMPEG_APP',
-                                last_updated_at: new Date().toISOString(),
-                                action_type: 'UPDATE_PEGAWAI',
-                                updated_by_nip: recordPayload.nip
-                            });
-                        }
-                    }
-
-                    if (serverApiConfig.gasUrl) {
-                        await fetch(serverApiConfig.gasUrl, {
-                            method: 'POST',
-                            mode: 'no-cors', 
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify(recordPayload)
-                        });
-                    }
-                } catch (queueErr) {
-                    console.warn("Background Queue Notice:", queueErr);
-                }
-            }, 150);
         };
 
         window.populateMasterDropdowns = function() {
-            const masterRuangan = window.getSessItem(MASTER_RUANGAN_STORAGE_KEY) || DEFAULT_RUANGAN;
-            const masterStatus = window.getSessItem(MASTER_STATUS_PEG_STORAGE_KEY) || DEFAULT_STATUS_PEG;
-            const masterGolongan = window.getSessItem(MASTER_GOLONGAN_STORAGE_KEY) || DEFAULT_GOLONGAN;
-            const masterEdu = window.getSessItem(MASTER_EDU_STORAGE_KEY) || DEFAULT_EDUCATION;
-            const masterOrg = window.getSessItem(MASTER_ORG_STORAGE_KEY) || DEFAULT_ORG_PROFESI;
-            const masterChecklist = window.getSessItem(MASTER_CHECKLIST_CONFIG_KEY);
-
-            if (masterChecklist && Array.isArray(masterChecklist) && masterChecklist.length > 0) {
-                FORM_CHECKLIST_CONFIG = masterChecklist;
-            }
-
             const ruanganEl = document.getElementById('f-bas-ruangan');
             if (ruanganEl) {
                 const curr = ruanganEl.value;
-                ruanganEl.innerHTML = '<option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>' + masterRuangan.map(r => `<option value="${r}">${r}</option>`).join('');
+                ruanganEl.innerHTML = '<option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>' + masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
                 if (curr) ruanganEl.value = curr;
             }
 
             const statusEl = document.getElementById('f-bas-status-pegawai');
             if (statusEl) {
                 const curr = statusEl.value;
-                statusEl.innerHTML = '<option value="" disabled selected>-- Pilih Status Kepegawaian --</option>' + masterStatus.map(s => `<option value="${s}">${s}</option>`).join('');
+                statusEl.innerHTML = '<option value="" disabled selected>-- Pilih Status Kepegawaian --</option>' + masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
                 if (curr) statusEl.value = curr;
             }
 
             const golSelect = document.getElementById('f-bas-golongan');
             if (golSelect) {
                 const curr = golSelect.value;
-                golSelect.innerHTML = '<option value="" disabled selected>-- Pilih Golongan --</option>' + masterGolongan.map(g => `<option value="${g}">${g}</option>`).join('');
+                golSelect.innerHTML = '<option value="" disabled selected>-- Pilih Golongan --</option>' + masterGolonganList.map(g => `<option value="${g}">${g}</option>`).join('');
                 if (curr) golSelect.value = curr;
             }
 
             const eduSelect = document.getElementById('m-edu-tingkat');
             if (eduSelect) {
                 const curr = eduSelect.value;
-                eduSelect.innerHTML = '<option value="" disabled selected>-- Pilih Jenjang --</option>' + masterEdu.map(ed => `<option value="${ed}">${ed}</option>`).join('');
+                eduSelect.innerHTML = '<option value="" disabled selected>-- Pilih Jenjang --</option>' + masterEducationList.map(ed => `<option value="${ed}">${ed}</option>`).join('');
                 if (curr) eduSelect.value = curr;
             }
 
             const orgSelect = document.getElementById('f-med-org-profesi');
             if (orgSelect) {
                 const curr = orgSelect.value;
-                orgSelect.innerHTML = '<option value="" disabled selected>-- Pilih Organisasi Profesi --</option>' + masterOrg.map(o => `<option value="${o}">${o}</option>`).join('');
+                orgSelect.innerHTML = '<option value="" disabled selected>-- Pilih Organisasi Profesi --</option>' + masterOrgList.map(o => `<option value="${o}">${o}</option>`).join('');
                 if (curr) orgSelect.value = curr;
             }
 
@@ -1093,116 +1104,115 @@
             }
         };
 
-        window.checkExistingSession = function() {
-            const saved = window.getSessItem(SESSION_STORAGE_KEY);
-            if (saved) {
-                currentPegawai = saved;
-                if (!currentPegawai.linksMap) currentPegawai.linksMap = {};
-                window.showDashboardView();
-            } else {
-                window.showAuthView();
-            }
-        };
-
+        // STRICT AUTHENTICATION: 1 PEGAWAI = 1 ID SESSION ISOLATION
         window.handleLoginSubmit = async function(e) {
-            e.preventDefault();
-            const uname = window.getVal('login-username-input').toLowerCase();
-            const key = window.getVal('login-key-input');
-            
-            window.showToast("Memverifikasi NIP ke Database...", "info");
+            if (e) e.preventDefault();
+            const username = window.getVal('login-username-input');
+            const keyInput = window.getVal('login-key-input');
+            if (!username || !keyInput) {
+                window.showToast("Silakan isi Username dan NIP/SK!", "warning");
+                return;
+            }
 
-            let foundRemote = null;
+            window.showToast("Mengecek Akses Sesi Pegawai...", "info");
+
+            let loadedPegawai = null;
+
+            // Query STRICTLY for this specific NIP / SK or Username from Supabase
             if (supabaseClient) {
                 try {
-                    const { data } = await supabaseClient
+                    const { data: nipData, error: nipErr } = await supabaseClient
                         .from('pegawai_lemari_digital')
                         .select('*')
-                        .eq('nip', key)
+                        .eq('nip', keyInput)
                         .maybeSingle();
-                    if (data) foundRemote = data;
-                } catch(err){}
-            }
 
-            if (!foundRemote) {
-                const masterDb = window.getSessItem(MASTER_PEGAWAI_DB_KEY) || [];
-                const localFound = masterDb.find(p => window.isMatchingKey(p.nip, key));
-                if (localFound) {
-                    foundRemote = {
-                        id_pegawai: localFound.idPegawai,
-                        nip: localFound.nip,
-                        username: localFound.username,
-                        nama: localFound.nama,
-                        status_kepegawaian: localFound.status,
-                        sub1: localFound.sub1,
-                        sub2: localFound.sub2,
-                        jabatan: localFound.jabatan,
-                        ruangan: localFound.ruangan,
-                        link_url_drive: localFound.linksMap || {},
-                        detail_personal: localFound.detailPersonal || {},
-                        detail_jabatan: localFound.detailJabatan || {},
-                        detail_medis: localFound.detailMedis || {},
-                        riwayat_pendidikan: localFound.riwayatPendidikan || [],
-                        verifikasi_status: localFound.verifikasiStatus || 'PENDING',
-                        verifikasi_catatan: localFound.verifikasiCatatan || ''
-                    };
+                    if (nipData && !nipErr) {
+                        loadedPegawai = {
+                            idPegawai: nipData.id_pegawai,
+                            nip: nipData.nip,
+                            username: nipData.username || username,
+                            nama: nipData.nama || nipData.username || username,
+                            status: nipData.status || '',
+                            sub1: nipData.sub1 || 'MEDIS',
+                            sub2: nipData.sub2 || 'FUNGSIONAL',
+                            jabatan: nipData.jabatan || '',
+                            ruangan: nipData.ruangan || '',
+                            linksMap: nipData.link_url_drive || {},
+                            detailPersonal: nipData.detail_personal || {},
+                            detailJabatan: nipData.detail_jabatan || {},
+                            detailMedis: nipData.detail_medis || {},
+                            riwayatPendidikan: nipData.riwayat_pendidikan || [],
+                            verifikasiStatus: nipData.verifikasi_status || 'PENDING',
+                            verifikasiCatatan: nipData.verifikasi_catatan || ''
+                        };
+                    } else {
+                        const { data: uData, error: uErr } = await supabaseClient
+                            .from('pegawai_lemari_digital')
+                            .select('*')
+                            .eq('username', username)
+                            .maybeSingle();
+
+                        if (uData && !uErr) {
+                            loadedPegawai = {
+                                idPegawai: uData.id_pegawai,
+                                nip: uData.nip,
+                                username: uData.username,
+                                nama: uData.nama || uData.username,
+                                status: uData.status || '',
+                                sub1: uData.sub1 || 'MEDIS',
+                                sub2: uData.sub2 || 'FUNGSIONAL',
+                                jabatan: uData.jabatan || '',
+                                ruangan: uData.ruangan || '',
+                                linksMap: uData.link_url_drive || {},
+                                detailPersonal: uData.detail_personal || {},
+                                detailJabatan: uData.detail_jabatan || {},
+                                detailMedis: uData.detail_medis || {},
+                                riwayatPendidikan: uData.riwayat_pendidikan || [],
+                                verifikasiStatus: uData.verifikasi_status || 'PENDING',
+                                verifikasiCatatan: uData.verifikasi_catatan || ''
+                            };
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Error fetching isolated user session:", err);
                 }
             }
 
-            if (foundRemote) {
-                currentPegawai = {
-                    idPegawai: foundRemote.id_pegawai,
-                    nip: foundRemote.nip,
-                    username: foundRemote.username,
-                    nama: foundRemote.nama,
-                    status: foundRemote.status_kepegawaian,
-                    sub1: foundRemote.sub1,
-                    sub2: foundRemote.sub2,
-                    jabatan: foundRemote.jabatan,
-                    ruangan: foundRemote.ruangan,
-                    linksMap: foundRemote.link_url_drive || {},
-                    detailPersonal: foundRemote.detail_personal || {},
-                    detailJabatan: foundRemote.detail_jabatan || {},
-                    detailMedis: foundRemote.detail_medis || {},
-                    riwayatPendidikan: foundRemote.riwayat_pendidikan || [],
-                    verifikasiStatus: foundRemote.verifikasi_status || 'PENDING',
-                    verifikasiCatatan: foundRemote.verifikasi_catatan || ''
+            if (!loadedPegawai) {
+                loadedPegawai = {
+                    idPegawai: window.generateIdPegawai(keyInput),
+                    username: username,
+                    nip: keyInput,
+                    status: '', sub1: 'MEDIS', sub2: 'FUNGSIONAL', nama: username, jabatan: '', ruangan: '', detailPersonal: {}, riwayatPendidikan: [], linksMap: {}, verifikasiStatus: 'PENDING', verifikasiCatatan: ''
                 };
-                window.setSessItem(SESSION_STORAGE_KEY, currentPegawai);
-                window.showDashboardView();
-                window.showToast(`Selamat datang, ${currentPegawai.nama}!`, "success");
-            } else {
-                window.showToast("Akun/NIP tidak ditemukan. Silakan Registrasi!", "warning");
-                window.switchAuthTab('register');
-                window.setVal('auth-key-input', key);
-                window.setVal('auth-username', uname);
             }
+
+            currentPegawai = loadedPegawai;
+            sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
+            
+            window.triggerActionDrivenSyncQueue(currentPegawai);
+            window.showDashboardView();
+            window.showToast(`Sesi Aktif: ${currentPegawai.nama || currentPegawai.username}`, "success");
         };
 
-        window.showAuthView = function() {
-            const authSec = document.getElementById('auth-section');
-            const dashSec = document.getElementById('dashboard-section');
-            const headProf = document.getElementById('user-header-profile');
-            if(authSec) authSec.classList.remove('hidden');
-            if(dashSec) dashSec.classList.add('hidden');
-            if(headProf) headProf.classList.add('hidden');
-        };
-
-        window.showDashboardView = function() {
-            const authSec = document.getElementById('auth-section');
-            const dashSec = document.getElementById('dashboard-section');
-            const headProf = document.getElementById('user-header-profile');
-            if(authSec) authSec.classList.add('hidden');
-            if(dashSec) dashSec.classList.remove('hidden');
-            if(headProf) headProf.classList.remove('hidden');
-            window.renderDashboard();
-            window.populateDetailProfileForm();
+        window.checkExistingSession = function() {
+            const cachedUser = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
+            if (cachedUser) {
+                try {
+                    currentPegawai = JSON.parse(cachedUser);
+                    window.showDashboardView();
+                    return;
+                } catch(e) {}
+            }
+            window.showAuthView();
         };
 
         window.logoutSession = function() {
-            sessionStorage.removeItem(SESSION_STORAGE_KEY);
             currentPegawai = null;
+            sessionStorage.removeItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
             window.showAuthView();
-            window.showToast("Anda telah keluar sesi.", "info");
+            window.showToast("Sesi pegawai telah ditutup.", "info");
         };
 
         window.switchTab = function(tabName) {
@@ -1269,7 +1279,7 @@
                                 <span>${currentPegawai.verifikasiCatatan || 'Mohon periksa dan lengkapi berkas Anda.'}</span>
                             </div>
                         </div>
-                        <button onclick="switchTab('dashboard')" class="px-3 py-1 rounded-lg bg-rose-600 text-white font-extrabold text-[10px] shrink-0">Perbaiki</button>
+                        <button onclick="window.switchTab('dashboard')" class="px-3 py-1 rounded-lg bg-rose-600 text-white font-extrabold text-[10px] shrink-0">Perbaiki</button>
                     `;
                     corrBanner.classList.remove('hidden');
                 } else if (currentPegawai.verifikasiStatus === 'TERVERIFIKASI') {
@@ -1295,7 +1305,7 @@
             const tbody = document.getElementById('edu-table-body');
             if (!tbody) return;
             tbody.innerHTML = '';
-            if (!currentPegawai.riwayatPendidikan || currentPegawai.riwayatPendidikan.length === 0) {
+            if (!currentPegawai || !currentPegawai.riwayatPendidikan || currentPegawai.riwayatPendidikan.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Belum ada data riwayat pendidikan.</td></tr>`;
                 return;
             }
@@ -1307,7 +1317,7 @@
                         <td class="p-2.5">${item.prodi || '-'}</td>
                         <td class="p-2.5 font-mono">${item.noIjazah || '-'}</td>
                         <td class="p-2.5 font-mono font-bold">${item.ipk || '-'}</td>
-                        <td class="p-2.5 text-center"><button onclick="deleteEducationItem('${item.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash-can"></i></button></td>
+                        <td class="p-2.5 text-center"><button onclick="window.deleteEducationItem('${item.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash-can"></i></button></td>
                     </tr>
                 `;
             });
@@ -1315,49 +1325,60 @@
 
         window.renderFormAtoHRepository = function() {
             const container = document.getElementById('earsip-categories-container');
-            if (!container) return;
+            if (!container || !currentPegawai) return;
             container.innerHTML = '';
 
             FORM_CHECKLIST_CONFIG.forEach(cat => {
                 let filled = 0;
                 let itemsHtml = '';
+
                 cat.items.forEach(item => {
                     const links = (currentPegawai.linksMap && currentPegawai.linksMap[item.id]) ? currentPegawai.linksMap[item.id] : [];
                     const isF = links.length > 0;
                     if (isF) filled++;
 
-                    let linkBadge = isF ? links.map((l, idx) => `
-                        <div class="flex items-center gap-1 bg-emerald-100 p-0.5 rounded border border-emerald-300">
-                            <button onclick="openDocViewer('${l.url}', '${l.label}')" class="px-2 py-0.5 rounded bg-emerald-700 text-white text-[9px] font-bold"><i class="fa-solid fa-eye mr-0.5"></i> ${l.label}</button>
-                            <button onclick="deleteLinkItem('${item.id}', ${idx})" class="text-rose-600 px-1 text-[9px]"><i class="fa-solid fa-xmark"></i></button>
+                    let linksBadgeHtml = isF ? links.map((l, idx) => `
+                        <div class="inline-flex items-center gap-1 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-300 text-[9.5px]">
+                            <button onclick="window.openDocViewer('${l.label}', '${l.url}')" class="font-bold text-emerald-900 hover:underline flex items-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-file-pdf text-emerald-700"></i> ${l.label}
+                            </button>
+                            <button onclick="window.deleteLinkItem('${item.id}', ${idx})" class="text-rose-600 hover:text-rose-800 ml-1 cursor-pointer" title="Hapus Berkas Ini">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
                         </div>
-                    `).join('') : `<span class="text-[9px] text-rose-500 font-bold italic">Belum dilampirkan</span>`;
+                    `).join('') : `<span class="text-[9.5px] text-rose-500 font-semibold italic">*Belum dilampirkan</span>`;
 
                     itemsHtml += `
-                        <div class="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-slate-900 text-[11px]"><i class="fa-solid ${isF ? 'fa-circle-check text-emerald-600' : 'fa-circle text-slate-300'} mr-1"></i>${item.name}</span>
-                                <button onclick="openAddLinkModal('${item.id}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[9px] shadow-2xs transition-all"><i class="fa-solid fa-plus mr-0.5"></i> Tautkan</button>
+                        <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1.5 shadow-2xs">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full ${isF ? 'bg-emerald-500' : 'bg-slate-300'} shrink-0"></span>
+                                    <span class="font-bold text-slate-900 text-xs">${item.name}</span>
+                                </div>
+                                <button type="button" onclick="window.openAddLinkModal('${item.id}')" class="h-7 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 shrink-0 cursor-pointer">
+                                    <i class="fa-solid fa-plus"></i> Tautkan
+                                </button>
                             </div>
-                            <div class="flex flex-wrap gap-1">${linkBadge}</div>
+                            <div class="pl-4 flex flex-wrap gap-1.5">${linksBadgeHtml}</div>
                         </div>
                     `;
                 });
 
                 const isExp = expandedCategories[cat.code] === true;
+
                 container.innerHTML += `
-                    <div class="rounded-xl bg-emerald-50/70 border border-emerald-200 overflow-hidden">
-                        <div onclick="toggleCategoryAccordion('${cat.code}')" class="p-2.5 bg-emerald-100/80 cursor-pointer flex items-center justify-between font-extrabold text-emerald-950 text-xs">
+                    <div class="rounded-xl border border-emerald-200 overflow-hidden space-y-2">
+                        <div onclick="window.toggleSingleCategory('${cat.code}')" class="p-3 bg-emerald-100/90 hover:bg-emerald-200/90 cursor-pointer flex items-center justify-between font-extrabold text-emerald-950 text-xs transition-colors">
                             <span>${cat.title}</span>
-                            <span class="text-[9px] px-2 py-0.5 rounded-full ${filled > 0 ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${filled} / ${cat.items.length} Terisi</span>
+                            <span class="text-[9.5px] px-2.5 py-0.5 rounded-full ${filled > 0 ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'}">${filled} / ${cat.items.length} Terisi</span>
                         </div>
-                        <div class="${isExp ? 'p-2 space-y-1.5' : 'hidden p-2 space-y-1.5'}">${itemsHtml}</div>
+                        <div class="${isExp ? 'p-2 space-y-2' : 'hidden p-2 space-y-2'}">${itemsHtml}</div>
                     </div>
                 `;
             });
         };
 
-        window.toggleCategoryAccordion = function(code) {
+        window.toggleSingleCategory = function(code) {
             expandedCategories[code] = !expandedCategories[code];
             window.renderFormAtoHRepository();
         };
@@ -1412,7 +1433,7 @@
             window.renderDashboard();
         };
 
-        window.openDocViewer = function(url, label) {
+        window.openDocViewer = function(label, url) {
             if (!url) return;
             window.setText('modal-doc-title', label || "Pratinjau");
             const extLink = document.getElementById('modal-doc-external');
@@ -1497,7 +1518,6 @@
             const secFn = document.getElementById('section-form-fungsional');
             const secMed = document.getElementById('section-form-medis');
             const badgeJalur = document.getElementById('display-jalur-jabatan');
-            const masterJabatan = window.getSessItem(MASTER_JABATAN_STORAGE_KEY) || DEFAULT_JABATAN;
 
             if (badgeJalur) {
                 badgeJalur.innerText = isSt ? "Jalur: Struktural (Manajerial)" : "Jalur: Fungsional (Non-Manajerial)";
@@ -1510,7 +1530,7 @@
 
             const el = document.getElementById(isSt ? 'f-st-nama-jabatan' : 'f-fn-nama-jabatan');
             if (el) {
-                const list = masterJabatan[isSt ? 'STRUKTURAL' : 'FUNGSIONAL'] || [];
+                const list = masterJabatanList[isSt ? 'STRUKTURAL' : 'FUNGSIONAL'] || [];
                 el.innerHTML = '<option value="" disabled selected>-- Pilih Jabatan --</option>' + list.map(j => `<option value="${j}">${j}</option>`).join('');
                 if (currentPegawai.jabatan) el.value = currentPegawai.jabatan;
             }
@@ -1527,10 +1547,10 @@
             window.setVal('f-bas-nip', currentPegawai.nip);
             if (dp.golongan) window.setVal('f-bas-golongan', dp.golongan);
             window.setVal('f-bas-nik', dp.nik); window.setVal('f-bas-kk', dp.noKk);
-            window.setVal('f-bas-gelar-depan', dp.gelarDepan); window.setVal('f-bas-nama-ijazah', dp.namaTanpaGeral || currentPegawai.nama || '');
+            window.setVal('f-bas-gelar-depan', dp.gelarDepan); window.setVal('f-bas-nama-ijazah', dp.namaTanpaGeral || '');
             window.setVal('f-bas-gelar-belakang', dp.gelarBelakang);
             if (currentPegawai.ruangan) window.setVal('f-bas-ruangan', currentPegawai.ruangan);
-            window.setVal('f-bas-tempat-lahir', dp.tempatLahir); window.setVal('f-bas-tgl-lahir', dp.tglLahir || currentPegawai.tglLahir);
+            window.setVal('f-bas-tempat-lahir', dp.tempatLahir); window.setVal('f-bas-tgl-lahir', dp.tglLahir);
             window.setVal('f-bas-jk', dp.jk); window.setVal('f-bas-agama', dp.agama);
             window.setVal('f-bas-gol-darah', dp.golDarah); window.setVal('f-bas-status-nikah', dp.statusNikah);
             window.setVal('f-bas-hp', dp.hp); window.setVal('f-bas-email', dp.email);
@@ -1577,10 +1597,12 @@
 
             window.captureCurrentFormInputToMemory();
 
-            let fn = currentPegawai.detailPersonal.namaTanpaGeral;
-            if (currentPegawai.detailPersonal.gelarDepan) fn = currentPegawai.detailPersonal.gelarDepan + ' ' + fn;
-            if (currentPegawai.detailPersonal.gelarBelakang) fn = fn + ', ' + currentPegawai.detailPersonal.gelarBelakang;
-            currentPegawai.nama = fn.trim() || currentPegawai.username;
+            let fn = currentPegawai.detailPersonal.namaTanpaGeral || '';
+            if (fn) {
+                if (currentPegawai.detailPersonal.gelarDepan) fn = currentPegawai.detailPersonal.gelarDepan + ' ' + fn;
+                if (currentPegawai.detailPersonal.gelarBelakang) fn = fn + ', ' + currentPegawai.detailPersonal.gelarBelakang;
+                currentPegawai.nama = fn.trim();
+            }
 
             window.triggerActionDrivenSyncQueue(currentPegawai);
             window.renderDashboard();
@@ -1603,35 +1625,37 @@
 
         window.saveProfileChanges = function() {
             if (!currentPegawai) return;
-            currentPegawai.username = window.getVal('edit-username');
-            currentPegawai.nip = window.getVal('edit-nip-input');
+            const newU = window.getVal('edit-username');
+            const newN = window.getVal('edit-nip-input');
+            if (newU) currentPegawai.username = newU;
+            if (newN) currentPegawai.nip = newN;
             window.triggerActionDrivenSyncQueue(currentPegawai);
             window.renderDashboard();
             window.closeEditProfileModal();
+            window.showToast("Perubahan akun disimpan.", "success");
         };
 
-        window.handleAuthSubmit = function(e) {
-            e.preventDefault();
+        window.handleAuthSubmit = async function(e) {
+            if (e) e.preventDefault();
             const nipKey = window.getVal('auth-key-input');
             const username = window.getVal('auth-username');
+
+            if (!username || !nipKey) {
+                window.showToast("Silakan lengkapi Username dan NIP/SK!", "warning");
+                return;
+            }
 
             currentPegawai = {
                 idPegawai: window.generateIdPegawai(nipKey),
                 username: username,
-                status: '',
-                sub1: 'MEDIS',
-                sub2: 'FUNGSIONAL',
                 nip: nipKey,
-                nama: username,
-                jabatan: '',
-                ruangan: '',
-                detailPersonal: {},
-                riwayatPendidikan: [],
-                linksMap: {}
+                status: '', sub1: 'MEDIS', sub2: 'FUNGSIONAL', nama: username, jabatan: '', ruangan: '', detailPersonal: {}, riwayatPendidikan: [], linksMap: {}, verifikasiStatus: 'PENDING', verifikasiCatatan: ''
             };
             
-            window.triggerActionDrivenSyncQueue(currentPegawai);
+            sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
             window.showDashboardView();
+            window.showToast("Akun Pegawai Berhasil Dibuat!", "success");
         };
 
         window.copyIdPegawai = function() {
@@ -1647,6 +1671,7 @@
 
         window.handleEducationFormSubmit = function(e) {
             e.preventDefault();
+            if (!currentPegawai) return;
             if (!currentPegawai.riwayatPendidikan) currentPegawai.riwayatPendidikan = [];
             currentPegawai.riwayatPendidikan.push({
                 id: 'edu_' + Date.now(),
@@ -1662,6 +1687,7 @@
         };
 
         window.deleteEducationItem = function(id) {
+            if (!currentPegawai || !currentPegawai.riwayatPendidikan) return;
             currentPegawai.riwayatPendidikan = currentPegawai.riwayatPendidikan.filter(x => x.id !== id);
             window.triggerActionDrivenSyncQueue(currentPegawai);
             window.renderEducationTable();
@@ -1669,7 +1695,7 @@
 
         window.filterEarsipItems = function() {
             const val = window.getVal('search-earsip-item').toLowerCase();
-            document.querySelectorAll('#earsip-categories-container .p-2').forEach(card => {
+            document.querySelectorAll('#earsip-categories-container .p-3').forEach(card => {
                 card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
             });
         };
