@@ -80,9 +80,9 @@
             </div>
 
             <div id="user-header-profile" class="hidden flex items-center gap-2">
-                <div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-extrabold text-[9.5px]">
+                <div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-extrabold text-[9.5px]" id="sync-status-badge">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ws-dot"></span>
-                    <span id="header-sync-status">Sesi Mandiri Aktif</span>
+                    <span id="header-sync-status">Sesi Mandiri & Cloud Sync Aktif</span>
                 </div>
                 <button onclick="window.logoutSession()" class="h-8 px-3 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10px] border border-rose-300 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs" title="Keluar dari akun pegawai ini">
                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -729,11 +729,29 @@
         // Variabel global untuk menyimpan URL GAS aktif di memori browser perangkat
         let ACTIVE_GAS_URL = localStorage.getItem('gas_url') || '';
 
-        let serverApiConfig = { 
-            gasUrl: ACTIVE_GAS_URL, 
-            supabaseUrl: localStorage.getItem('supabase_url') || ANCHORED_SUPABASE_URL, 
-            supabaseAnonKey: localStorage.getItem('supabase_anon_key') || ANCHORED_SUPABASE_ANON_KEY 
+        // Membaca konfigurasi terpadu dari LocalStorage (termasuk RSUD_UMPEG_SERVER_CONFIG dari Admin)
+        window.loadSavedServerConfig = function() {
+            let supaUrl = ANCHORED_SUPABASE_URL;
+            let supaKey = ANCHORED_SUPABASE_ANON_KEY;
+            let gasUrl = ACTIVE_GAS_URL;
+
+            try {
+                const savedConfig = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
+                if (savedConfig) {
+                    const parsed = JSON.parse(savedConfig);
+                    if (parsed.supabaseUrl) supaUrl = parsed.supabaseUrl;
+                    if (parsed.supabaseAnonKey) supaKey = parsed.supabaseAnonKey;
+                    if (parsed.gasUrl) gasUrl = parsed.gasUrl;
+                }
+            } catch(e) {}
+
+            if (localStorage.getItem('supabase_url')) supaUrl = localStorage.getItem('supabase_url');
+            if (localStorage.getItem('supabase_anon_key')) supaKey = localStorage.getItem('supabase_anon_key');
+
+            return { gasUrl, supabaseUrl: supaUrl, supabaseAnonKey: supaKey };
         };
+
+        let serverApiConfig = window.loadSavedServerConfig();
 
         const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
         const DEFAULT_JABATAN = {
@@ -890,10 +908,18 @@
             // Simpan sesi lokal terisolasi
             sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(pegData));
 
-            // A. Upsert ke Supabase (Username dan Nama dipisah dengan tegas)
+            const syncStatusText = document.getElementById('header-sync-status');
+            const wsDot = document.getElementById('ws-dot');
+
+            if (syncStatusText) syncStatusText.innerText = "🔄 Menyimpan ke Cloud...";
+            if (wsDot) wsDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+
+            let supaSuccess = false;
+
+            // A. Upsert ke Supabase dengan penetapan onConflict: 'nip'
             if (supabaseClient) {
                 try {
-                    await supabaseClient.from('pegawai_lemari_digital').upsert({
+                    const { error: upsertErr } = await supabaseClient.from('pegawai_lemari_digital').upsert({
                         id_pegawai: pegData.idPegawai,
                         nip: pegData.nip,
                         username: pegData.username || '',
@@ -908,8 +934,17 @@
                         detail_jabatan: pegData.detailJabatan || {},
                         detail_medis: pegData.detailMedis || {},
                         riwayat_pendidikan: pegData.riwayatPendidikan || [],
+                        verifikasi_status: pegData.verifikasiStatus || 'PENDING',
+                        verifikasi_catatan: pegData.verifikasiCatatan || '',
                         updated_at: new Date().toISOString()
-                    });
+                    }, { onConflict: 'nip' });
+
+                    if (!upsertErr) {
+                        supaSuccess = true;
+                        console.log("✅ Data pegawai berhasil tersimpan ke Supabase:", pegData.nip);
+                    } else {
+                        console.warn("⚠️ Upsert Supabase notice:", upsertErr.message);
+                    }
                 } catch(err) {
                     console.warn("Supabase Isolated Sync Notice:", err);
                 }
@@ -917,6 +952,13 @@
 
             // B. Transmisi ke Google Sheets via ACTIVE_GAS_URL
             window.kirimKeGoogleSheets(pegData);
+
+            if (syncStatusText) {
+                syncStatusText.innerText = supaSuccess ? "🟢 Terhubung Cloud Supabase" : "🌐 Sesi Lokal Aktif";
+            }
+            if (wsDot) {
+                wsDot.className = supaSuccess ? "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" : "w-2 h-2 rounded-full bg-teal-500";
+            }
         };
 
         window.generateIdPegawai = function(keyInput) {
@@ -947,6 +989,7 @@
         // 3. KONEKSI REALTIME & CLOUD-FIRST INITIALIZATION
         // ==========================================
         window.initCloudConnectionAndRealtime = async function() {
+            serverApiConfig = window.loadSavedServerConfig();
             const finalSupaUrl = serverApiConfig.supabaseUrl || ANCHORED_SUPABASE_URL;
             const finalAnonKey = serverApiConfig.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
 
@@ -970,15 +1013,25 @@
                     try {
                         const { data: sysData } = await supabaseClient
                             .from('system_config')
-                            .select('gas_url, config_data')
+                            .select('gas_url, supabase_url, supabase_anon_key, config_data')
                             .eq('id', ANCHORED_APP_ID)
                             .maybeSingle();
 
-                        if (sysData && sysData.gas_url) {
-                            ACTIVE_GAS_URL = sysData.gas_url;
-                            serverApiConfig.gasUrl = sysData.gas_url;
-                            localStorage.setItem('gas_url', sysData.gas_url);
-                            console.log("📥 [Startup] ACTIVE_GAS_URL ditarik dari Supabase:", ACTIVE_GAS_URL);
+                        if (sysData) {
+                            if (sysData.gas_url) {
+                                ACTIVE_GAS_URL = sysData.gas_url;
+                                serverApiConfig.gasUrl = sysData.gas_url;
+                                localStorage.setItem('gas_url', sysData.gas_url);
+                            }
+                            if (sysData.supabase_url) {
+                                serverApiConfig.supabaseUrl = sysData.supabase_url;
+                                localStorage.setItem('supabase_url', sysData.supabase_url);
+                            }
+                            if (sysData.supabase_anon_key) {
+                                serverApiConfig.supabaseAnonKey = sysData.supabase_anon_key;
+                                localStorage.setItem('supabase_anon_key', sysData.supabase_anon_key);
+                            }
+                            console.log("📥 [Startup] Server configuration ditarik dari Supabase.");
                         }
 
                         const { data: masterData } = await supabaseClient
@@ -1007,13 +1060,15 @@
                             realtimeChannel = supabaseClient
                                 .channel('sinkronisasi-konfig-global')
                                 .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, async (payload) => {
-                                    console.log("🔔 [Realtime] Perubahan system_config terdeteksi!", payload);
-                                    if (payload.new && payload.new.gas_url) {
-                                        ACTIVE_GAS_URL = payload.new.gas_url;
-                                        serverApiConfig.gasUrl = payload.new.gas_url;
-                                        localStorage.setItem('gas_url', payload.new.gas_url);
-                                        console.log("🔄 ACTIVE_GAS_URL otomatis diperbarui di perangkat ini menjadi:", ACTIVE_GAS_URL);
-                                        window.showToast("⚡ URL Server GAS diperbarui secara live!", "info");
+                                    if (payload.new) {
+                                        if (payload.new.gas_url) {
+                                            ACTIVE_GAS_URL = payload.new.gas_url;
+                                            serverApiConfig.gasUrl = payload.new.gas_url;
+                                            localStorage.setItem('gas_url', payload.new.gas_url);
+                                        }
+                                        if (payload.new.supabase_url) serverApiConfig.supabaseUrl = payload.new.supabase_url;
+                                        if (payload.new.supabase_anon_key) serverApiConfig.supabaseAnonKey = payload.new.supabase_anon_key;
+                                        window.showToast("⚡ Kredensial server diperbarui secara live!", "info");
                                     }
                                 })
                                 .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
@@ -1030,7 +1085,7 @@
 
                                         sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
                                         window.renderDashboard();
-                                        window.showToast("⚡ Hasil audit/berkas diperbarui secara live!", "success");
+                                        window.showToast("⚡ Data profil/audit diperbarui secara live oleh Admin!", "success");
                                     }
                                 })
                                 .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
@@ -1051,7 +1106,7 @@
                                 .subscribe((status) => {
                                     if (status === 'SUBSCRIBED') {
                                         if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                                        if (txt) txt.innerText = "🌐 WebSocket Realtime Active";
+                                        if (txt) txt.innerText = "🟢 Terhubung Cloud Supabase";
                                     }
                                 });
                         } catch(wsErr) {
