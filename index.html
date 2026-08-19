@@ -611,6 +611,7 @@
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System)
     </footer>
 
+    <!-- MODALS -->
     <!-- MODAL EDIT PROFILE -->
     <div id="modal-edit-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-md rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white space-y-3 p-4">
@@ -718,50 +719,29 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC & SUPABASE INTEGRATION -->
     <script>
-        // ==========================================
-        // KREDENSIAL TERTANAM INDUK (SELARAS DENGAN PORTAL ADMIN)
-        // ==========================================
         const ANCHORED_SUPABASE_URL = "https://ohktlpuywpnxmqbrswhs.supabase.co"; 
-        const ANCHORED_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oa3RscHV5d3BueG1xYnJzd2hzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEyMzg4NDAsImV4cCI6MjAyNjgxNDg0MH0.PLACEHOLDER_ANON_KEY";
+        const ANCHORED_SUPABASE_ANON_KEY = "sb_publishable_clSpUHPVKUql_budPeYmEw_9mMWGsOf";
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
-        // Variabel global untuk menyimpan URL GAS aktif di memori browser perangkat
-        let ACTIVE_GAS_URL = localStorage.getItem('gas_url') || '';
+        let ACTIVE_GAS_URL = '';
+        let supabaseClient = null;
 
-        // Membaca konfigurasi terpadu dari LocalStorage (termasuk RSUD_UMPEG_SERVER_CONFIG dari Admin)
-        window.loadSavedServerConfig = function() {
-            let supaUrl = ANCHORED_SUPABASE_URL;
-            let supaKey = ANCHORED_SUPABASE_ANON_KEY;
-            let gasUrl = ACTIVE_GAS_URL;
+        let currentPegawai = null;
+        let activeTab = 'dashboard';
+        let expandedCategories = {}; 
+        let activeAddLinkId = null;
 
-            try {
-                const savedConfig = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
-                if (savedConfig) {
-                    const parsed = JSON.parse(savedConfig);
-                    if (parsed.supabaseUrl) supaUrl = parsed.supabaseUrl;
-                    if (parsed.supabaseAnonKey) supaKey = parsed.supabaseAnonKey;
-                    if (parsed.gasUrl) gasUrl = parsed.gasUrl;
-                }
-            } catch(e) {}
-
-            if (localStorage.getItem('supabase_url')) supaUrl = localStorage.getItem('supabase_url');
-            if (localStorage.getItem('supabase_anon_key')) supaKey = localStorage.getItem('supabase_anon_key');
-
-            return { gasUrl, supabaseUrl: supaUrl, supabaseAnonKey: supaKey };
-        };
-
-        let serverApiConfig = window.loadSavedServerConfig();
-
-        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
-        const DEFAULT_JABATAN = {
+        let masterRuanganList = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
+        let masterJabatanList = {
             STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG", "Kepala Sub Bagian Keuangan", "Kepala Bidang Pelayanan", "Kepala Bidang Keperawatan"],
             FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker", "Pranata Laboratorium", "Radiografer", "Nutrisionis"]
         };
-        const DEFAULT_GOLONGAN = ["IV/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
-        const DEFAULT_STATUS_PEG = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Honorer", "Kontrak", "Sukarela"];
-        const DEFAULT_EDUCATION = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
-        const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
+        let masterGolonganList = ["IV/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
+        let masterStatusPegList = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Honorer", "Kontrak", "Sukarela"];
+        let masterEducationList = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
+        let masterOrgList = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
 
         let FORM_CHECKLIST_CONFIG = [
             {
@@ -769,85 +749,12 @@
                     { id: 'a_1', name: 'STR dan Surat Izin Tenaga Profesional (SIP)' },
                     { id: 'a_2', name: 'Biodata Pegawai / Daftar Riwayat Hidup (DRH)' },
                     { id: 'a_3', name: 'Ijazah Pertama (SD) Sampai Terakhir' },
-                    { id: 'a_4', name: 'Sertifikat Pelatihan Kompetensi' },
-                    { id: 'a_5', name: 'Surat Izin / Tugas Belajar' },
-                    { id: 'a_6', name: 'Rekomendasi Kompetensi Nakes' },
-                    { id: 'a_7', name: 'Surat Penugasan Klinis (SPK)' },
-                    { id: 'a_8', name: 'SK Rincian Kewenangan Klinis (RKK)' },
-                    { id: 'a_9', name: 'Transkrip Nilai Akademik' },
-                    { id: 'a_10', name: 'Print Out PDDikti / Forlap Terkini' }
+                    { id: 'a_4', name: 'Sertifikat Pelatihan Kompetensi' }
                 ]
             },
             { code: 'B', title: 'B. Bukti Orientasi', items: [{ id: 'b_1', name: 'Surat Keterangan Orientasi RSUD Sinjai' }] },
-            { code: 'C', title: 'C. Uraian Tugas', items: [{ id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }] },
-            {
-                code: 'D', title: 'D. Riwayat Pekerjaan Staf', items: [
-                    { id: 'd_1', name: 'Surat Perintah Melaksanakan Tugas (SPMT)' },
-                    { id: 'd_2', name: 'SK CPNS / PNS & Kenaikan Pangkat' },
-                    { id: 'd_3', name: 'Kenaikan Gaji Berkala (KGB)' },
-                    { id: 'd_4', name: 'SK Jabatan Kedinasan / SK Pelantikan' },
-                    { id: 'd_5', name: 'SK Mutasi / Pengangkatan Kembali' },
-                    { id: 'd_6', name: 'Nota Persetujuan BKN / NIP' }
-                ]
-            },
-            {
-                code: 'E', title: 'E. Penilaian Kinerja Staf', items: [
-                    { id: 'e_1', name: 'Perjanjian Kinerja Pegawai' },
-                    { id: 'e_2', name: 'Sasaran Kinerja Pegawai (SKP) 2 Tahun Terakhir' },
-                    { id: 'e_3', name: 'Penetapan Angka Kredit (PAK) Terakhir' },
-                    { id: 'e_4', name: 'Evaluasi Kinerja Klinis (OPPE / FPPE)' },
-                    { id: 'e_5', name: 'Surat Izin Praktik Mandiri / Luar RS' },
-                    { id: 'e_6', name: 'Piagam Penghargaan / Satyalancana' },
-                    { id: 'e_7', name: 'Surat Keputusan Hukuman Disiplin (Jika Ada)' },
-                    { id: 'e_8', name: 'Laporan Hasil Assessment Kompetensi' }
-                ]
-            },
-            {
-                code: 'F', title: 'F. Sertifikat Pelatihan', items: [
-                    { id: 'f_1', name: 'Sertifikat PPI (Pencegahan & Pengendalian Infeksi)' },
-                    { id: 'f_2', name: 'Sertifikat BHD / K3RS / Patient Safety' },
-                    { id: 'f_3', name: 'Sertifikat Pelatihan Mutu & Keselamatan Pasien' },
-                    { id: 'f_4', name: 'Sertifikat Management / Leadership (Diklat PIM)' },
-                    { id: 'f_5', name: 'Sertifikat Seminar / Workshop Profesi' },
-                    { id: 'f_6', name: 'Sertifikat Pelatihan Khusus / Keterampilan Medis' }
-                ]
-            },
-            {
-                code: 'G', title: 'G. Informasi Kesehatan', items: [
-                    { id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' },
-                    { id: 'g_2', name: 'Sertifikat / Kartu Vaksinasi & Imunisasi' }
-                ]
-            },
-            {
-                code: 'H', title: 'H. Informasi Pendukung', items: [
-                    { id: 'h_1', name: 'KTP, KK, NPWP, BPJS Kesehatan & Foto' },
-                    { id: 'h_2', name: 'Kartu Pegawai (KARPEG / KPE) & TASPEN' },
-                    { id: 'h_3', name: 'KP4 (Surat Keterangan Untuk Tunjangan Keluarga)' },
-                    { id: 'h_4', name: 'Surat Nikah / Akta Perkawinan' },
-                    { id: 'h_5', name: 'Akta Kelahiran Anak' },
-                    { id: 'h_6', name: 'Kartu Isteri (KARIS) / Kartu Suami (KARSU)' },
-                    { id: 'h_7', name: 'Tanda Terima LHKPN / LHKASN' },
-                    { id: 'h_8', name: 'Kartu Anggota Organisasi Profesi (IDI/PPNI/IBI/IAI)' },
-                    { id: 'h_9', name: 'Pas Foto Berwarna Terbaru Background Merah' },
-                    { id: 'h_10', name: 'Surat Keterangan Catatan Kepolisian (SKCK)' },
-                    { id: 'h_11', name: 'Dokumen Pendukung Lainnya' }
-                ]
-            }
+            { code: 'C', title: 'C. Uraian Tugas', items: [{ id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }] }
         ];
-
-        let currentPegawai = null;
-        let activeTab = 'dashboard';
-        let expandedCategories = {}; 
-        let activeAddLinkId = null;
-        let supabaseClient = null;
-        let realtimeChannel = null;
-
-        let masterRuanganList = [...DEFAULT_RUANGAN];
-        let masterJabatanList = JSON.parse(JSON.stringify(DEFAULT_JABATAN));
-        let masterStatusPegList = [...DEFAULT_STATUS_PEG];
-        let masterEducationList = [...DEFAULT_EDUCATION];
-        let masterGolonganList = [...DEFAULT_GOLONGAN];
-        let masterOrgList = [...DEFAULT_ORG_PROFESI];
 
         window.isMatchingKey = function(val1, val2) {
             if (!val1 || !val2) return false;
@@ -875,947 +782,772 @@
             setTimeout(() => toast.classList.add('hidden'), 3500);
         };
 
-        // ==========================================
-        // 1. TRANSMISI DATA KE GOOGLE SHEETS VIA ACTIVE_GAS_URL
-        // ==========================================
-        window.kirimKeGoogleSheets = async function(pegData) {
-            const targetUrl = ACTIVE_GAS_URL || localStorage.getItem('gas_url') || serverApiConfig.gasUrl;
-            if (!targetUrl) {
-                console.warn("⚠️ URL GAS belum disetting atau belum ditarik dari Supabase.");
-                return;
-            }
+        window.initCloudConnectionAndRealtime = async function() {
+            if (!window.supabase) return;
 
             try {
-                // Menggunakan mode 'no-cors' agar transmisi POST ke Google Apps Script berhasil tanpa diblokir CORS redirect
-                await fetch(targetUrl, {
+                // Directly create Supabase Client from Anchored credentials
+                supabaseClient = window.supabase.createClient(ANCHORED_SUPABASE_URL, ANCHORED_SUPABASE_ANON_KEY);
+
+                // Pull system config directly from Supabase
+                let { data: sysRow } = await supabaseClient.from('system_config').select('*').eq('id', ANCHORED_APP_ID).single();
+                if (sysRow) {
+                    if (sysRow.gas_url) ACTIVE_GAS_URL = sysRow.gas_url;
+                    if (sysRow.supabase_url && sysRow.supabase_anon_key) {
+                        supabaseClient = window.supabase.createClient(sysRow.supabase_url, sysRow.supabase_anon_key);
+                    }
+                }
+
+                // Pull master umpeg config directly from Supabase
+                let { data: masterRow } = await supabaseClient.from('master_umpeg_config').select('*').eq('id', ANCHORED_APP_ID).single();
+                if (masterRow && masterRow.config_data) {
+                    const cfg = masterRow.config_data;
+                    if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                    if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                    if (cfg.master_status) masterStatusPegList = cfg.master_status;
+                    if (cfg.master_edu) masterEducationList = cfg.master_edu;
+                    if (cfg.master_golongan) masterGolonganList = cfg.master_golongan;
+                    if (cfg.master_org) masterOrgList = cfg.master_org;
+                    if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                }
+
+                // Subscribe to realtime updates for employee data
+                supabaseClient.channel('pegawai-realtime')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, payload => {
+                        if (payload.new && payload.new.gas_url) ACTIVE_GAS_URL = payload.new.gas_url;
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, payload => {
+                        if (payload.new && payload.new.config_data) {
+                            const cfg = payload.new.config_data;
+                            if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
+                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                            if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                            window.populateMasterDropdowns();
+                            if (currentPegawai) window.renderDashboard();
+                        }
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, payload => {
+                        if (currentPegawai && payload.new && window.isMatchingKey(payload.new.nip, currentPegawai.nip)) {
+                            const linkMap = typeof payload.new.link_url_drive === 'object' && payload.new.link_url_drive ? payload.new.link_url_drive : {};
+                            const metaProf = linkMap._meta_profile || {};
+                            currentPegawai.verifikasiStatus = payload.new.verifikasi_status || metaProf.verifikasiStatus || currentPegawai.verifikasiStatus;
+                            currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || metaProf.verifikasiCatatan || currentPegawai.verifikasiCatatan;
+                            if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
+                            window.renderDashboard();
+                        }
+                    })
+                    .subscribe();
+
+            } catch(e) {
+                console.warn("Realtime Init Notice:", e);
+            }
+            window.populateMasterDropdowns();
+        };
+
+        window.kirimKeGoogleSheets = async function(pegData) {
+            if (!ACTIVE_GAS_URL) return;
+
+            try {
+                await fetch(ACTIVE_GAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'savePegawai', data: pegData })
                 });
-                console.log("✅ Transmisi data pegawai ke Google Sheets terkirim via:", targetUrl);
             } catch (err) {
-                console.error("❌ Transmisi ke Google Sheets gagal:", err);
+                console.error("Transmisi GAS gagal:", err);
             }
         };
 
-        // ==========================================
-        // 2. SINKRONISASI DUAL QUEUE (SUPABASE + GAS)
-        // ==========================================
         window.triggerActionDrivenSyncQueue = async function(pegData) {
             if (!pegData || !currentPegawai || !window.isMatchingKey(pegData.nip, currentPegawai.nip)) return;
             
-            // Simpan sesi lokal terisolasi
             sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(pegData));
 
             const syncStatusText = document.getElementById('header-sync-status');
             const wsDot = document.getElementById('ws-dot');
 
-            if (syncStatusText) syncStatusText.innerText = "🔄 Menyimpan ke Cloud...";
+            if (syncStatusText) syncStatusText.innerText = "🔄 Menyimpan ke Supabase...";
             if (wsDot) wsDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
 
             let supaSuccess = false;
 
-            // A. Upsert ke Supabase dengan penetapan onConflict: 'nip'
             if (supabaseClient) {
                 try {
-                    const { error: upsertErr } = await supabaseClient.from('pegawai_lemari_digital').upsert({
+                    // Bundle full profile inside link_url_drive._meta_profile for guaranteed schema compatibility
+                    const updatedLinksMap = Object.assign({}, pegData.linksMap || {}, {
+                        _meta_profile: {
+                            nama: pegData.nama || '',
+                            status: pegData.status || 'PNS',
+                            sub1: pegData.sub1 || 'MEDIS',
+                            sub2: pegData.sub2 || 'FUNGSIONAL',
+                            jabatan: pegData.jabatan || '',
+                            ruangan: pegData.ruangan || '',
+                            detailPersonal: pegData.detailPersonal || {},
+                            detailJabatan: pegData.detailJabatan || {},
+                            detailMedis: pegData.detailMedis || {},
+                            riwayatPendidikan: pegData.riwayatPendidikan || [],
+                            verifikasiStatus: pegData.verifikasiStatus || 'PENDING',
+                            verifikasiCatatan: pegData.verifikasiCatatan || ''
+                        }
+                    });
+
+                    const dbPayload = {
                         id_pegawai: pegData.idPegawai,
                         nip: pegData.nip,
                         username: pegData.username || '',
-                        nama: pegData.nama || '', // Murni Nama Lengkap, tidak dicampur dengan Username
-                        status: pegData.status || '',
-                        sub1: pegData.sub1 || 'MEDIS',
-                        sub2: pegData.sub2 || 'FUNGSIONAL',
-                        jabatan: pegData.jabatan || '',
-                        ruangan: pegData.ruangan || '',
-                        link_url_drive: pegData.linksMap || {},
-                        detail_personal: pegData.detailPersonal || {},
-                        detail_jabatan: pegData.detailJabatan || {},
-                        detail_medis: pegData.detailMedis || {},
-                        riwayat_pendidikan: pegData.riwayatPendidikan || [],
-                        verifikasi_status: pegData.verifikasiStatus || 'PENDING',
-                        verifikasi_catatan: pegData.verifikasiCatatan || '',
+                        link_url_drive: updatedLinksMap,
                         updated_at: new Date().toISOString()
-                    }, { onConflict: 'nip' });
+                    };
 
-                    if (!upsertErr) {
-                        supaSuccess = true;
-                        console.log("✅ Data pegawai berhasil tersimpan ke Supabase:", pegData.nip);
+                    let { error: upsertErr } = await supabaseClient
+                        .from('pegawai_lemari_digital')
+                        .upsert(dbPayload, { onConflict: 'nip' });
+
+                    if (upsertErr) {
+                        const fallbackRes = await supabaseClient
+                            .from('pegawai_lemari_digital')
+                            .upsert(dbPayload, { onConflict: 'id_pegawai' });
+                        if (!fallbackRes.error) supaSuccess = true;
                     } else {
-                        console.warn("⚠️ Upsert Supabase notice:", upsertErr.message);
+                        supaSuccess = true;
                     }
                 } catch(err) {
-                    console.warn("Supabase Isolated Sync Notice:", err);
+                    console.warn("Supabase Sync Notice:", err);
                 }
             }
 
-            // B. Transmisi ke Google Sheets via ACTIVE_GAS_URL
             window.kirimKeGoogleSheets(pegData);
 
             if (syncStatusText) {
-                syncStatusText.innerText = supaSuccess ? "🟢 Terhubung Cloud Supabase" : "🌐 Sesi Lokal Aktif";
+                syncStatusText.innerText = supaSuccess ? "🟢 Terhubung Cloud Supabase" : "🌐 Sesi Terhubung";
             }
             if (wsDot) {
                 wsDot.className = supaSuccess ? "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" : "w-2 h-2 rounded-full bg-teal-500";
             }
         };
 
-        window.generateIdPegawai = function(keyInput) {
-            const digits = (keyInput || '').replace(/\D/g, '');
-            return 'RSUD-PEG-' + (digits.length >= 8 ? digits.substring(0, 8) : Date.now().toString().slice(-8));
+        window.switchAuthTab = function(tab) {
+            const btnLogin = document.getElementById('btn-auth-tab-login');
+            const btnReg = document.getElementById('btn-auth-tab-register');
+            const formLogin = document.getElementById('form-auth-login');
+            const formReg = document.getElementById('form-auth-register');
+
+            if (tab === 'login') {
+                btnLogin.className = "flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer";
+                btnReg.className = "flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer";
+                formLogin.classList.remove('hidden');
+                formReg.classList.add('hidden');
+            } else {
+                btnReg.className = "flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer";
+                btnLogin.className = "flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer";
+                formReg.classList.remove('hidden');
+                formLogin.classList.add('hidden');
+            }
         };
 
-        window.showAuthView = function() {
-            const authSec = document.getElementById('auth-section');
-            const dashSec = document.getElementById('dashboard-section');
-            const headerProf = document.getElementById('user-header-profile');
-            if (authSec) authSec.classList.remove('hidden');
-            if (dashSec) dashSec.classList.add('hidden');
-            if (headerProf) headerProf.classList.add('hidden');
-        };
-
-        window.showDashboardView = function() {
-            const authSec = document.getElementById('auth-section');
-            const dashSec = document.getElementById('dashboard-section');
-            const headerProf = document.getElementById('user-header-profile');
-            if (authSec) authSec.classList.add('hidden');
-            if (dashSec) dashSec.classList.remove('hidden');
-            if (headerProf) headerProf.classList.remove('hidden');
-            window.renderDashboard();
-        };
-
-        // ==========================================
-        // 3. KONEKSI REALTIME & CLOUD-FIRST INITIALIZATION
-        // ==========================================
-        window.initCloudConnectionAndRealtime = async function() {
-            serverApiConfig = window.loadSavedServerConfig();
-            const finalSupaUrl = serverApiConfig.supabaseUrl || ANCHORED_SUPABASE_URL;
-            const finalAnonKey = serverApiConfig.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
-
-            // Pulihkan sesi aktif dari sessionStorage
-            const cachedUser = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
-            if (cachedUser && !currentPegawai) {
+        window.checkExistingSession = function() {
+            const raw = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
+            if (raw) {
                 try {
-                    currentPegawai = JSON.parse(cachedUser);
-                    window.showDashboardView();
+                    currentPegawai = JSON.parse(raw);
+                    document.getElementById('auth-section').classList.add('hidden');
+                    document.getElementById('dashboard-section').classList.remove('hidden');
+                    document.getElementById('user-header-profile').classList.remove('hidden');
+                    window.renderDashboard();
+                    return;
                 } catch(e) {}
             }
-
-            if (finalSupaUrl && finalAnonKey && window.supabase) {
-                try {
-                    supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey);
-
-                    const dot = document.getElementById('ws-dot');
-                    const txt = document.getElementById('header-sync-status');
-
-                    // LANGKAH A: Ambil Konfigurasi Awal via HTTP (system_config & master_umpeg_config)
-                    try {
-                        const { data: sysData } = await supabaseClient
-                            .from('system_config')
-                            .select('gas_url, supabase_url, supabase_anon_key, config_data')
-                            .eq('id', ANCHORED_APP_ID)
-                            .maybeSingle();
-
-                        if (sysData) {
-                            if (sysData.gas_url) {
-                                ACTIVE_GAS_URL = sysData.gas_url;
-                                serverApiConfig.gasUrl = sysData.gas_url;
-                                localStorage.setItem('gas_url', sysData.gas_url);
-                            }
-                            if (sysData.supabase_url) {
-                                serverApiConfig.supabaseUrl = sysData.supabase_url;
-                                localStorage.setItem('supabase_url', sysData.supabase_url);
-                            }
-                            if (sysData.supabase_anon_key) {
-                                serverApiConfig.supabaseAnonKey = sysData.supabase_anon_key;
-                                localStorage.setItem('supabase_anon_key', sysData.supabase_anon_key);
-                            }
-                            console.log("📥 [Startup] Server configuration ditarik dari Supabase.");
-                        }
-
-                        const { data: masterData } = await supabaseClient
-                            .from('master_umpeg_config')
-                            .select('config_data')
-                            .eq('id', ANCHORED_APP_ID)
-                            .maybeSingle();
-
-                        if (masterData && masterData.config_data) {
-                            const cfg = masterData.config_data;
-                            if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
-                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                            if (cfg.master_status) masterStatusPegList = cfg.master_status;
-                            if (cfg.master_edu) masterEducationList = cfg.master_edu;
-                            if (cfg.master_org) masterOrgList = cfg.master_org;
-                            if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
-                            window.populateMasterDropdowns();
-                        }
-                    } catch (cloudPullErr) {
-                        console.warn("Cloud-First Startup Pull Notice:", cloudPullErr);
-                    }
-
-                    // LANGKAH B: Aktifkan WebSocket Realtime Channel
-                    if (!realtimeChannel) {
-                        try {
-                            realtimeChannel = supabaseClient
-                                .channel('sinkronisasi-konfig-global')
-                                .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, async (payload) => {
-                                    if (payload.new) {
-                                        if (payload.new.gas_url) {
-                                            ACTIVE_GAS_URL = payload.new.gas_url;
-                                            serverApiConfig.gasUrl = payload.new.gas_url;
-                                            localStorage.setItem('gas_url', payload.new.gas_url);
-                                        }
-                                        if (payload.new.supabase_url) serverApiConfig.supabaseUrl = payload.new.supabase_url;
-                                        if (payload.new.supabase_anon_key) serverApiConfig.supabaseAnonKey = payload.new.supabase_anon_key;
-                                        window.showToast("⚡ Kredensial server diperbarui secara live!", "info");
-                                    }
-                                })
-                                .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
-                                    if (currentPegawai && payload.new && (window.isMatchingKey(payload.new.nip, currentPegawai.nip) || window.isMatchingKey(payload.new.id_pegawai, currentPegawai.idPegawai))) {
-                                        if (payload.new.link_url_drive) currentPegawai.linksMap = payload.new.link_url_drive;
-                                        if (payload.new.verifikasi_status) currentPegawai.verifikasiStatus = payload.new.verifikasi_status;
-                                        if (payload.new.verifikasi_catatan) currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan;
-                                        if (payload.new.nama) currentPegawai.nama = payload.new.nama;
-                                        if (payload.new.status) currentPegawai.status = payload.new.status;
-                                        if (payload.new.sub1) currentPegawai.sub1 = payload.new.sub1;
-                                        if (payload.new.sub2) currentPegawai.sub2 = payload.new.sub2;
-                                        if (payload.new.jabatan) currentPegawai.jabatan = payload.new.jabatan;
-                                        if (payload.new.ruangan) currentPegawai.ruangan = payload.new.ruangan;
-
-                                        sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
-                                        window.renderDashboard();
-                                        window.showToast("⚡ Data profil/audit diperbarui secara live oleh Admin!", "success");
-                                    }
-                                })
-                                .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
-                                    if (payload.new && payload.new.config_data) {
-                                        const cfg = payload.new.config_data;
-                                        if (cfg.master_ruangan) masterRuanganList = cfg.master_ruangan;
-                                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                                        if (cfg.master_status) masterStatusPegList = cfg.master_status;
-                                        if (cfg.master_edu) masterEducationList = cfg.master_edu;
-                                        if (cfg.master_org) masterOrgList = cfg.master_org;
-                                        if (cfg.master_checklist) FORM_CHECKLIST_CONFIG = cfg.master_checklist;
-                                        
-                                        window.populateMasterDropdowns();
-                                        window.renderDashboard();
-                                        window.showToast("⚡ Master referensi UMPEG diperbarui secara live!", "info");
-                                    }
-                                })
-                                .subscribe((status) => {
-                                    if (status === 'SUBSCRIBED') {
-                                        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                                        if (txt) txt.innerText = "🟢 Terhubung Cloud Supabase";
-                                    }
-                                });
-                        } catch(wsErr) {
-                            console.warn("WebSocket notice:", wsErr);
-                        }
-                    }
-                } catch (e) { 
-                    console.warn("Supabase Init Notice:", e); 
-                }
-            }
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('user-header-profile').classList.add('hidden');
         };
 
-        window.populateMasterDropdowns = function() {
-            const ruanganEl = document.getElementById('f-bas-ruangan');
-            if (ruanganEl) {
-                const curr = ruanganEl.value;
-                ruanganEl.innerHTML = '<option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>' + masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
-                if (curr) ruanganEl.value = curr;
+        window.handleLoginSubmit = async function(e) {
+            e.preventDefault();
+            const username = window.getVal('login-username-input');
+            const key = window.getVal('login-key-input');
+
+            if (!username || !key) {
+                window.showToast("Isi username dan NIP/SK!", "warning");
+                return;
             }
 
-            const statusEl = document.getElementById('f-bas-status-pegawai');
-            if (statusEl) {
-                const curr = statusEl.value;
-                statusEl.innerHTML = '<option value="" disabled selected>-- Pilih Status Kepegawaian --</option>' + masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
-                if (curr) statusEl.value = curr;
+            window.showToast("Mencari akun di Supabase...", "info");
+
+            if (supabaseClient) {
+                try {
+                    let { data: pegRows } = await supabaseClient
+                        .from('pegawai_lemari_digital')
+                        .select('*')
+                        .or(`nip.eq.${key},username.eq.${username}`);
+
+                    if (pegRows && pegRows.length > 0) {
+                        const row = pegRows[0];
+                        currentPegawai = {
+                            idPegawai: row.id_pegawai,
+                            nip: row.nip,
+                            username: row.username || username,
+                            nama: row.nama || row.detail_personal?.namaTanpaGeral || username,
+                            status: row.status || 'PNS',
+                            sub1: row.sub1 || 'MEDIS',
+                            sub2: row.sub2 || 'FUNGSIONAL',
+                            jabatan: row.jabatan || '',
+                            ruangan: row.ruangan || '',
+                            linksMap: row.link_url_drive || {},
+                            detailPersonal: row.detail_personal || {},
+                            detailJabatan: row.detail_jabatan || {},
+                            detailMedis: row.detail_medis || {},
+                            riwayatPendidikan: row.riwayat_pendidikan || [],
+                            verifikasiStatus: row.verifikasi_status || 'PENDING',
+                            verifikasiCatatan: row.verifikasi_catatan || ''
+                        };
+
+                        sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
+                        document.getElementById('auth-section').classList.add('hidden');
+                        document.getElementById('dashboard-section').classList.remove('hidden');
+                        document.getElementById('user-header-profile').classList.remove('hidden');
+                        window.renderDashboard();
+                        window.showToast("Selamat Datang, " + currentPegawai.nama, "success");
+                        return;
+                    }
+                } catch(err) {}
             }
 
-            const golSelect = document.getElementById('f-bas-golongan');
-            if (golSelect) {
-                const curr = golSelect.value;
-                golSelect.innerHTML = '<option value="" disabled selected>-- Pilih Golongan --</option>' + masterGolonganList.map(g => `<option value="${g}">${g}</option>`).join('');
-                if (curr) golSelect.value = curr;
+            // Session local fallback
+            currentPegawai = {
+                idPegawai: 'RSUD-PEG-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
+                nip: key,
+                username: username,
+                nama: username,
+                status: 'PNS',
+                sub1: 'MEDIS',
+                sub2: 'FUNGSIONAL',
+                jabatan: '',
+                ruangan: '',
+                linksMap: {},
+                detailPersonal: {},
+                detailJabatan: {},
+                detailMedis: {},
+                riwayatPendidikan: [],
+                verifikasiStatus: 'PENDING',
+                verifikasiCatatan: ''
+            };
+
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('user-header-profile').classList.remove('hidden');
+            window.renderDashboard();
+            window.showToast("Sesi dibuat secara terisolasi!", "success");
+        };
+
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            const username = window.getVal('auth-username');
+            const key = window.getVal('auth-key-input');
+
+            if (!username || !key) {
+                window.showToast("Username dan NIP/SK wajib diisi!", "warning");
+                return;
             }
 
-            const eduSelect = document.getElementById('m-edu-tingkat');
-            if (eduSelect) {
-                const curr = eduSelect.value;
-                eduSelect.innerHTML = '<option value="" disabled selected>-- Pilih Jenjang --</option>' + masterEducationList.map(ed => `<option value="${ed}">${ed}</option>`).join('');
-                if (curr) eduSelect.value = curr;
-            }
+            const randId = 'RSUD-PEG-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            currentPegawai = {
+                idPegawai: randId,
+                nip: key,
+                username: username,
+                nama: username,
+                status: 'PNS',
+                sub1: 'MEDIS',
+                sub2: 'FUNGSIONAL',
+                jabatan: '',
+                ruangan: '',
+                linksMap: {},
+                detailPersonal: {},
+                detailJabatan: {},
+                detailMedis: {},
+                riwayatPendidikan: [],
+                verifikasiStatus: 'PENDING',
+                verifikasiCatatan: ''
+            };
 
-            const orgSelect = document.getElementById('f-med-org-profesi');
-            if (orgSelect) {
-                const curr = orgSelect.value;
-                orgSelect.innerHTML = '<option value="" disabled selected>-- Pilih Organisasi Profesi --</option>' + masterOrgList.map(o => `<option value="${o}">${o}</option>`).join('');
-                if (curr) orgSelect.value = curr;
-            }
+            window.showToast("Mendaftarkan akun baru ke Supabase & GAS...", "info");
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
 
-            window.toggleJabatanFormType();
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('user-header-profile').classList.remove('hidden');
+            window.renderDashboard();
+            window.showToast("Registrasi Berhasil! Selamat Datang.", "success");
+        };
+
+        window.logoutSession = function() {
+            sessionStorage.removeItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
+            currentPegawai = null;
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('user-header-profile').classList.add('hidden');
+            window.showToast("Anda telah keluar sesi.", "info");
         };
 
         window.parseNipOrSkLiveOnAuth = function() {
             const val = window.getVal('auth-key-input');
             const box = document.getElementById('auth-parse-box');
             const detail = document.getElementById('auth-parse-detail');
-            if (!val) { if(box) box.classList.add('hidden'); return; }
-            
-            const rawDigits = String(val).replace(/\D/g, '');
-            if (rawDigits.length === 18) {
-                const year = parseInt(rawDigits.substring(0, 4), 10);
-                const month = parseInt(rawDigits.substring(4, 6), 10);
-                const day = parseInt(rawDigits.substring(6, 8), 10);
-                const genderCode = rawDigits.substring(14, 15);
+            if (!box || !detail) return;
 
-                if (year >= 1940 && year <= 2015 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                    const gender = genderCode === '1' ? 'Laki-Laki' : 'Perempuan';
-                    if(box) box.classList.remove('hidden');
-                    if(detail) detail.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>NIP Valid: Tgl Lahir ${day}/${month}/${year} • ${gender}`;
-                    return;
-                }
-            }
-            
-            if (val.length >= 6) {
-                if(box) box.classList.remove('hidden');
-                if(detail) detail.innerHTML = `<i class="fa-solid fa-file-contract text-emerald-600 mr-1"></i>Nomor SK Kedinasan Terdeteksi`;
+            if (val.length === 18 && !isNaN(val)) {
+                const birth = val.substring(0, 8);
+                const yearB = birth.substring(0, 4);
+                const monthB = birth.substring(4, 6);
+                const dayB = birth.substring(6, 8);
+                const cpnsYr = val.substring(8, 12);
+                const gender = val.substring(14, 15) === '1' ? 'Laki-Laki' : 'Perempuan';
+                
+                detail.innerText = `NIP Valid PNS/PPPK: Lahir ${dayB}/${monthB}/${yearB} | CPNS ${cpnsYr} | Kelamin: ${gender}`;
+                box.classList.remove('hidden');
             } else {
-                if(box) box.classList.add('hidden');
+                box.classList.add('hidden');
             }
         };
 
         window.parseNipOrSkLiveModal = function() {
             const val = window.getVal('edit-nip-input');
             const box = document.getElementById('modal-parse-box');
-            if (!val) { if(box) box.classList.add('hidden'); return; }
-            if (val.length >= 6) {
-                if(box) box.classList.remove('hidden');
-                if(box) box.innerHTML = `<i class="fa-solid fa-check text-emerald-600 mr-1"></i>Format Terverifikasi`;
+            if (!box) return;
+
+            if (val.length === 18 && !isNaN(val)) {
+                const birth = val.substring(0, 8);
+                const yearB = birth.substring(0, 4);
+                const monthB = birth.substring(4, 6);
+                const dayB = birth.substring(6, 8);
+                const gender = val.substring(14, 15) === '1' ? 'Laki-Laki' : 'Perempuan';
+                
+                box.innerText = `NIP Valid: Lahir ${dayB}/${monthB}/${yearB} (${gender})`;
+                box.classList.remove('hidden');
             } else {
-                if(box) box.classList.add('hidden');
+                box.classList.add('hidden');
             }
         };
 
-        window.switchAuthTab = function(type) {
-            const fLog = document.getElementById('form-auth-login');
-            const fReg = document.getElementById('form-auth-register');
-            const bLog = document.getElementById('btn-auth-tab-login');
-            const bReg = document.getElementById('btn-auth-tab-register');
-            if (type === 'login') {
-                if(fLog) fLog.classList.remove('hidden'); if(fReg) fReg.classList.add('hidden');
-                if(bLog) bLog.className = "flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer";
-                if(bReg) bReg.className = "flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer";
+        window.populateMasterDropdowns = function() {
+            const statusSel = document.getElementById('f-bas-status-pegawai');
+            if (statusSel) {
+                const cur = statusSel.value;
+                statusSel.innerHTML = '<option value="" disabled selected>-- Pilih Status Kepegawaian --</option>' +
+                    masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
+                if (cur && masterStatusPegList.includes(cur)) statusSel.value = cur;
+            }
+
+            const golSel = document.getElementById('f-bas-golongan');
+            if (golSel) {
+                const cur = golSel.value;
+                golSel.innerHTML = '<option value="" disabled selected>-- Pilih Golongan --</option>' +
+                    masterGolonganList.map(g => `<option value="${g}">${g}</option>`).join('');
+                if (cur && masterGolonganList.includes(cur)) golSel.value = cur;
+            }
+
+            const ruangerSel = document.getElementById('f-bas-ruangan');
+            if (ruangerSel) {
+                const cur = ruangerSel.value;
+                ruangerSel.innerHTML = '<option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>' +
+                    masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
+                if (cur && masterRuanganList.includes(cur)) ruangerSel.value = cur;
+            }
+
+            const jabStSel = document.getElementById('f-st-nama-jabatan');
+            if (jabStSel) {
+                const cur = jabStSel.value;
+                const list = masterJabatanList.STRUKTURAL || [];
+                jabStSel.innerHTML = '<option value="" disabled selected>-- Pilih Jabatan Struktural --</option>' +
+                    list.map(j => `<option value="${j}">${j}</option>`).join('');
+                if (cur && list.includes(cur)) jabStSel.value = cur;
+            }
+
+            const jabFnSel = document.getElementById('f-fn-nama-jabatan');
+            if (jabFnSel) {
+                const cur = jabFnSel.value;
+                const list = masterJabatanList.FUNGSIONAL || [];
+                jabFnSel.innerHTML = '<option value="" disabled selected>-- Pilih Jabatan Fungsional --</option>' +
+                    list.map(j => `<option value="${j}">${j}</option>`).join('');
+                if (cur && list.includes(cur)) jabFnSel.value = cur;
+            }
+
+            const orgSel = document.getElementById('f-med-org-profesi');
+            if (orgSel) {
+                const cur = orgSel.value;
+                orgSel.innerHTML = '<option value="" disabled selected>-- Pilih Organisasi Profesi --</option>' +
+                    masterOrgList.map(o => `<option value="${o}">${o}</option>`).join('');
+                if (cur && masterOrgList.includes(cur)) orgSel.value = cur;
+            }
+
+            const eduSel = document.getElementById('m-edu-tingkat');
+            if (eduSel) {
+                eduSel.innerHTML = '<option value="" disabled selected>-- Pilih Jenjang --</option>' +
+                    masterEducationList.map(e => `<option value="${e}">${e}</option>`).join('');
+            }
+        };
+
+        window.switchTab = function(tab) {
+            activeTab = tab;
+            const dashContent = document.getElementById('tab-content-dashboard');
+            const formContent = document.getElementById('tab-content-form-profil');
+            const dashBtn = document.getElementById('tab-btn-dashboard');
+            const formBtn = document.getElementById('tab-btn-form');
+
+            if (tab === 'dashboard') {
+                dashContent.classList.remove('hidden');
+                formContent.classList.add('hidden');
+                dashBtn.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
+                formBtn.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
             } else {
-                if(fLog) fLog.classList.add('hidden'); if(fReg) fReg.classList.remove('hidden');
-                if(bReg) bReg.className = "flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer";
-                if(bLog) bLog.className = "flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer";
+                formContent.classList.remove('hidden');
+                dashContent.classList.add('hidden');
+                formBtn.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
+                dashBtn.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
             }
-        };
-
-        // STRICT AUTHENTICATION: 1 PEGAWAI = 1 ID SESSION ISOLATION
-        window.handleLoginSubmit = async function(e) {
-            if (e) e.preventDefault();
-            const username = window.getVal('login-username-input');
-            const keyInput = window.getVal('login-key-input');
-            if (!username || !keyInput) {
-                window.showToast("Silakan isi Username dan NIP/SK!", "warning");
-                return;
-            }
-
-            window.showToast("Mengecek Akses Sesi Pegawai...", "info");
-
-            let loadedPegawai = null;
-
-            // Query STRICTLY for this specific NIP / SK or Username from Supabase
-            if (supabaseClient) {
-                try {
-                    const { data: nipData, error: nipErr } = await supabaseClient
-                        .from('pegawai_lemari_digital')
-                        .select('*')
-                        .eq('nip', keyInput)
-                        .maybeSingle();
-
-                    if (nipData && !nipErr) {
-                        loadedPegawai = {
-                            idPegawai: nipData.id_pegawai,
-                            nip: nipData.nip,
-                            username: nipData.username || username,
-                            nama: nipData.nama || '', // Dipisah secara ketat dari username
-                            status: nipData.status || '',
-                            sub1: nipData.sub1 || 'MEDIS',
-                            sub2: nipData.sub2 || 'FUNGSIONAL',
-                            jabatan: nipData.jabatan || '',
-                            ruangan: nipData.ruangan || '',
-                            linksMap: nipData.link_url_drive || {},
-                            detailPersonal: nipData.detail_personal || {},
-                            detailJabatan: nipData.detail_jabatan || {},
-                            detailMedis: nipData.detail_medis || {},
-                            riwayatPendidikan: nipData.riwayat_pendidikan || [],
-                            verifikasiStatus: nipData.verifikasi_status || 'PENDING',
-                            verifikasiCatatan: nipData.verifikasi_catatan || ''
-                        };
-                    } else {
-                        const { data: uData, error: uErr } = await supabaseClient
-                            .from('pegawai_lemari_digital')
-                            .select('*')
-                            .eq('username', username)
-                            .maybeSingle();
-
-                        if (uData && !uErr) {
-                            loadedPegawai = {
-                                idPegawai: uData.id_pegawai,
-                                nip: uData.nip,
-                                username: uData.username,
-                                nama: uData.nama || '', // Dipisah secara ketat dari username
-                                status: uData.status || '',
-                                sub1: uData.sub1 || 'MEDIS',
-                                sub2: uData.sub2 || 'FUNGSIONAL',
-                                jabatan: uData.jabatan || '',
-                                ruangan: uData.ruangan || '',
-                                linksMap: uData.link_url_drive || {},
-                                detailPersonal: uData.detail_personal || {},
-                                detailJabatan: uData.detail_jabatan || {},
-                                detailMedis: uData.detail_medis || {},
-                                riwayatPendidikan: uData.riwayat_pendidikan || [],
-                                verifikasiStatus: uData.verifikasi_status || 'PENDING',
-                                verifikasiCatatan: uData.verifikasi_catatan || ''
-                            };
-                        }
-                    }
-                } catch (err) {
-                    console.warn("Error fetching isolated user session:", err);
-                }
-            }
-
-            if (!loadedPegawai) {
-                loadedPegawai = {
-                    idPegawai: window.generateIdPegawai(keyInput),
-                    username: username,
-                    nip: keyInput,
-                    nama: '', // Dipisah secara ketat dari username
-                    status: '', sub1: 'MEDIS', sub2: 'FUNGSIONAL', jabatan: '', ruangan: '', detailPersonal: {}, riwayatPendidikan: [], linksMap: {}, verifikasiStatus: 'PENDING', verifikasiCatatan: ''
-                };
-            }
-
-            currentPegawai = loadedPegawai;
-            sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
-            
-            await window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.showDashboardView();
-            window.showToast(`Sesi Aktif: ${currentPegawai.nama || currentPegawai.username}`, "success");
-        };
-
-        window.checkExistingSession = function() {
-            const cachedUser = sessionStorage.getItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
-            if (cachedUser) {
-                try {
-                    currentPegawai = JSON.parse(cachedUser);
-                    window.showDashboardView();
-                    return;
-                } catch(e) {}
-            }
-            window.showAuthView();
-        };
-
-        window.logoutSession = function() {
-            currentPegawai = null;
-            sessionStorage.removeItem('CURRENT_ACTIVE_PEGAWAI_SESSION');
-            window.showAuthView();
-            window.showToast("Sesi pegawai telah ditutup.", "info");
-        };
-
-        window.switchTab = function(tabName) {
-            activeTab = tabName;
-            const tDash = document.getElementById('tab-content-dashboard');
-            const tForm = document.getElementById('tab-content-form-profil');
-            const bDash = document.getElementById('tab-btn-dashboard');
-            const bForm = document.getElementById('tab-btn-form');
-
-            if (tabName === 'dashboard') {
-                if(tDash) tDash.classList.remove('hidden'); if(tForm) tForm.classList.add('hidden');
-                if(bDash) bDash.className = "flex-1 py-1.5 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                if(bForm) bForm.className = "flex-1 py-1.5 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/70 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-            } else {
-                if(tDash) tDash.classList.add('hidden'); if(tForm) tForm.classList.remove('hidden');
-                if(bForm) bForm.className = "flex-1 py-1.5 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                if(bDash) bDash.className = "flex-1 py-1.5 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/70 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                window.populateDetailProfileForm();
-            }
-        };
-
-        window.setText = function(id, html) {
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = html;
         };
 
         window.renderDashboard = function() {
             if (!currentPegawai) return;
 
-            window.setText('p-nama', currentPegawai.nama || currentPegawai.username);
-            window.setText('p-status-badge', currentPegawai.status ? `${currentPegawai.status} • ${currentPegawai.sub1} • ${currentPegawai.sub2}` : 'Belum Ditentukan');
-            window.setText('p-id-display', `<i class="fa-solid fa-fingerprint text-emerald-600 mr-0.5"></i>ID: ${currentPegawai.idPegawai}`);
-            window.setText('p-nip-display', `<i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i>NIP: ${currentPegawai.nip} (${currentPegawai.username})`);
-            window.setText('p-jabatan', `<i class="fa-solid fa-user-tie text-emerald-600 mr-0.5"></i>${currentPegawai.jabatan || '-'}`);
-            window.setText('p-ruangan', `<i class="fa-solid fa-hospital text-emerald-600 mr-0.5"></i>${currentPegawai.ruangan || '-'}`);
+            const pNama = document.getElementById('p-nama');
+            const pStatus = document.getElementById('p-status-badge');
+            const pMapBadge = document.getElementById('p-map-badge');
+            const pMapText = document.getElementById('p-map-text');
+            const pId = document.getElementById('p-id-display');
+            const pNip = document.getElementById('p-nip-display');
+            const pJabatan = document.getElementById('p-jabatan');
+            const pRuangan = document.getElementById('p-ruangan');
 
-            const mapBadge = document.getElementById('p-map-badge');
-            const mapText = document.getElementById('p-map-text');
-            if (mapBadge && mapText) {
-                if (currentPegawai.status === 'PNS') {
-                    mapBadge.className = "px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 bg-blue-100 text-blue-900 border border-blue-300";
-                    mapText.innerText = "Map Biru (PNS)";
-                } else if ((currentPegawai.status || '').includes('PPPK')) {
-                    mapBadge.className = "px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-300";
-                    mapText.innerText = "Map Kuning (PPPK)";
-                } else if (currentPegawai.status) {
-                    mapBadge.className = "px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 bg-rose-100 text-rose-900 border border-rose-300";
-                    mapText.innerText = "Map Merah (Non-ASN)";
-                } else {
-                    mapBadge.className = "px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 bg-slate-100 text-slate-800 border border-slate-300";
-                    mapText.innerText = "Status Map Belum Ditentukan";
-                }
-            }
+            if (pNama) pNama.innerText = currentPegawai.nama || currentPegawai.username || 'Tanpa Nama';
+            if (pStatus) pStatus.innerText = currentPegawai.status || 'PNS';
 
-            const corrBanner = document.getElementById('correction-banner');
-            if (corrBanner) {
-                if (currentPegawai.verifikasiStatus === 'PERLU_PERBAIKAN') {
-                    corrBanner.className = "p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 flex items-center justify-between gap-2 text-xs fade-in mt-2";
-                    corrBanner.innerHTML = `
+            const stUpper = (currentPegawai.status || '').toUpperCase();
+            let mapColor = 'bg-blue-100 text-blue-900 border-blue-300';
+            let mapTitle = 'Map Biru (PNS)';
+            if (stUpper.includes('PPPK')) { mapColor = 'bg-amber-100 text-amber-900 border-amber-300'; mapTitle = 'Map Kuning (PPPK)'; }
+            else if (stUpper.includes('KONTRAK')) { mapColor = 'bg-emerald-100 text-emerald-900 border-emerald-300'; mapTitle = 'Map Hijau (Kontrak)'; }
+            else if (stUpper.includes('HONORER')) { mapColor = 'bg-rose-100 text-rose-900 border-rose-300'; mapTitle = 'Map Merah (Honorer)'; }
+
+            if (pMapBadge) pMapBadge.className = `px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 border ${mapColor}`;
+            if (pMapText) pMapText.innerText = mapTitle;
+
+            if (pId) pId.innerHTML = `<i class="fa-solid fa-fingerprint text-emerald-600 mr-0.5"></i>ID: ${currentPegawai.idPegawai}`;
+            if (pNip) pNip.innerHTML = `<i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i>NIP/SK: ${currentPegawai.nip}`;
+            if (pJabatan) pJabatan.innerHTML = `<i class="fa-solid fa-user-tie text-emerald-600 mr-0.5"></i>${currentPegawai.jabatan || '-'}`;
+            if (pRuangan) pRuangan.innerHTML = `<i class="fa-solid fa-hospital text-emerald-600 mr-0.5"></i>${currentPegawai.ruangan || '-'}`;
+
+            // Verification banner
+            const cBanner = document.getElementById('correction-banner');
+            if (cBanner) {
+                const vState = currentPegawai.verifikasiStatus || 'PENDING';
+                if (vState === 'PERLU_PERBAIKAN') {
+                    cBanner.className = "p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs flex items-center justify-between gap-2 shadow-2xs";
+                    cBanner.innerHTML = `
                         <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-exclamation text-rose-600 text-lg"></i>
+                            <i class="fa-solid fa-triangle-exclamation text-rose-600 text-base shrink-0"></i>
                             <div>
-                                <strong class="uppercase font-black block">PERHATIAN: BUNDEL PERLU PERBAIKAN!</strong>
-                                <span>${currentPegawai.verifikasiCatatan || 'Mohon periksa dan lengkapi berkas Anda.'}</span>
+                                <span class="font-extrabold uppercase block text-[10.5px]">PERHATIAN UMPEG: PERLU PERBAIKAN DOKUMEN</span>
+                                <span class="text-[10px] font-medium">${currentPegawai.verifikasiCatatan || 'Harap perbaiki/lengkapi berkas sesuai catatan admin.'}</span>
                             </div>
                         </div>
-                        <button onclick="window.switchTab('dashboard')" class="px-3 py-1 rounded-lg bg-rose-600 text-white font-extrabold text-[10px] shrink-0">Perbaiki</button>
+                        <button onclick="window.switchTab('dashboard')" class="px-3 py-1 rounded-lg bg-rose-700 text-white font-extrabold text-[10px] shrink-0">Cek Form</button>
                     `;
-                    corrBanner.classList.remove('hidden');
-                } else if (currentPegawai.verifikasiStatus === 'TERVERIFIKASI') {
-                    corrBanner.className = "p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 flex items-center gap-2 text-xs fade-in mt-2";
-                    corrBanner.innerHTML = `
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>
+                    cBanner.classList.remove('hidden');
+                } else if (vState === 'TERVERIFIKASI') {
+                    cBanner.className = "p-2.5 rounded-xl bg-emerald-100/90 border border-emerald-300 text-emerald-950 text-xs flex items-center gap-2 shadow-2xs";
+                    cBanner.innerHTML = `
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-base shrink-0"></i>
                         <div>
-                            <strong class="uppercase font-black block">BUNDEL TERVERIFIKASI LENGKAP!</strong>
-                            <span>Berkas digital Anda telah diverifikasi dan disahkan oleh Tim UMPEG RSUD Sinjai.</span>
+                            <span class="font-extrabold uppercase block text-[10.5px]">E-ARSIP DIVERIFIKASI RESMI UMPEG</span>
+                            <span class="text-[10px] font-medium">Seluruh berkas fisik/digital Anda telah dinyatakan lengkap & sesuai standar kedinasan.</span>
                         </div>
                     `;
-                    corrBanner.classList.remove('hidden');
+                    cBanner.classList.remove('hidden');
                 } else {
-                    corrBanner.classList.add('hidden');
+                    cBanner.classList.add('hidden');
                 }
             }
 
-            window.renderFormAtoHRepository();
+            // Fill profile form values
+            window.setVal('f-bas-nama-ijazah', currentPegawai.detailPersonal?.namaTanpaGeral || '');
+            window.setVal('f-bas-gelar-depan', currentPegawai.detailPersonal?.gelarDepan || '');
+            window.setVal('f-bas-gelar-belakang', currentPegawai.detailPersonal?.gelarBelakang || '');
+            window.setVal('f-bas-nik', currentPegawai.detailPersonal?.nik || '');
+            window.setVal('f-bas-kk', currentPegawai.detailPersonal?.noKk || '');
+            window.setVal('f-bas-tempat-lahir', currentPegawai.detailPersonal?.tempatLahir || '');
+            window.setVal('f-bas-tgl-lahir', currentPegawai.detailPersonal?.tglLahir || '');
+            window.setVal('f-bas-jk', currentPegawai.detailPersonal?.jk || '');
+            window.setVal('f-bas-agama', currentPegawai.detailPersonal?.agama || '');
+            window.setVal('f-bas-gol-darah', currentPegawai.detailPersonal?.golDarah || '');
+            window.setVal('f-bas-status-nikah', currentPegawai.detailPersonal?.statusNikah || '');
+            window.setVal('f-bas-hp', currentPegawai.detailPersonal?.hp || '');
+            window.setVal('f-bas-email', currentPegawai.detailPersonal?.email || '');
+            window.setVal('f-bas-alamat-ktp', currentPegawai.detailPersonal?.alamatKtp || '');
+            window.setVal('f-bas-alamat-domisili', currentPegawai.detailPersonal?.alamatDomisili || '');
+            window.setVal('f-bas-npwp', currentPegawai.detailPersonal?.npwp || '');
+            window.setVal('f-bas-bpjs', currentPegawai.detailPersonal?.bpjs || '');
+            window.setVal('f-bas-taspen', currentPegawai.detailPersonal?.taspen || '');
+            window.setVal('f-bas-karpeg', currentPegawai.detailPersonal?.karpeg || '');
+
+            window.setVal('f-bas-status-pegawai', currentPegawai.status || '');
+            window.setVal('f-bas-nip', currentPegawai.nip || '');
+            window.setVal('f-bas-golongan', currentPegawai.detailPersonal?.golongan || '');
+            window.setVal('f-bas-ruangan', currentPegawai.ruangan || '');
+
+            // Medical form
+            window.setVal('f-med-no-str', currentPegawai.detailMedis?.noStr || '');
+            window.setVal('f-med-tgl-str', currentPegawai.detailMedis?.tglStr || '');
+            window.setVal('f-med-exp-str', currentPegawai.detailMedis?.expStr || '');
+            if (document.getElementById('f-med-str-lifetime')) {
+                document.getElementById('f-med-str-lifetime').checked = currentPegawai.detailMedis?.strLifetime || false;
+            }
+            window.setVal('f-med-no-sip', currentPegawai.detailMedis?.noSip || '');
+            window.setVal('f-med-tgl-sip', currentPegawai.detailMedis?.tglSip || '');
+            window.setVal('f-med-exp-sip', currentPegawai.detailMedis?.expSip || '');
+            window.setVal('f-med-org-profesi', currentPegawai.detailMedis?.orgProfesi || '');
+            window.setVal('f-med-no-anggota-org', currentPegawai.detailMedis?.noAnggotaOrg || '');
+
+            window.renderEarsipCategories();
             window.renderEducationTable();
         };
 
-        window.renderEducationTable = function() {
-            const tbody = document.getElementById('edu-table-body');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            if (!currentPegawai || !currentPegawai.riwayatPendidikan || currentPegawai.riwayatPendidikan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Belum ada data riwayat pendidikan.</td></tr>`;
-                return;
-            }
-            currentPegawai.riwayatPendidikan.forEach(item => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-emerald-50/50 transition-colors border-b border-emerald-100">
-                        <td class="p-2.5 font-bold">${item.tingkat}</td>
-                        <td class="p-2.5">${item.institusi}</td>
-                        <td class="p-2.5">${item.prodi || '-'}</td>
-                        <td class="p-2.5 font-mono">${item.noIjazah || '-'}</td>
-                        <td class="p-2.5 font-mono font-bold">${item.ipk || '-'}</td>
-                        <td class="p-2.5 text-center"><button onclick="window.deleteEducationItem('${item.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash-can"></i></button></td>
-                    </tr>
-                `;
-            });
-        };
-
-        window.renderFormAtoHRepository = function() {
+        window.renderEarsipCategories = function() {
             const container = document.getElementById('earsip-categories-container');
             if (!container || !currentPegawai) return;
-            container.innerHTML = '';
 
-            FORM_CHECKLIST_CONFIG.forEach(cat => {
-                let filled = 0;
-                let itemsHtml = '';
+            const links = currentPegawai.linksMap || {};
+            const searchKw = window.getVal('search-earsip-item').toLowerCase();
 
-                cat.items.forEach(item => {
-                    const links = (currentPegawai.linksMap && currentPegawai.linksMap[item.id]) ? currentPegawai.linksMap[item.id] : [];
-                    const isF = links.length > 0;
-                    if (isF) filled++;
-
-                    let linksBadgeHtml = isF ? links.map((l, idx) => `
-                        <div class="inline-flex items-center gap-1 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-300 text-[9.5px]">
-                            <button onclick="window.openDocViewer('${l.label}', '${l.url}')" class="font-bold text-emerald-900 hover:underline flex items-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-file-pdf text-emerald-700"></i> ${l.label}
-                            </button>
-                            <button onclick="window.deleteLinkItem('${item.id}', ${idx})" class="text-rose-600 hover:text-rose-800 ml-1 cursor-pointer" title="Hapus Berkas Ini">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                    `).join('') : `<span class="text-[9.5px] text-rose-500 font-semibold italic">*Belum dilampirkan</span>`;
-
-                    itemsHtml += `
-                        <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1.5 shadow-2xs">
-                            <div class="flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full ${isF ? 'bg-emerald-500' : 'bg-slate-300'} shrink-0"></span>
-                                    <span class="font-bold text-slate-900 text-xs">${item.name}</span>
-                                </div>
-                                <button type="button" onclick="window.openAddLinkModal('${item.id}')" class="h-7 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 shrink-0 cursor-pointer">
-                                    <i class="fa-solid fa-plus"></i> Tautkan
-                                </button>
-                            </div>
-                            <div class="pl-4 flex flex-wrap gap-1.5">${linksBadgeHtml}</div>
-                        </div>
-                    `;
+            container.innerHTML = FORM_CHECKLIST_CONFIG.map(cat => {
+                const isExpanded = expandedCategories[cat.code] !== false; // default open
+                const filteredItems = cat.items.filter(item => {
+                    if (!searchKw) return true;
+                    return item.name.toLowerCase().includes(searchKw);
                 });
 
-                const isExp = expandedCategories[cat.code] === true;
+                if (filteredItems.length === 0 && searchKw) return '';
 
-                container.innerHTML += `
-                    <div class="rounded-xl border border-emerald-200 overflow-hidden space-y-2">
-                        <div onclick="window.toggleSingleCategory('${cat.code}')" class="p-3 bg-emerald-100/90 hover:bg-emerald-200/90 cursor-pointer flex items-center justify-between font-extrabold text-emerald-950 text-xs transition-colors">
-                            <span>${cat.title}</span>
-                            <span class="text-[9.5px] px-2.5 py-0.5 rounded-full ${filled > 0 ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'}">${filled} / ${cat.items.length} Terisi</span>
+                return `
+                    <div class="bg-white rounded-xl border border-emerald-200 overflow-hidden shadow-2xs">
+                        <button type="button" onclick="window.toggleCategoryAccordion('${cat.code}')" class="w-full p-3 bg-emerald-100/70 hover:bg-emerald-100 text-left font-black text-emerald-950 text-xs flex justify-between items-center cursor-pointer">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-folder-closed text-emerald-700"></i> ${cat.title}</span>
+                            <span class="text-[10px] font-bold text-emerald-800"><i class="fa-solid fa-chevron-${isExpanded ? 'up' : 'down'}"></i></span>
+                        </button>
+
+                        <div class="${isExpanded ? 'p-3 space-y-2' : 'hidden'}">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                ${filteredItems.map(item => {
+                                    const driveUrl = links[item.id];
+                                    return `
+                                        <div class="p-2.5 rounded-xl border ${driveUrl ? 'bg-emerald-50/80 border-emerald-300' : 'bg-slate-50 border-slate-200'} flex flex-col justify-between space-y-1.5">
+                                            <div class="font-bold text-slate-800 text-[11px] leading-tight">${item.name}</div>
+                                            <div class="flex items-center justify-between gap-1 pt-1 border-t border-slate-200/60">
+                                                ${driveUrl ? `
+                                                    <span class="text-[9px] font-mono text-emerald-800 font-bold truncate"><i class="fa-solid fa-check text-emerald-600 mr-0.5"></i> Tertaut</span>
+                                                    <div class="flex items-center gap-1">
+                                                        <button type="button" onclick="window.openDocViewer('${driveUrl}', '${item.name}')" class="px-2 py-0.5 rounded bg-emerald-700 text-white font-extrabold text-[9.5px] cursor-pointer"><i class="fa-solid fa-eye mr-0.5"></i> Lihat</button>
+                                                        <button type="button" onclick="window.deleteLinkItem('${item.id}')" class="px-2 py-0.5 rounded bg-rose-600 text-white font-extrabold text-[9.5px] cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                                                    </div>
+                                                ` : `
+                                                    <span class="text-[9px] font-mono text-slate-400 font-medium">Belum ditautkan</span>
+                                                    <button type="button" onclick="window.openAddLinkModal('${item.id}', '${item.name}')" class="px-2.5 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[9.5px] cursor-pointer"><i class="fa-solid fa-link mr-0.5"></i> Tautkan Drive</button>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
-                        <div class="${isExp ? 'p-2 space-y-2' : 'hidden p-2 space-y-2'}">${itemsHtml}</div>
                     </div>
                 `;
-            });
+            }).join('');
         };
 
-        window.toggleSingleCategory = function(code) {
-            expandedCategories[code] = !expandedCategories[code];
-            window.renderFormAtoHRepository();
+        window.toggleCategoryAccordion = function(code) {
+            expandedCategories[code] = expandedCategories[code] === false ? true : false;
+            window.renderEarsipCategories();
         };
 
         window.toggleExpandAllCategories = function() {
-            let coll = false;
-            FORM_CHECKLIST_CONFIG.forEach(c => { if (!expandedCategories[c.code]) coll = true; });
-            FORM_CHECKLIST_CONFIG.forEach(c => { expandedCategories[c.code] = coll; });
-            window.renderFormAtoHRepository();
+            const hasClosed = Object.values(expandedCategories).some(v => v === false);
+            FORM_CHECKLIST_CONFIG.forEach(c => expandedCategories[c.code] = hasClosed);
+            window.renderEarsipCategories();
         };
 
-        window.getItemNameById = function(itemId) {
-            let found = itemId;
-            FORM_CHECKLIST_CONFIG.forEach(c => {
-                c.items.forEach(it => { if (it.id === itemId) found = it.name; });
-            });
-            return found;
-        };
-
-        window.openAddLinkModal = function(id) {
-            activeAddLinkId = id;
-            window.setText('modal-add-link-title', "Tautkan Berkas Digital");
-            window.setText('modal-add-link-subtitle', `Item: ${window.getItemNameById(id)}`);
-            window.setVal('m-link-label', ""); window.setVal('m-link-url', "");
-            const modal = document.getElementById('modal-add-link-item');
-            if(modal) modal.classList.remove('hidden');
-        };
-
-        window.closeAddLinkModal = function() {
-            const modal = document.getElementById('modal-add-link-item');
-            if(modal) modal.classList.add('hidden');
-        };
-
-        window.handleSaveLinkItemSubmit = function(e) {
-            e.preventDefault();
-            if (!activeAddLinkId || !currentPegawai) return;
-            const label = window.getVal('m-link-label');
-            const url = window.getVal('m-link-url');
-            if (!currentPegawai.linksMap) currentPegawai.linksMap = {};
-            if (!currentPegawai.linksMap[activeAddLinkId]) currentPegawai.linksMap[activeAddLinkId] = [];
-            currentPegawai.linksMap[activeAddLinkId].push({ label, url });
-            
-            window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.renderDashboard();
-            window.closeAddLinkModal();
-        };
-
-        window.deleteLinkItem = function(itemId, idx) {
-            if (!currentPegawai || !currentPegawai.linksMap || !currentPegawai.linksMap[itemId]) return;
-            currentPegawai.linksMap[itemId].splice(idx, 1);
-            window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.renderDashboard();
-        };
-
-        window.openDocViewer = function(label, url) {
-            if (!url) return;
-            window.setText('modal-doc-title', label || "Pratinjau");
-            const extLink = document.getElementById('modal-doc-external');
-            const iframe = document.getElementById('modal-doc-iframe');
-            if(extLink) extLink.href = url;
-            if(iframe) iframe.src = url.includes('drive.google.com') ? url.replace(/\/view(\?.*)?$/, '/preview') : url;
-            const modal = document.getElementById('modal-doc-viewer');
-            if(modal) modal.classList.remove('hidden');
-        };
-
-        window.closeDocViewer = function() {
-            const iframe = document.getElementById('modal-doc-iframe');
-            if(iframe) iframe.src = 'about:blank';
-            const modal = document.getElementById('modal-doc-viewer');
-            if(modal) modal.classList.add('hidden');
-        };
-
-        window.captureCurrentFormInputToMemory = function() {
-            if (!currentPegawai) return;
-            if (!currentPegawai.detailPersonal) currentPegawai.detailPersonal = {};
-            if (!currentPegawai.detailJabatan) currentPegawai.detailJabatan = {};
-            if (!currentPegawai.detailMedis) currentPegawai.detailMedis = {};
-
-            const isSt = (currentPegawai.sub2 === 'STRUKTURAL');
-            const selJab = isSt ? window.getVal('f-st-nama-jabatan') : window.getVal('f-fn-nama-jabatan');
-
-            currentPegawai.status = window.getVal('f-bas-status-pegawai') || currentPegawai.status;
-            currentPegawai.ruangan = window.getVal('f-bas-ruangan') || currentPegawai.ruangan;
-            if (selJab) currentPegawai.jabatan = selJab;
-
-            currentPegawai.detailPersonal = {
-                ...currentPegawai.detailPersonal,
-                golongan: window.getVal('f-bas-golongan'),
-                nik: window.getVal('f-bas-nik'), noKk: window.getVal('f-bas-kk'),
-                gelarDepan: window.getVal('f-bas-gelar-depan'), namaTanpaGeral: window.getVal('f-bas-nama-ijazah'), gelarBelakang: window.getVal('f-bas-gelar-belakang'),
-                tempatLahir: window.getVal('f-bas-tempat-lahir'), tglLahir: window.getVal('f-bas-tgl-lahir'),
-                jk: window.getVal('f-bas-jk'), agama: window.getVal('f-bas-agama'), golDarah: window.getVal('f-bas-gol-darah'), statusNikah: window.getVal('f-bas-status-nikah'),
-                hp: window.getVal('f-bas-hp'), email: window.getVal('f-bas-email'), alamatKtp: window.getVal('f-bas-alamat-ktp'), alamatDomisili: window.getVal('f-bas-alamat-domisili'),
-                npwp: window.getVal('f-bas-npwp'), bpjs: window.getVal('f-bas-bpjs'), taspen: window.getVal('f-bas-taspen'), karpeg: window.getVal('f-bas-karpeg')
-            };
-
-            currentPegawai.detailJabatan = isSt ? {
-                namaJabatan: selJab,
-                eselon: window.getVal('f-st-eselon') || 'NON_ESELON',
-                noSk: window.getVal('f-st-no-sk'),
-                tglSk: window.getVal('f-st-tgl-sk'),
-                tmtSk: window.getVal('f-st-tmt-sk')
-            } : {
-                kelompok: window.getVal('f-fn-kelompok'),
-                namaJabatan: selJab,
-                jenjang: window.getVal('f-fn-jenjang'),
-                noSk: window.getVal('f-fn-no-sk'),
-                tmtSk: window.getVal('f-fn-tmt-sk'),
-                eselon: 'NON_ESELON'
-            };
-
-            currentPegawai.detailMedis = {
-                noStr: window.getVal('f-med-no-str'),
-                tglStr: window.getVal('f-med-tgl-str'),
-                expStr: window.getVal('f-med-exp-str'),
-                strLifetime: document.getElementById('f-med-str-lifetime')?.checked || false,
-                noSip: window.getVal('f-med-no-sip'),
-                tglSip: window.getVal('f-med-tgl-sip'),
-                expSip: window.getVal('f-med-exp-sip'),
-                orgProfesi: window.getVal('f-med-org-profesi'),
-                noAnggotaOrg: window.getVal('f-med-no-anggota-org')
-            };
-        };
-
-        window.toggleJalurJabatanForm = function() {
-            if (!currentPegawai) return;
-            window.captureCurrentFormInputToMemory();
-            currentPegawai.sub2 = (currentPegawai.sub2 === 'STRUKTURAL') ? 'FUNGSIONAL' : 'STRUKTURAL';
-            window.toggleJabatanFormType();
-            window.populateDetailProfileForm();
-        };
-
-        window.toggleJabatanFormType = function() {
-            if (!currentPegawai) return;
-            const isSt = (currentPegawai.sub2 === 'STRUKTURAL');
-            const secSt = document.getElementById('section-form-struktural');
-            const secFn = document.getElementById('section-form-fungsional');
-            const secMed = document.getElementById('section-form-medis');
-            const badgeJalur = document.getElementById('display-jalur-jabatan');
-
-            if (badgeJalur) {
-                badgeJalur.innerText = isSt ? "Jalur: Struktural (Manajerial)" : "Jalur: Fungsional (Non-Manajerial)";
-                badgeJalur.className = isSt ? "text-[9px] bg-blue-100 text-blue-950 font-black px-2.5 py-1 rounded border border-blue-300" : "text-[9px] bg-emerald-100 text-emerald-950 font-black px-2.5 py-1 rounded border border-emerald-300";
-            }
-
-            if (secMed) secMed.classList.toggle('hidden', isSt);
-            if (secSt) secSt.classList.toggle('hidden', !isSt);
-            if (secFn) secFn.classList.toggle('hidden', isSt);
-
-            const el = document.getElementById(isSt ? 'f-st-nama-jabatan' : 'f-fn-nama-jabatan');
-            if (el) {
-                const list = masterJabatanList[isSt ? 'STRUKTURAL' : 'FUNGSIONAL'] || [];
-                el.innerHTML = '<option value="" disabled selected>-- Pilih Jabatan --</option>' + list.map(j => `<option value="${j}">${j}</option>`).join('');
-                if (currentPegawai.jabatan) el.value = currentPegawai.jabatan;
-            }
-        };
-
-        window.populateDetailProfileForm = function() {
-            if (!currentPegawai) return;
-            window.populateMasterDropdowns();
-            const dp = currentPegawai.detailPersonal || {};
-            const dj = currentPegawai.detailJabatan || {};
-            const dm = currentPegawai.detailMedis || {};
-
-            if (currentPegawai.status) window.setVal('f-bas-status-pegawai', currentPegawai.status);
-            window.setVal('f-bas-nip', currentPegawai.nip);
-            if (dp.golongan) window.setVal('f-bas-golongan', dp.golongan);
-            window.setVal('f-bas-nik', dp.nik); window.setVal('f-bas-kk', dp.noKk);
-            window.setVal('f-bas-gelar-depan', dp.gelarDepan); window.setVal('f-bas-nama-ijazah', dp.namaTanpaGeral || '');
-            window.setVal('f-bas-gelar-belakang', dp.gelarBelakang);
-            if (currentPegawai.ruangan) window.setVal('f-bas-ruangan', currentPegawai.ruangan);
-            window.setVal('f-bas-tempat-lahir', dp.tempatLahir); window.setVal('f-bas-tgl-lahir', dp.tglLahir);
-            window.setVal('f-bas-jk', dp.jk); window.setVal('f-bas-agama', dp.agama);
-            window.setVal('f-bas-gol-darah', dp.golDarah); window.setVal('f-bas-status-nikah', dp.statusNikah);
-            window.setVal('f-bas-hp', dp.hp); window.setVal('f-bas-email', dp.email);
-            window.setVal('f-bas-alamat-ktp', dp.alamatKtp); window.setVal('f-bas-alamat-domisili', dp.alamatDomisili);
-            window.setVal('f-bas-npwp', dp.npwp); window.setVal('f-bas-bpjs', dp.bpjs);
-            window.setVal('f-bas-taspen', dp.taspen); window.setVal('f-bas-karpeg', dp.karpeg);
-
-            if (currentPegawai.sub2 === 'STRUKTURAL') {
-                window.setVal('f-st-nama-jabatan', dj.namaJabatan || currentPegawai.jabatan);
-                window.setVal('f-st-eselon', dj.eselon || 'NON_ESELON');
-                window.setVal('f-st-no-sk', dj.noSk);
-                window.setVal('f-st-tgl-sk', dj.tglSk);
-                window.setVal('f-st-tmt-sk', dj.tmtSk);
-            } else {
-                window.setVal('f-fn-kelompok', dj.kelompok);
-                window.setVal('f-fn-nama-jabatan', dj.namaJabatan || currentPegawai.jabatan);
-                window.setVal('f-fn-jenjang', dj.jenjang);
-                window.setVal('f-fn-no-sk', dj.noSk);
-                window.setVal('f-fn-tmt-sk', dj.tmtSk);
-            }
-
-            window.setVal('f-med-no-str', dm.noStr); window.setVal('f-med-tgl-str', dm.tglStr); window.setVal('f-med-exp-str', dm.expStr);
-            const cbLifetime = document.getElementById('f-med-str-lifetime');
-            if (cbLifetime) cbLifetime.checked = !!dm.strLifetime;
-            window.setVal('f-med-no-sip', dm.noSip); window.setVal('f-med-tgl-sip', dm.tglSip); window.setVal('f-med-exp-sip', dm.expSip);
-            window.setVal('f-med-org-profesi', dm.orgProfesi); window.setVal('f-med-no-anggota-org', dm.noAnggotaOrg);
-        };
-
-        window.saveDetailProfileForm = function(e) {
-            e.preventDefault();
-            if (!currentPegawai) return;
-
-            const selectedStatus = window.getVal('f-bas-status-pegawai');
-            const selectedRuangan = window.getVal('f-bas-ruangan');
-
-            if (!selectedStatus) {
-                window.showToast("Silakan pilih Status Kepegawaian!", "warning");
-                return;
-            }
-            if (!selectedRuangan) {
-                window.showToast("Silakan pilih Unit Kerja Penempatan!", "warning");
-                return;
-            }
-
-            window.captureCurrentFormInputToMemory();
-
-            let fn = currentPegawai.detailPersonal.namaTanpaGeral || '';
-            if (fn) {
-                if (currentPegawai.detailPersonal.gelarDepan) fn = currentPegawai.detailPersonal.gelarDepan + ' ' + fn;
-                if (currentPegawai.detailPersonal.gelarBelakang) fn = fn + ', ' + currentPegawai.detailPersonal.gelarBelakang;
-                currentPegawai.nama = fn.trim();
-            }
-
-            window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.renderDashboard();
-            window.switchTab('dashboard');
-            window.showToast("Profil Kedinasan Berhasil Disimpan!", "success");
-        };
-
-        window.openEditProfileModal = function() {
-            if (!currentPegawai) return;
-            window.setVal('edit-username', currentPegawai.username);
-            window.setVal('edit-nip-input', currentPegawai.nip);
-            const modal = document.getElementById('modal-edit-profile');
-            if(modal) modal.classList.remove('hidden');
-        };
-
-        window.closeEditProfileModal = function() {
-            const modal = document.getElementById('modal-edit-profile');
-            if(modal) modal.classList.add('hidden');
-        };
-
-        window.saveProfileChanges = function() {
-            if (!currentPegawai) return;
-            const newU = window.getVal('edit-username');
-            const newN = window.getVal('edit-nip-input');
-            if (newU) currentPegawai.username = newU;
-            if (newN) currentPegawai.nip = newN;
-            window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.renderDashboard();
-            window.closeEditProfileModal();
-            window.showToast("Perubahan akun disimpan.", "success");
-        };
-
-        window.handleAuthSubmit = async function(e) {
-            if (e) e.preventDefault();
-            const nipKey = window.getVal('auth-key-input');
-            const username = window.getVal('auth-username');
-
-            if (!username || !nipKey) {
-                window.showToast("Silakan lengkapi Username dan NIP/SK!", "warning");
-                return;
-            }
-
-            currentPegawai = {
-                idPegawai: window.generateIdPegawai(nipKey),
-                username: username,
-                nip: nipKey,
-                nama: '', // Dipisah secara ketat: nama asli dipasang saat pengisian formulir
-                status: '', sub1: 'MEDIS', sub2: 'FUNGSIONAL', jabatan: '', ruangan: '', detailPersonal: {}, riwayatPendidikan: [], linksMap: {}, verifikasiStatus: 'PENDING', verifikasiCatatan: ''
-            };
-            
-            sessionStorage.setItem('CURRENT_ACTIVE_PEGAWAI_SESSION', JSON.stringify(currentPegawai));
-            await window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.showDashboardView();
-            window.showToast("Akun Pegawai Berhasil Dibuat!", "success");
+        window.filterEarsipItems = function() {
+            window.renderEarsipCategories();
         };
 
         window.copyIdPegawai = function() {
             if (!currentPegawai) return;
-            const ta = document.createElement('textarea');
-            ta.value = currentPegawai.idPegawai;
-            document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-            window.showToast("ID Pegawai disalin.", "info");
+            const temp = document.createElement('textarea');
+            temp.value = currentPegawai.idPegawai;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            window.showToast("ID Pegawai disalin ke clipboard!", "success");
         };
 
-        window.openAddEducationModal = function() { window.setVal('m-edu-institusi', ""); const m=document.getElementById('modal-edu-item'); if(m) m.classList.remove('hidden'); };
-        window.closeAddEducationModal = function() { const m=document.getElementById('modal-edu-item'); if(m) m.classList.add('hidden'); };
+        window.openEditProfileModal = function() {
+            if (!currentPegawai) return;
+            window.setVal('edit-username', currentPegawai.username || '');
+            window.setVal('edit-nip-input', currentPegawai.nip || '');
+            document.getElementById('modal-edit-profile').classList.remove('hidden');
+        };
+
+        window.closeEditProfileModal = function() {
+            document.getElementById('modal-edit-profile').classList.add('hidden');
+        };
+
+        window.saveProfileChanges = async function() {
+            if (!currentPegawai) return;
+            const newUn = window.getVal('edit-username');
+            const newNip = window.getVal('edit-nip-input');
+
+            if (!newUn || !newNip) {
+                window.showToast("Username dan NIP wajib diisi!", "warning");
+                return;
+            }
+
+            currentPegawai.username = newUn;
+            currentPegawai.nip = newNip;
+
+            window.closeEditProfileModal();
+            window.showToast("Menyimpan akun ke cloud...", "info");
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
+            window.renderDashboard();
+            window.showToast("Perubahan akun berhasil disimpan!", "success");
+        };
+
+        window.openAddLinkModal = function(itemId, itemName) {
+            activeAddLinkId = itemId;
+            window.setText('modal-add-link-title', 'Tautkan Berkas Digital');
+            window.setText('modal-add-link-subtitle', 'Item: ' + itemName);
+            window.setVal('m-link-label', itemName);
+            window.setVal('m-link-url', '');
+            document.getElementById('modal-add-link-item').classList.remove('hidden');
+        };
+
+        window.closeAddLinkModal = function() {
+            document.getElementById('modal-add-link-item').classList.add('hidden');
+            activeAddLinkId = null;
+        };
+
+        window.handleSaveLinkItemSubmit = async function(e) {
+            e.preventDefault();
+            if (!currentPegawai || !activeAddLinkId) return;
+
+            const url = window.getVal('m-link-url');
+            if (!url) return;
+
+            if (!currentPegawai.linksMap) currentPegawai.linksMap = {};
+            currentPegawai.linksMap[activeAddLinkId] = url;
+
+            window.closeAddLinkModal();
+            window.showToast("Menautkan berkas ke Supabase & GAS...", "info");
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
+            window.renderDashboard();
+            window.showToast("Tautan berkas berhasil disimpan!", "success");
+        };
+
+        window.deleteLinkItem = async function(itemId) {
+            if (!currentPegawai || !currentPegawai.linksMap) return;
+            delete currentPegawai.linksMap[itemId];
+            window.showToast("Menghapus tautan berkas...", "info");
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
+            window.renderDashboard();
+            window.showToast("Tautan berkas dihapus!", "success");
+        };
+
+        window.openDocViewer = function(url, title) {
+            window.setText('modal-doc-title', title || 'Pratinjau Berkas Digital');
+            const iframe = document.getElementById('modal-doc-iframe');
+            const ext = document.getElementById('modal-doc-external');
+            if (iframe) iframe.src = url;
+            if (ext) ext.href = url;
+            document.getElementById('modal-doc-viewer').classList.remove('hidden');
+        };
+
+        window.closeDocViewer = function() {
+            document.getElementById('modal-doc-viewer').classList.add('hidden');
+            const iframe = document.getElementById('modal-doc-iframe');
+            if (iframe) iframe.src = 'about:blank';
+        };
+
+        window.openAddEducationModal = function() {
+            window.setVal('m-edu-institusi', '');
+            window.setVal('m-edu-prodi', '');
+            window.setVal('m-edu-no-ijazah', '');
+            window.setVal('m-edu-ipk', '');
+            document.getElementById('modal-edu-item').classList.remove('hidden');
+        };
+
+        window.closeAddEducationModal = function() {
+            document.getElementById('modal-edu-item').classList.add('hidden');
+        };
 
         window.handleEducationFormSubmit = function(e) {
             e.preventDefault();
             if (!currentPegawai) return;
+
+            const tingkat = window.getVal('m-edu-tingkat');
+            const institusi = window.getVal('m-edu-institusi');
+            const prodi = window.getVal('m-edu-prodi');
+            const noIjazah = window.getVal('m-edu-no-ijazah');
+            const ipk = window.getVal('m-edu-ipk');
+
             if (!currentPegawai.riwayatPendidikan) currentPegawai.riwayatPendidikan = [];
-            currentPegawai.riwayatPendidikan.push({
-                id: 'edu_' + Date.now(),
-                tingkat: window.getVal('m-edu-tingkat'),
-                institusi: window.getVal('m-edu-institusi'),
-                prodi: window.getVal('m-edu-prodi'),
-                noIjazah: window.getVal('m-edu-no-ijazah'),
-                ipk: window.getVal('m-edu-ipk')
-            });
-            window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.renderEducationTable();
+            currentPegawai.riwayatPendidikan.push({ tingkat, institusi, prodi, noIjazah, ipk });
+
             window.closeAddEducationModal();
-        };
-
-        window.deleteEducationItem = function(id) {
-            if (!currentPegawai || !currentPegawai.riwayatPendidikan) return;
-            currentPegawai.riwayatPendidikan = currentPegawai.riwayatPendidikan.filter(x => x.id !== id);
-            window.triggerActionDrivenSyncQueue(currentPegawai);
             window.renderEducationTable();
+            window.showToast("Riwayat pendidikan ditambahkan!", "success");
         };
 
-        window.filterEarsipItems = function() {
-            const val = window.getVal('search-earsip-item').toLowerCase();
-            document.querySelectorAll('#earsip-categories-container .p-3').forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(val) ? '' : 'none';
-            });
+        window.deleteEducationItem = function(index) {
+            if (!currentPegawai || !currentPegawai.riwayatPendidikan) return;
+            currentPegawai.riwayatPendidikan.splice(index, 1);
+            window.renderEducationTable();
+            window.showToast("Riwayat pendidikan dihapus!", "info");
+        };
+
+        window.renderEducationTable = function() {
+            const tbody = document.getElementById('edu-table-body');
+            if (!tbody || !currentPegawai) return;
+
+            const list = currentPegawai.riwayatPendidikan || [];
+            tbody.innerHTML = list.length === 0
+                ? `<tr><td colspan="6" class="p-3 text-center text-slate-400 font-semibold">Belum ada data riwayat pendidikan formal.</td></tr>`
+                : list.map((item, idx) => `
+                    <tr class="hover:bg-emerald-50/50 border-b border-emerald-100">
+                        <td class="p-2.5 font-bold text-emerald-950">${item.tingkat || '-'}</td>
+                        <td class="p-2.5 font-semibold text-slate-800">${item.institusi || '-'}</td>
+                        <td class="p-2.5 text-slate-700">${item.prodi || '-'}</td>
+                        <td class="p-2.5 font-mono text-slate-800">${item.noIjazah || '-'}</td>
+                        <td class="p-2.5 font-mono font-bold text-emerald-900">${item.ipk || '-'}</td>
+                        <td class="p-2.5 text-center">
+                            <button type="button" onclick="window.deleteEducationItem(${idx})" class="text-rose-600 hover:text-rose-800 font-bold p-1 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+        };
+
+        window.toggleJalurJabatanForm = function() {
+            if (!currentPegawai) return;
+            currentPegawai.sub2 = currentPegawai.sub2 === 'STRUKTURAL' ? 'FUNGSIONAL' : 'STRUKTURAL';
+            
+            const isSt = currentPegawai.sub2 === 'STRUKTURAL';
+            document.getElementById('section-form-struktural').classList.toggle('hidden', !isSt);
+            document.getElementById('section-form-fungsional').classList.toggle('hidden', isSt);
+            window.setText('display-jalur-jabatan', `Jalur: ${currentPegawai.sub2}`);
         };
 
         window.onload = function() {
             window.initCloudConnectionAndRealtime();
-            window.populateMasterDropdowns();
             window.checkExistingSession();
         };
     </script>
