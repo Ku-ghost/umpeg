@@ -130,7 +130,7 @@
 
             <div class="flex items-center gap-2 text-xs">
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
+                    <span class="w-2 h-2 rounded-full bg-amber-500" id="ws-dot"></span>
                     <span id="ws-status-text">🔴 Offline / Unconfigured</span>
                 </div>
                 <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
@@ -1141,12 +1141,11 @@
     </div>
 
     <script>
-        // Konfigurasi Default Bawaan sebagai Fallback Terpusat
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
-            supabaseUrl: "https://dlstwmavfxtktlwqajvj.supabase.co",
-            supabaseAnonKey: "sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O",
-            gasUrl: "https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec",
+            supabaseUrl: "",
+            supabaseAnonKey: "",
+            gasUrl: "",
             password: "kugoskom36"
         };
 
@@ -1173,14 +1172,75 @@
         const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
 
         const DEFAULT_CHECKLIST_CONFIG = [
-            { code: 'A', title: 'A. Kualifikasi & Kompetensi Staf', items: [{ id: 'a_1', name: 'STR dan Surat Izin Tenaga Profesional (SIP)' }, { id: 'a_2', name: 'Biodata Pegawai / Daftar Riwayat Hidup (DRH)' }, { id: 'a_3', name: 'Ijazah Pertama (SD) Sampai Terakhir' }, { id: 'a_4', name: 'Sertifikat Pelatihan Kompetensi' }] },
+            {
+                code: 'A', title: 'A. Kualifikasi & Kompetensi Staf', items: [
+                    { id: 'a_1', name: 'STR dan Surat Izin Tenaga Profesional (SIP)' },
+                    { id: 'a_2', name: 'Biodata Pegawai / Daftar Riwayat Hidup (DRH)' },
+                    { id: 'a_3', name: 'Ijazah Pertama (SD) Sampai Terakhir' },
+                    { id: 'a_4', name: 'Sertifikat Pelatihan Kompetensi' },
+                    { id: 'a_5', name: 'Surat Izin / Tugas Belajar' },
+                    { id: 'a_6', name: 'Rekomendasi Kompetensi Nakes' },
+                    { id: 'a_7', name: 'Surat Penugasan Klinis (SPK)' },
+                    { id: 'a_8', name: 'SK Rincian Kewenangan Klinis (RKK)' },
+                    { id: 'a_9', name: 'Transkrip Nilai Akademik' },
+                    { id: 'a_10', name: 'Print Out PDDikti / Forlap Terkini' }
+                ]
+            },
             { code: 'B', title: 'B. Bukti Orientasi', items: [{ id: 'b_1', name: 'Surat Keterangan Orientasi RSUD Sinjai' }] },
             { code: 'C', title: 'C. Uraian Tugas', items: [{ id: 'c_1', name: 'Uraian Tugas & Kewenangan Kedinasan' }] },
-            { code: 'D', title: 'D. Riwayat Pekerjaan Staf', items: [{ id: 'd_1', name: 'Surat Perintah Melaksanakan Tugas (SPMT)' }, { id: 'd_2', name: 'SK CPNS / PNS & Kenaikan Pangkat' }] },
-            { code: 'E', title: 'E. Penilaian Kinerja Staf', items: [{ id: 'e_1', name: 'Perjanjian Kinerja Pegawai' }, { id: 'e_2', name: 'Sasaran Kinerja Pegawai (SKP)' }] },
-            { code: 'F', title: 'F. Sertifikat Pelatihan', items: [{ id: 'f_1', name: 'Sertifikat PPI / BHD / K3RS' }] },
-            { code: 'G', title: 'G. Informasi Kesehatan', items: [{ id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' }] },
-            { code: 'H', title: 'H. Informasi Pendukung', items: [{ id: 'h_1', name: 'KTP, KK, NPWP, BPJS Kesehatan & Foto' }, { id: 'h_2', name: 'SKCK & Berkas Lainnya' }] }
+            {
+                code: 'D', title: 'D. Riwayat Pekerjaan Staf', items: [
+                    { id: 'd_1', name: 'Surat Perintah Melaksanakan Tugas (SPMT)' },
+                    { id: 'd_2', name: 'SK CPNS / PNS & Kenaikan Pangkat' },
+                    { id: 'd_3', name: 'Kenaikan Gaji Berkala (KGB)' },
+                    { id: 'd_4', name: 'SK Jabatan Kedinasan / SK Pelantikan' },
+                    { id: 'd_5', name: 'SK Mutasi / Pengangkatan Kembali' },
+                    { id: 'd_6', name: 'Nota Persetujuan BKN / NIP' }
+                ]
+            },
+            {
+                code: 'E', title: 'E. Penilaian Kinerja Staf', items: [
+                    { id: 'e_1', name: 'Perjanjian Kinerja Pegawai' },
+                    { id: 'e_2', name: 'Sasaran Kinerja Pegawai (SKP) 2 Tahun Terakhir' },
+                    { id: 'e_3', name: 'Penetapan Angka Kredit (PAK) Terakhir' },
+                    { id: 'e_4', name: 'Evaluasi Kinerja Klinis (OPPE / FPPE)' },
+                    { id: 'e_5', name: 'Surat Izin Praktik Mandiri / Luar RS' },
+                    { id: 'e_6', name: 'Piagam Penghargaan / Satyalancana' },
+                    { id: 'e_7', name: 'Surat Keputusan Hukuman Disiplin (Jika Ada)' },
+                    { id: 'e_8', name: 'Laporan Hasil Assessment Kompetensi' }
+                ]
+            },
+            {
+                code: 'F', title: 'F. Sertifikat Pelatihan', items: [
+                    { id: 'f_1', name: 'Sertifikat PPI (Pencegahan & Pengendalian Infeksi)' },
+                    { id: 'f_2', name: 'Sertifikat BHD / K3RS / Patient Safety' },
+                    { id: 'f_3', name: 'Sertifikat Pelatihan Mutu & Keselamatan Pasien' },
+                    { id: 'f_4', name: 'Sertifikat Management / Leadership (Diklat PIM)' },
+                    { id: 'f_5', name: 'Sertifikat Seminar / Workshop Profesi' },
+                    { id: 'f_6', name: 'Sertifikat Pelatihan Khusus / Keterampilan Medis' }
+                ]
+            },
+            {
+                code: 'G', title: 'G. Informasi Kesehatan', items: [
+                    { id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' },
+                    { id: 'g_2', name: 'Sertifikat / Kartu Vaksinasi & Imunisasi' }
+                ]
+            },
+            {
+                code: 'H', title: 'H. Informasi Pendukung', items: [
+                    { id: 'h_1', name: 'KTP, KK, NPWP, BPJS Kesehatan & Foto' },
+                    { id: 'h_2', name: 'Kartu Pegawai (KARPEG / KPE) & TASPEN' },
+                    { id: 'h_3', name: 'KP4 (Surat Keterangan Untuk Tunjangan Keluarga)' },
+                    { id: 'h_4', name: 'Surat Nikah / Akta Perkawinan' },
+                    { id: 'h_5', name: 'Akta Kelahiran Anak' },
+                    { id: 'h_6', name: 'Kartu Isteri (KARIS) / Kartu Suami (KARSU)' },
+                    { id: 'h_7', name: 'Tanda Terima LHKPN / LHKASN' },
+                    { id: 'h_8', name: 'Kartu Anggota Organisasi Profesi (IDI/PPNI/IBI/IAI)' },
+                    { id: 'h_9', name: 'Pas Foto Berwarna Terbaru Background Merah' },
+                    { id: 'h_10', name: 'Surat Keterangan Catatan Kepolisian (SKCK)' },
+                    { id: 'h_11', name: 'Dokumen Pendukung Lainnya' }
+                ]
+            }
         ];
 
         let masterPegawaiDb = [];
@@ -1236,7 +1296,7 @@
                 badge.className = "px-2.5 py-1 rounded-full bg-teal-100 text-teal-900 border border-teal-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-amber-500";
-                txt.innerText = text || "🔴 Konfigurasi Kosong / Terputus";
+                txt.innerText = text || "🔴 Offline / Unconfigured";
                 badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
             }
         };
@@ -1268,9 +1328,9 @@
             } catch(e) {}
 
             window.state.appId = serverApiConfig.appId || DEFAULT_CONFIG.appId;
-            window.state.supabaseUrl = serverApiConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl;
-            window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || DEFAULT_CONFIG.supabaseAnonKey;
-            window.state.gasUrl = serverApiConfig.gasUrl || DEFAULT_CONFIG.gasUrl;
+            window.state.supabaseUrl = serverApiConfig.supabaseUrl || '';
+            window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || '';
+            window.state.gasUrl = serverApiConfig.gasUrl || '';
         };
 
         window.saveLocalServerConfig = function() {
@@ -1279,7 +1339,7 @@
 
         window.sendToSheet = async function(actionType, payloadData) {
             const url = window.state.gasUrl || serverApiConfig.gasUrl;
-            if (!url) {
+            if (!url || !url.startsWith('http')) {
                 console.warn("URL Google Apps Script belum dikonfigurasi!");
                 window.showToast("Koneksi GAS belum diatur!", "error");
                 return { status: 'error', message: 'URL GAS Kosong' };
@@ -1316,26 +1376,27 @@
         };
 
         window.activatePollingFallback = function() {
-            if (!window.state.gasUrl) return;
+            if (!window.state.gasUrl || !window.state.gasUrl.startsWith('http')) return;
             window.updateWsBadge('polling', 'Polling Fallback Active');
             if (pollingTimer) clearInterval(pollingTimer);
             pollingTimer = setInterval(() => { window.pullAllDataFromGas(false); }, 15000);
         };
 
-        // Otomatisasi Inisialisasi Service + Auto Query Config dari Supabase Cloud
         window.initDynamicServices = async function() {
             window.loadLocalServerConfig();
             
-            if (window.state.supabaseUrl && window.state.supabaseAnonKey && window.supabase) {
+            const supaUrl = window.state.supabaseUrl || '';
+            const supaKey = window.state.supabaseAnonKey || '';
+
+            if (supaUrl && supaUrl.startsWith('http') && supaKey && window.supabase) {
                 try {
-                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
+                    supabaseClient = window.supabase.createClient(supaUrl, supaKey);
                     console.log("Supabase Client Terhubung secara Dinamis!");
 
-                    // Kunci Keberhasilan: Otomatis Query `system_config` dari Supabase Cloud
                     const { data: cloudCfg, error: cfgErr } = await supabaseClient
                         .from('system_config')
                         .select('*')
-                        .eq('id', window.state.appId)
+                        .eq('id', window.state.appId || 'RSUD_SINJAI_UMPEG_APP')
                         .maybeSingle();
 
                     if (cloudCfg && !cfgErr) {
@@ -1358,7 +1419,9 @@
                 }
             } else {
                 window.updateWsBadge('offline', '🔴 Konfigurasi Belum Diisi');
-                if (window.state.gasUrl) window.activatePollingFallback();
+                if (window.state.gasUrl && window.state.gasUrl.startsWith('http')) {
+                    window.activatePollingFallback();
+                }
             }
         };
 
@@ -1387,9 +1450,9 @@
 
         window.openServerConfigModal = function() {
             document.getElementById('cfg-app-id').value = window.state.appId || DEFAULT_CONFIG.appId;
-            document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || DEFAULT_CONFIG.supabaseUrl;
-            document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || DEFAULT_CONFIG.supabaseAnonKey;
-            document.getElementById('cfg-gas-url').value = window.state.gasUrl || DEFAULT_CONFIG.gasUrl;
+            document.getElementById('cfg-supabase-url').value = window.state.supabaseUrl || '';
+            document.getElementById('cfg-supabase-anon-key').value = window.state.supabaseAnonKey || '';
+            document.getElementById('cfg-gas-url').value = window.state.gasUrl || '';
             document.getElementById('cfg-system-password').value = serverApiConfig.password || 'kugoskom36';
 
             const modal = document.getElementById('modal-config-server');
@@ -1519,7 +1582,10 @@
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
             const url = window.state.gasUrl || serverApiConfig.gasUrl;
-            if (!url) return;
+            if (!url || !url.startsWith('http')) {
+                window.renderActiveView();
+                return;
+            }
 
             try {
                 window.state.isSyncing = true;
@@ -1553,8 +1619,10 @@
                     window.renderActiveView();
                     if (showToastNotice) window.showToast("Data Diperbarui Otomatis dari Server!", "success");
                 }
-            } catch(e) { console.warn("Gagal pull data dari GAS:", e); }
-            finally {
+            } catch(e) { 
+                console.warn("Gagal pull data dari GAS:", e); 
+                window.renderActiveView();
+            } finally {
                 window.state.isSyncing = false;
                 const spinner = document.getElementById('auto-sync-spinner');
                 if (spinner) spinner.classList.remove('animate-spin');
@@ -1697,30 +1765,46 @@
             tbody.innerHTML = '';
 
             const unitMap = {};
+
+            if (Array.isArray(masterRuanganList)) {
+                masterRuanganList.forEach(r => {
+                    if (r && r.trim()) unitMap[r.trim()] = 0;
+                });
+            }
+
             masterPegawaiDb.forEach(p => {
-                const u = p.ruangan || 'Lainnya / Unassigned';
+                const u = (p.ruangan || '').trim() || 'Lainnya / Unassigned';
                 unitMap[u] = (unitMap[u] || 0) + 1;
             });
 
-            const sortedUnits = Object.keys(unitMap).map(k => ({ name: k, count: unitMap[k] })).sort((a,b) => b.count - a.count);
+            const sortedUnits = Object.keys(unitMap)
+                .map(k => ({ name: k, count: unitMap[k] }))
+                .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
             const total = masterPegawaiDb.length || 1;
 
             if (sortedUnits.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data unit kerja.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data unit kerja / ruangan.</td></tr>`;
                 return;
             }
 
             sortedUnits.forEach((u, i) => {
                 const pct = Math.round((u.count / total) * 100);
+                const isMasterUnit = masterRuanganList.includes(u.name);
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/50 transition-colors">
                         <td class="p-2.5 text-center font-bold text-slate-500">${i + 1}</td>
-                        <td class="p-2.5 font-bold text-slate-800">${u.name}</td>
+                        <td class="p-2.5 font-bold text-slate-800">
+                            <div class="flex items-center gap-1.5">
+                                <span>${u.name}</span>
+                                ${!isMasterUnit && u.count > 0 ? '<span class="text-[8px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded border border-amber-300 font-semibold">Non-Master</span>' : ''}
+                            </div>
+                        </td>
                         <td class="p-2.5 text-center font-mono font-bold text-emerald-950">${u.count}</td>
                         <td class="p-2.5 text-center">
                             <div class="flex items-center gap-1.5">
                                 <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-emerald-600 h-full rounded-full" style="width: ${pct}%"></div>
+                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
                                 </div>
                                 <span class="font-mono text-[9px] font-bold text-slate-600 w-8">${pct}%</span>
                             </div>
@@ -2150,15 +2234,19 @@
         window.addNewMasterRuangan = function() {
             const val = (document.getElementById('input-new-ruangan')?.value || '').trim();
             if (!val) return;
-            masterRuanganList.push(val);
+            if (!masterRuanganList.includes(val)) {
+                masterRuanganList.push(val);
+            }
             document.getElementById('input-new-ruangan').value = '';
             window.renderMasterRuanganCards();
+            window.renderUnitKerjaSummaryTable();
             window.saveMasterConfigToCloud();
         };
 
         window.deleteMasterRuangan = function(idx) {
             masterRuanganList.splice(idx, 1);
             window.renderMasterRuanganCards();
+            window.renderUnitKerjaSummaryTable();
             window.saveMasterConfigToCloud();
         };
 
@@ -2406,10 +2494,10 @@
 
         window.openEditStafAdminModal = function(nip = null) {
             const statusSelect = document.getElementById('edit-staf-status');
-            statusSelect.innerHTML = masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
+            if (statusSelect) statusSelect.innerHTML = masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
             
             const ruanganSelect = document.getElementById('edit-staf-ruangan');
-            ruanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
+            if (ruanganSelect) ruanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
             
             if (nip) {
                 const target = masterPegawaiDb.find(p => p.nip === nip);
@@ -2419,10 +2507,9 @@
                     document.getElementById('edit-staf-nip').value = target.nip;
                     document.getElementById('edit-staf-sub1').value = target.sub1 || 'MEDIS';
                     document.getElementById('edit-staf-sub2').value = target.sub2 || 'FUNGSIONAL';
-                    statusSelect.value = target.status || 'PNS';
-                    ruanganSelect.value = target.ruangan || masterRuanganList[0];
-                    window.handleAdminEditJalurChange();
-                    document.getElementById('edit-staf-jabatan').value = target.jabatan || '';
+                    if (statusSelect) statusSelect.value = target.status || 'PNS';
+                    if (ruanganSelect) ruanganSelect.value = target.ruangan || masterRuanganList[0];
+                    window.handleAdminEditJalurChange(target.jabatan);
                 }
             } else {
                 document.getElementById('edit-staf-target-id').value = '';
@@ -2430,8 +2517,8 @@
                 document.getElementById('edit-staf-nip').value = '';
                 document.getElementById('edit-staf-sub1').value = 'MEDIS';
                 document.getElementById('edit-staf-sub2').value = 'FUNGSIONAL';
-                statusSelect.value = masterStatusPegList[0] || 'PNS';
-                ruanganSelect.value = masterRuanganList[0];
+                if (statusSelect) statusSelect.value = masterStatusPegList[0] || 'PNS';
+                if (ruanganSelect) ruanganSelect.value = masterRuanganList[0];
                 window.handleAdminEditJalurChange();
             }
 
@@ -2444,11 +2531,23 @@
             if (modal) modal.classList.add('hidden');
         };
 
-        window.handleAdminEditJalurChange = function() {
+        window.handleAdminEditJalurChange = function(targetJabatanValue = null) {
             const jalur = document.getElementById('edit-staf-sub2')?.value || 'FUNGSIONAL';
             const jabatanSelect = document.getElementById('edit-staf-jabatan');
+            if (!jabatanSelect) return;
+            
+            const currentSelected = targetJabatanValue !== null ? targetJabatanValue : jabatanSelect.value;
             const list = masterJabatanList[jalur] || [];
-            jabatanSelect.innerHTML = list.map(j => `<option value="${j}">${j}</option>`).join('');
+            
+            let options = [...list];
+            if (currentSelected && !options.includes(currentSelected)) {
+                options.unshift(currentSelected);
+            }
+
+            jabatanSelect.innerHTML = options.map(j => `<option value="${j}">${j}</option>`).join('');
+            if (currentSelected && options.includes(currentSelected)) {
+                jabatanSelect.value = currentSelected;
+            }
         };
 
         window.saveEditStafAdmin = async function(e) {
@@ -2458,8 +2557,23 @@
             
             const isNew = !target;
             if (isNew) {
-                target = { idPegawai: `RSUD-PEG-${Math.random().toString(36).substring(2,10).toUpperCase()}`, linksMap: {}, detailPersonal: {}, detailJabatan: {}, detailMedis: {}, riwayatPendidikan: [] };
+                target = { 
+                    idPegawai: `RSUD-PEG-${Math.random().toString(36).substring(2,10).toUpperCase()}`, 
+                    linksMap: {}, 
+                    detailPersonal: {}, 
+                    detailJabatan: {}, 
+                    detailMedis: {}, 
+                    riwayatPendidikan: [],
+                    verifikasiStatus: 'PENDING',
+                    verifikasiCatatan: ''
+                };
             }
+
+            target.linksMap = target.linksMap || {};
+            target.detailPersonal = target.detailPersonal || {};
+            target.detailJabatan = target.detailJabatan || {};
+            target.detailMedis = target.detailMedis || {};
+            target.riwayatPendidikan = target.riwayatPendidikan || [];
 
             target.nama = document.getElementById('edit-staf-nama')?.value;
             target.username = target.nama;
@@ -2469,6 +2583,10 @@
             target.sub2 = document.getElementById('edit-staf-sub2')?.value;
             target.jabatan = document.getElementById('edit-staf-jabatan')?.value;
             target.ruangan = document.getElementById('edit-staf-ruangan')?.value;
+
+            target.detailJabatan.jabatan = target.jabatan;
+            target.detailJabatan.ruangan = target.ruangan;
+            target.detailJabatan.sub2 = target.sub2;
 
             if (isNew) masterPegawaiDb.push(target);
 
@@ -2484,6 +2602,12 @@
                         sub2: target.sub2,
                         jabatan: target.jabatan,
                         ruangan: target.ruangan,
+                        links_map: target.linksMap,
+                        detail_personal: target.detailPersonal,
+                        detail_jabatan: target.detailJabatan,
+                        detail_medis: target.detailMedis,
+                        verifikasi_status: target.verifikasiStatus || 'PENDING',
+                        verifikasi_catatan: target.verifikasiCatatan || '',
                         last_updated_at: new Date().toISOString()
                     });
                 } catch(err) {}
@@ -2493,7 +2617,7 @@
 
             window.closeEditStafAdminModal();
             window.renderActiveView();
-            window.showToast("Data Staf Berhasil Disimpan & Terbroadcast!", "success");
+            window.showToast("Data Staf & Jalur Jabatan Berhasil Disesuaikan!", "success");
         };
 
         window.confirmDeleteStaf = function(nip, idPegawai) {
@@ -2619,13 +2743,26 @@
                 if (el) el.innerText = new Date().toLocaleTimeString('id-ID') + ' WITA';
             }, 1000);
             
-            window.initDynamicServices().then(() => {
-                window.pullAllDataFromGas(false).then(() => {
-                    const loader = document.getElementById('loading-screen');
-                    if (loader) loader.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => { if (loader) loader.classList.add('hidden'); }, 300);
-                });
-            });
+            (async () => {
+                try {
+                    await window.initDynamicServices();
+                } catch(e) {
+                    console.warn("Init dynamic services notice:", e);
+                }
+                
+                try {
+                    await window.pullAllDataFromGas(false);
+                } catch(e) {
+                    console.warn("Pull data notice:", e);
+                }
+                
+                // Hapus preloader secara aman
+                const loader = document.getElementById('loading-screen');
+                if (loader) {
+                    loader.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => { loader.classList.add('hidden'); }, 300);
+                }
+            })();
         };
     </script>
 </body>
