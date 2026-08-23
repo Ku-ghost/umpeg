@@ -99,6 +99,7 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
+    <!-- Loading Preloader Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
             <i class="fa-solid fa-tower-cell"></i>
@@ -106,7 +107,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Menghubungkan ke Supabase Realtime & GAS Engine...</span>
+            <span>Menghubungkan Engine Realtime Supabase & GAS...</span>
         </p>
     </div>
 
@@ -130,7 +131,7 @@
 
             <div class="flex items-center gap-2 text-xs">
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-amber-500" id="ws-dot"></span>
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
                     <span id="ws-status-text">🔴 Offline / Unconfigured</span>
                 </div>
                 <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
@@ -313,7 +314,8 @@
                         <span class="text-[9px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Terurut Terbanyak</span>
                     </div>
 
-                    <div class="table-scroll-container overflow-y-auto max-h-[280px] rounded-xl border border-emerald-200/80 bg-white flex-1">
+                    <!-- Increased height with vertical scrollbar -->
+                    <div class="table-scroll-container overflow-y-auto max-h-[420px] rounded-xl border border-emerald-200/80 bg-white flex-1">
                         <table class="w-full text-left border-collapse text-[11px]">
                             <thead>
                                 <tr class="bg-emerald-100/90 text-emerald-950 font-extrabold border-b border-emerald-200 sticky top-0 z-10">
@@ -344,7 +346,7 @@
                     </div>
 
                     <div class="bg-white p-3.5 rounded-xl border border-emerald-200/80 relative flex-1 flex flex-col justify-end">
-                        <div class="relative z-10 h-44 flex items-end justify-between px-2 pt-4 pb-1 border-b-2 border-slate-700 gap-2">
+                        <div class="relative z-10 h-52 flex items-end justify-between px-2 pt-4 pb-1 border-b-2 border-slate-700 gap-2">
                             <div class="flex-1 flex flex-col items-center h-full justify-end px-0.5">
                                 <div class="w-full flex items-end justify-center gap-0.5 h-full">
                                     <div class="flex-1 flex flex-col items-center h-full justify-end">
@@ -929,15 +931,15 @@
                 </div>
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">URL Supabase Project Endpoint</label>
-                    <input type="url" id="cfg-supabase-url" placeholder="https://dlstwmavfxtktlwqajvj.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
+                    <input type="url" id="cfg-supabase-url" placeholder="https://your-project.supabase.co" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Supabase Public Anon Key Asli</label>
-                    <textarea id="cfg-supabase-anon-key" rows="2" placeholder="sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg p-2.5 font-mono text-[10px] text-slate-900 focus:outline-none"></textarea>
+                    <textarea id="cfg-supabase-anon-key" rows="2" placeholder="sb_publishable_..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg p-2.5 font-mono text-[10px] text-slate-900 focus:outline-none"></textarea>
                 </div>
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Google Apps Script (GAS) Web App Executable URL Asli</label>
-                    <input type="url" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
+                    <input type="url" id="cfg-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-[11px] focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Sandi Akses Konfigurasi Sistem</label>
@@ -1141,6 +1143,7 @@
     </div>
 
     <script>
+        // Default Standby Configuration (Clean Defaults - No Hardcoded Dummy Creds)
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
             supabaseUrl: "",
@@ -1220,12 +1223,7 @@
                     { id: 'f_6', name: 'Sertifikat Pelatihan Khusus / Keterampilan Medis' }
                 ]
             },
-            {
-                code: 'G', title: 'G. Informasi Kesehatan', items: [
-                    { id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' },
-                    { id: 'g_2', name: 'Sertifikat / Kartu Vaksinasi & Imunisasi' }
-                ]
-            },
+            { code: 'G', title: 'G. Informasi Kesehatan', items: [{ id: 'g_1', name: 'Hasil Pemeriksaan Kesehatan (MCU) Terkini' }, { id: 'g_2', name: 'Sertifikat / Kartu Vaksinasi & Imunisasi' }] },
             {
                 code: 'H', title: 'H. Informasi Pendukung', items: [
                     { id: 'h_1', name: 'KTP, KK, NPWP, BPJS Kesehatan & Foto' },
@@ -1328,9 +1326,9 @@
             } catch(e) {}
 
             window.state.appId = serverApiConfig.appId || DEFAULT_CONFIG.appId;
-            window.state.supabaseUrl = serverApiConfig.supabaseUrl || '';
-            window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || '';
-            window.state.gasUrl = serverApiConfig.gasUrl || '';
+            window.state.supabaseUrl = serverApiConfig.supabaseUrl || DEFAULT_CONFIG.supabaseUrl;
+            window.state.supabaseAnonKey = serverApiConfig.supabaseAnonKey || DEFAULT_CONFIG.supabaseAnonKey;
+            window.state.gasUrl = serverApiConfig.gasUrl || DEFAULT_CONFIG.gasUrl;
         };
 
         window.saveLocalServerConfig = function() {
@@ -1340,8 +1338,6 @@
         window.sendToSheet = async function(actionType, payloadData) {
             const url = window.state.gasUrl || serverApiConfig.gasUrl;
             if (!url || !url.startsWith('http')) {
-                console.warn("URL Google Apps Script belum dikonfigurasi!");
-                window.showToast("Koneksi GAS belum diatur!", "error");
                 return { status: 'error', message: 'URL GAS Kosong' };
             }
             try {
@@ -1385,18 +1381,14 @@
         window.initDynamicServices = async function() {
             window.loadLocalServerConfig();
             
-            const supaUrl = window.state.supabaseUrl || '';
-            const supaKey = window.state.supabaseAnonKey || '';
-
-            if (supaUrl && supaUrl.startsWith('http') && supaKey && window.supabase) {
+            if (window.state.supabaseUrl && window.state.supabaseUrl.startsWith('http') && window.state.supabaseAnonKey && window.supabase) {
                 try {
-                    supabaseClient = window.supabase.createClient(supaUrl, supaKey);
-                    console.log("Supabase Client Terhubung secara Dinamis!");
+                    supabaseClient = window.supabase.createClient(window.state.supabaseUrl, window.state.supabaseAnonKey);
 
                     const { data: cloudCfg, error: cfgErr } = await supabaseClient
                         .from('system_config')
                         .select('*')
-                        .eq('id', window.state.appId || 'RSUD_SINJAI_UMPEG_APP')
+                        .eq('id', window.state.appId)
                         .maybeSingle();
 
                     if (cloudCfg && !cfgErr) {
@@ -1414,14 +1406,11 @@
 
                     await window.listenRealtimeUpdates();
                 } catch(e) {
-                    console.warn("Gagal init Supabase:", e);
                     window.activatePollingFallback();
                 }
             } else {
-                window.updateWsBadge('offline', '🔴 Konfigurasi Belum Diisi');
-                if (window.state.gasUrl && window.state.gasUrl.startsWith('http')) {
-                    window.activatePollingFallback();
-                }
+                window.updateWsBadge('offline', '🔴 Offline / Unconfigured');
+                if (window.state.gasUrl && window.state.gasUrl.startsWith('http')) window.activatePollingFallback();
             }
         };
 
@@ -1502,12 +1491,11 @@
                     last_updated_at: new Date().toISOString()
                 };
 
-                const { data: supaResult, error: supaErr } = await directClient
+                const { error: supaErr } = await directClient
                     .from('system_config')
                     .upsert(payload, { onConflict: 'id' });
 
                 if (supaErr) {
-                    console.error("Gagal menulis ke tabel system_config di Supabase:", supaErr);
                     window.showToast("SUPABASE ERROR: " + supaErr.message, "error");
                     throw supaErr;
                 }
@@ -1543,23 +1531,23 @@
         };
 
         function tryParse(str) {
-            try { return JSON.parse(str); } catch(e) { return {}; }
+            try { return typeof str === 'string' ? JSON.parse(str) : (str || {}); } catch(e) { return {}; }
         }
 
         function normalizePegawaiData(raw) {
             if (!raw) return null;
-            const detailPersonal = typeof raw.detailPersonal === 'string' ? tryParse(raw.detailPersonal) : (raw.detailPersonal || raw.detail_personal || {});
-            const detailJabatan = typeof raw.detailJabatan === 'string' ? tryParse(raw.detailJabatan) : (raw.detailJabatan || raw.detail_jabatan || {});
-            const detailMedis = typeof raw.detailMedis === 'string' ? tryParse(raw.detailMedis) : (raw.detailMedis || raw.detail_medis || {});
-            const linksMap = typeof raw.linksMap === 'string' ? tryParse(raw.linksMap) : (raw.linksMap || raw.link_url_drive || {});
-            const riwayatEdu = typeof raw.riwayatPendidikan === 'string' ? tryParse(raw.riwayatPendidikan) : (raw.riwayatPendidikan || raw.riwayat_pendidikan || []);
+            const detailPersonal = tryParse(raw.detailPersonal || raw.detail_personal);
+            const detailJabatan = tryParse(raw.detailJabatan || raw.detail_jabatan);
+            const detailMedis = tryParse(raw.detailMedis || raw.detail_medis);
+            const linksMap = tryParse(raw.linksMap || raw.link_url_drive || raw.links_map);
+            const riwayatEdu = tryParse(raw.riwayatPendidikan || raw.riwayat_pendidikan || []);
 
             return {
                 idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || '',
                 nip: String(raw.nip || raw.NIP || '').trim(),
                 username: raw.username || raw.USERNAME || raw.nama || '',
                 nama: raw.nama || raw.NAMA || raw.username || '',
-                status: raw.status || raw.STATUS || 'PNS',
+                status: raw.status || raw.STATUS || raw.status_kepegawaian || 'PNS',
                 sub1: raw.sub1 || raw.SUB1 || 'MEDIS',
                 sub2: raw.sub2 || raw.SUB2 || 'FUNGSIONAL',
                 jabatan: raw.jabatan || raw.JABATAN || '-',
@@ -1582,10 +1570,7 @@
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
             const url = window.state.gasUrl || serverApiConfig.gasUrl;
-            if (!url || !url.startsWith('http')) {
-                window.renderActiveView();
-                return;
-            }
+            if (!url || !url.startsWith('http')) return;
 
             try {
                 window.state.isSyncing = true;
@@ -1619,10 +1604,8 @@
                     window.renderActiveView();
                     if (showToastNotice) window.showToast("Data Diperbarui Otomatis dari Server!", "success");
                 }
-            } catch(e) { 
-                console.warn("Gagal pull data dari GAS:", e); 
-                window.renderActiveView();
-            } finally {
+            } catch(e) { console.warn("Gagal pull data dari GAS:", e); }
+            finally {
                 window.state.isSyncing = false;
                 const spinner = document.getElementById('auto-sync-spinner');
                 if (spinner) spinner.classList.remove('animate-spin');
@@ -1765,46 +1748,30 @@
             tbody.innerHTML = '';
 
             const unitMap = {};
-
-            if (Array.isArray(masterRuanganList)) {
-                masterRuanganList.forEach(r => {
-                    if (r && r.trim()) unitMap[r.trim()] = 0;
-                });
-            }
-
             masterPegawaiDb.forEach(p => {
-                const u = (p.ruangan || '').trim() || 'Lainnya / Unassigned';
+                const u = p.ruangan || 'Lainnya / Unassigned';
                 unitMap[u] = (unitMap[u] || 0) + 1;
             });
 
-            const sortedUnits = Object.keys(unitMap)
-                .map(k => ({ name: k, count: unitMap[k] }))
-                .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-
+            const sortedUnits = Object.keys(unitMap).map(k => ({ name: k, count: unitMap[k] })).sort((a,b) => b.count - a.count);
             const total = masterPegawaiDb.length || 1;
 
             if (sortedUnits.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data unit kerja / ruangan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada data unit kerja.</td></tr>`;
                 return;
             }
 
             sortedUnits.forEach((u, i) => {
                 const pct = Math.round((u.count / total) * 100);
-                const isMasterUnit = masterRuanganList.includes(u.name);
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/50 transition-colors">
                         <td class="p-2.5 text-center font-bold text-slate-500">${i + 1}</td>
-                        <td class="p-2.5 font-bold text-slate-800">
-                            <div class="flex items-center gap-1.5">
-                                <span>${u.name}</span>
-                                ${!isMasterUnit && u.count > 0 ? '<span class="text-[8px] bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded border border-amber-300 font-semibold">Non-Master</span>' : ''}
-                            </div>
-                        </td>
+                        <td class="p-2.5 font-bold text-slate-800">${u.name}</td>
                         <td class="p-2.5 text-center font-mono font-bold text-emerald-950">${u.count}</td>
                         <td class="p-2.5 text-center">
                             <div class="flex items-center gap-1.5">
                                 <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                                    <div class="bg-emerald-600 h-full rounded-full" style="width: ${pct}%"></div>
                                 </div>
                                 <span class="font-mono text-[9px] font-bold text-slate-600 w-8">${pct}%</span>
                             </div>
@@ -2234,19 +2201,15 @@
         window.addNewMasterRuangan = function() {
             const val = (document.getElementById('input-new-ruangan')?.value || '').trim();
             if (!val) return;
-            if (!masterRuanganList.includes(val)) {
-                masterRuanganList.push(val);
-            }
+            masterRuanganList.push(val);
             document.getElementById('input-new-ruangan').value = '';
             window.renderMasterRuanganCards();
-            window.renderUnitKerjaSummaryTable();
             window.saveMasterConfigToCloud();
         };
 
         window.deleteMasterRuangan = function(idx) {
             masterRuanganList.splice(idx, 1);
             window.renderMasterRuanganCards();
-            window.renderUnitKerjaSummaryTable();
             window.saveMasterConfigToCloud();
         };
 
@@ -2617,7 +2580,7 @@
 
             window.closeEditStafAdminModal();
             window.renderActiveView();
-            window.showToast("Data Staf & Jalur Jabatan Berhasil Disesuaikan!", "success");
+            window.showToast("Data Staf Berhasil Disimpan Tanpa Mereset Berkas!", "success");
         };
 
         window.confirmDeleteStaf = function(nip, idPegawai) {
@@ -2743,26 +2706,13 @@
                 if (el) el.innerText = new Date().toLocaleTimeString('id-ID') + ' WITA';
             }, 1000);
             
-            (async () => {
-                try {
-                    await window.initDynamicServices();
-                } catch(e) {
-                    console.warn("Init dynamic services notice:", e);
-                }
-                
-                try {
-                    await window.pullAllDataFromGas(false);
-                } catch(e) {
-                    console.warn("Pull data notice:", e);
-                }
-                
-                // Hapus preloader secara aman
-                const loader = document.getElementById('loading-screen');
-                if (loader) {
-                    loader.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => { loader.classList.add('hidden'); }, 300);
-                }
-            })();
+            window.initDynamicServices().finally(() => {
+                window.pullAllDataFromGas(false).finally(() => {
+                    const loader = document.getElementById('loading-screen');
+                    if (loader) loader.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => { if (loader) loader.classList.add('hidden'); }, 300);
+                });
+            });
         };
     </script>
 </body>
