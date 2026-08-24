@@ -222,14 +222,14 @@
                 </div>
 
                 <!-- FORM LOGIN -->
-                <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3.5">
+                <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3.5" autocomplete="off">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Username / Nama Akun Login</label>
-                        <input type="text" id="login-username-input" required placeholder="Ketik Username Anda..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="login-username-input" autocomplete="off" required placeholder="Ketik Username Anda..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Kode Masuk (NIP 18 Digit / Nomor SK)</label>
-                        <input type="password" id="login-key-input" required placeholder="Ketik NIP 18 Digit / Nomor SK..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="login-key-input" autocomplete="off" required placeholder="Ketik NIP 18 Digit / Nomor SK..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
                     <button type="submit" class="w-full h-11 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i>
@@ -238,15 +238,15 @@
                 </form>
 
                 <!-- FORM REGISTRASI AKUN BARU -->
-                <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3.5">
+                <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3.5" autocomplete="off">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Nama Akun (Username Login)</label>
-                        <input type="text" id="auth-username" required placeholder="Contoh: username_anda" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="auth-username" autocomplete="off" required placeholder="Contoh: username_anda" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
 
                     <div>
                         <label id="lbl-auth-key" class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Nomor NIP (18 Digit) / Nomor SK Kedinasan</label>
-                        <input type="text" id="auth-key-input" onkeyup="window.parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="auth-key-input" autocomplete="off" onkeyup="window.parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                         
                         <div id="auth-parse-box" class="hidden mt-1.5 p-2 rounded-lg bg-emerald-100/90 border border-emerald-300 text-[10px] text-emerald-950 font-medium">
                             <span id="auth-parse-detail"></span>
@@ -857,6 +857,10 @@
             if (authSec) authSec.classList.remove('hidden');
             if (dashSec) dashSec.classList.add('hidden');
             if (headerProf) headerProf.classList.add('hidden');
+            window.setVal('login-username-input', '');
+            window.setVal('login-key-input', '');
+            window.setVal('auth-username', '');
+            window.setVal('auth-key-input', '');
         };
 
         window.showDashboardView = function() {
