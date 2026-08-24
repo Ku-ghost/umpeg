@@ -1030,11 +1030,13 @@
             const inputExp = document.getElementById('f-med-exp-str');
             if (!inputExp) return;
             if (cb && cb.checked) {
+                inputExp.type = 'text';
                 inputExp.value = '';
                 inputExp.disabled = true;
                 inputExp.placeholder = "Seumur Hidup";
                 inputExp.classList.add('bg-amber-100', 'cursor-not-allowed');
             } else {
+                inputExp.type = 'date';
                 inputExp.disabled = false;
                 inputExp.placeholder = "";
                 inputExp.classList.remove('bg-amber-100', 'cursor-not-allowed');
@@ -1052,72 +1054,96 @@
                 }
             } catch(e) {}
 
-            if (!serverApiConfig.supabaseUrl || !serverApiConfig.supabaseAnonKey || !serverApiConfig.supabaseUrl.startsWith('http') || !window.supabase) {
-                window.updateWsBadge('offline', '🔴 Koneksi Belum Diatur');
-                return;
-            }
+            let configLoaded = false;
 
-            try {
-                supabaseClient = window.supabase.createClient(serverApiConfig.supabaseUrl, serverApiConfig.supabaseAnonKey);
-                
-                const { data: masterConfig } = await supabaseClient
-                    .from('master_umpeg_config')
-                    .select('*')
-                    .eq('id', ANCHORED_APP_ID)
-                    .maybeSingle();
+            if (serverApiConfig.supabaseUrl && serverApiConfig.supabaseAnonKey && serverApiConfig.supabaseUrl.startsWith('http') && window.supabase) {
+                try {
+                    supabaseClient = window.supabase.createClient(serverApiConfig.supabaseUrl, serverApiConfig.supabaseAnonKey);
+                    
+                    const { data: masterConfig } = await supabaseClient
+                        .from('master_umpeg_config')
+                        .select('*')
+                        .eq('id', ANCHORED_APP_ID)
+                        .maybeSingle();
 
-                if (masterConfig && masterConfig.config_data) {
-                    const cfg = masterConfig.config_data;
-                    if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan) && cfg.master_ruangan.length > 0) masterRuanganList = cfg.master_ruangan;
-                    if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                    if (cfg.master_status && Array.isArray(cfg.master_status) && cfg.master_status.length > 0) masterStatusPegList = cfg.master_status;
-                    if (cfg.master_edu && Array.isArray(cfg.master_edu) && cfg.master_edu.length > 0) masterEducationList = cfg.master_edu;
-                    if (cfg.master_golongan && Array.isArray(cfg.master_golongan) && cfg.master_golongan.length > 0) masterGolonganList = cfg.master_golongan;
-                    if (cfg.master_org && Array.isArray(cfg.master_org) && cfg.master_org.length > 0) masterOrgList = cfg.master_org;
-                    if (cfg.master_checklist && Array.isArray(cfg.master_checklist) && cfg.master_checklist.length > 0) {
-                        FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                    if (masterConfig && masterConfig.config_data) {
+                        const cfg = masterConfig.config_data;
+                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan) && cfg.master_ruangan.length > 0) masterRuanganList = cfg.master_ruangan;
+                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                        if (cfg.master_status && Array.isArray(cfg.master_status) && cfg.master_status.length > 0) masterStatusPegList = cfg.master_status;
+                        if (cfg.master_edu && Array.isArray(cfg.master_edu) && cfg.master_edu.length > 0) masterEducationList = cfg.master_edu;
+                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan) && cfg.master_golongan.length > 0) masterGolonganList = cfg.master_golongan;
+                        if (cfg.master_org && Array.isArray(cfg.master_org) && cfg.master_org.length > 0) masterOrgList = cfg.master_org;
+                        if (cfg.master_checklist && Array.isArray(cfg.master_checklist) && cfg.master_checklist.length > 0) {
+                            FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                        }
+                        if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
+                        configLoaded = true;
                     }
-                    if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
-                }
 
-                window.populateMasterDropdowns();
-                window.updateWsBadge('online', '🟢 Antena Realtime Aktif');
+                    window.populateMasterDropdowns();
+                    window.updateWsBadge('online', '🟢 Antena Realtime Aktif');
 
-                if (!realtimeChannel) {
-                    try {
-                        realtimeChannel = supabaseClient
-                            .channel('portal-pegawai-realtime-sync')
-                            .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
-                                if (payload.new && payload.new.config_data) {
-                                    const cfg = payload.new.config_data;
-                                    if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
-                                    if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                                    if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
-                                    if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
-                                    if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
-                                    if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
-                                    if (cfg.master_checklist && Array.isArray(cfg.master_checklist) && cfg.master_checklist.length > 0) {
-                                        FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                    if (!realtimeChannel) {
+                        try {
+                            realtimeChannel = supabaseClient
+                                .channel('portal-pegawai-realtime-sync')
+                                .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, async (payload) => {
+                                    if (payload.new && payload.new.config_data) {
+                                        const cfg = payload.new.config_data;
+                                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
+                                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                                        if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
+                                        if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
+                                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
+                                        if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
+                                        if (cfg.master_checklist && Array.isArray(cfg.master_checklist) && cfg.master_checklist.length > 0) {
+                                            FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                                            window.renderDashboard();
+                                        }
+                                        if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
+                                        window.populateMasterDropdowns();
+                                    }
+                                })
+                                .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
+                                    if (currentPegawai && payload.new && window.isMatchingKey(payload.new.nip, currentPegawai.nip)) {
+                                        currentPegawai.verifikasiStatus = payload.new.verifikasi_status || 'PENDING';
+                                        currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
+                                        if (payload.new.links_map) currentPegawai.linksMap = window.tryParseJson(payload.new.links_map, {});
                                         window.renderDashboard();
                                     }
-                                    if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
-                                    window.populateMasterDropdowns();
-                                }
-                            })
-                            .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
-                                if (currentPegawai && payload.new && window.isMatchingKey(payload.new.nip, currentPegawai.nip)) {
-                                    currentPegawai.verifikasiStatus = payload.new.verifikasi_status || 'PENDING';
-                                    currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
-                                    if (payload.new.links_map) currentPegawai.linksMap = window.tryParseJson(payload.new.links_map, {});
-                                    window.renderDashboard();
-                                }
-                            });
+                                });
 
-                        realtimeChannel.subscribe();
-                    } catch(wsErr) {}
+                            realtimeChannel.subscribe();
+                        } catch(wsErr) {}
+                    }
+                } catch (e) { 
+                    window.updateWsBadge('offline', '🔴 Koneksi Standby');
                 }
-            } catch (e) { 
-                window.updateWsBadge('offline', '🔴 Koneksi Standby');
+            } else {
+                window.updateWsBadge('offline', '🔴 Koneksi Belum Diatur');
+            }
+
+            if (!configLoaded && serverApiConfig.gasUrl) {
+                try {
+                     const fetchUrl = serverApiConfig.gasUrl.includes('?') ? `${serverApiConfig.gasUrl}&sheet=config` : `${serverApiConfig.gasUrl}?sheet=config`;
+                     const res = await fetch(fetchUrl);
+                     const json = await res.json();
+                     if (json && json.config) {
+                        const cfg = json.config;
+                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan) && cfg.master_ruangan.length > 0) masterRuanganList = cfg.master_ruangan;
+                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                        if (cfg.master_status && Array.isArray(cfg.master_status) && cfg.master_status.length > 0) masterStatusPegList = cfg.master_status;
+                        if (cfg.master_edu && Array.isArray(cfg.master_edu) && cfg.master_edu.length > 0) masterEducationList = cfg.master_edu;
+                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan) && cfg.master_golongan.length > 0) masterGolonganList = cfg.master_golongan;
+                        if (cfg.master_org && Array.isArray(cfg.master_org) && cfg.master_org.length > 0) masterOrgList = cfg.master_org;
+                        if (cfg.master_checklist && Array.isArray(cfg.master_checklist) && cfg.master_checklist.length > 0) {
+                            FORM_CHECKLIST_CONFIG = cfg.master_checklist;
+                        }
+                        if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
+                        window.populateMasterDropdowns();
+                     }
+                } catch(e) {}
             }
         };
 
@@ -1257,49 +1283,89 @@
                 return;
             }
 
-            if (!supabaseClient) {
-                window.showToast("Koneksi Supabase belum aktif! Harap atur konfigurasi sistem dari Web UMPEG.", "error");
+            window.showToast("Memverifikasi data ke database...", "info");
+
+            let foundData = null;
+            let gasData = null;
+
+            if (supabaseClient) {
+                try {
+                    let { data, error } = await supabaseClient
+                        .from('pegawai_lemari_digital')
+                        .select('*')
+                        .eq('nip', keyInput)
+                        .maybeSingle();
+
+                    if (data) foundData = data;
+                } catch (err) {}
+            }
+
+            // Langsung tarik detail dari Google Sheets (GAS) berdasarkan NIP
+            if (serverApiConfig.gasUrl) {
+                 try {
+                     const fetchUrl = serverApiConfig.gasUrl.includes('?') ? `${serverApiConfig.gasUrl}&action=getPegawai&nip=${keyInput}` : `${serverApiConfig.gasUrl}?action=getPegawai&nip=${keyInput}`;
+                     const res = await fetch(fetchUrl);
+                     const json = await res.json();
+                     if (json && json.status === 'success' && json.data) {
+                         gasData = json.data;
+                     }
+                 } catch (e) {}
+            }
+
+            if (!foundData && !gasData) {
+                window.showToast("AKSES DITOLAK: NIP / SK belum terdaftar di database! Silakan registrasi profil baru.", "error");
                 return;
             }
 
-            window.showToast("Memverifikasi data ke database...", "info");
-
-            try {
-                let { data, error } = await supabaseClient
-                    .from('pegawai_lemari_digital')
-                    .select('*')
-                    .eq('nip', keyInput)
-                    .maybeSingle();
-
-                if (!data) {
-                    window.showToast("AKSES DITOLAK: NIP / SK belum terdaftar di database! Silakan registrasi profil baru.", "error");
-                    return;
-                }
-
-                currentPegawai = {
-                    idPegawai: data.id_pegawai,
-                    nip: data.nip || keyInput,
-                    username: data.username || username,
-                    nama: data.nama || data.username,
-                    status: data.status_kepegawaian || 'PNS',
-                    sub1: data.sub1 || 'MEDIS',
-                    sub2: data.sub2 || 'FUNGSIONAL',
-                    jabatan: data.jabatan || '',
-                    ruangan: data.ruangan || '',
-                    linksMap: window.tryParseJson(data.links_map, {}),
-                    detailPersonal: window.tryParseJson(data.detail_personal, {}),
-                    detailJabatan: window.tryParseJson(data.detail_jabatan, {}),
-                    detailMedis: window.tryParseJson(data.detail_medis, {}),
-                    riwayatPendidikan: window.tryParseJson(data.riwayat_pendidikan, []),
-                    verifikasiStatus: data.verifikasi_status || 'PENDING',
-                    verifikasiCatatan: data.verifikasi_catatan || ''
-                };
-
-                window.showDashboardView();
-                window.showToast(`Selamat Datang kembali, ${currentPegawai.nama || currentPegawai.username}!`, "success");
-            } catch (err) {
-                window.showToast("Kesalahan server saat memverifikasi data.", "error");
+            // Gabungkan data dari Supabase dan GAS (Prioritaskan detail dari GAS jika Supabase kosong)
+            let finalData = foundData || gasData;
+            if (foundData && gasData) {
+                 finalData.detail_personal = (Object.keys(foundData.detail_personal || {}).length > 0) ? foundData.detail_personal : gasData.detailPersonal;
+                 finalData.detail_jabatan = (Object.keys(foundData.detail_jabatan || {}).length > 0) ? foundData.detail_jabatan : gasData.detailJabatan;
+                 finalData.detail_medis = (Object.keys(foundData.detail_medis || {}).length > 0) ? foundData.detail_medis : gasData.detailMedis;
+                 finalData.riwayat_pendidikan = (foundData.riwayat_pendidikan && foundData.riwayat_pendidikan.length > 0) ? foundData.riwayat_pendidikan : gasData.riwayatPendidikan;
+            } else if (!foundData && gasData) {
+                 finalData = {
+                     id_pegawai: gasData.idPegawai,
+                     nip: gasData.nip,
+                     username: gasData.username,
+                     nama: gasData.nama,
+                     status_kepegawaian: gasData.status,
+                     sub1: gasData.sub1,
+                     sub2: gasData.sub2,
+                     jabatan: gasData.jabatan,
+                     ruangan: gasData.ruangan,
+                     links_map: gasData.linksMap,
+                     detail_personal: gasData.detailPersonal,
+                     detail_jabatan: gasData.detailJabatan,
+                     detail_medis: gasData.detailMedis,
+                     riwayat_pendidikan: gasData.riwayatPendidikan,
+                     verifikasi_status: gasData.verifikasiStatus,
+                     verifikasi_catatan: gasData.verifikasiCatatan
+                 };
             }
+
+            currentPegawai = {
+                idPegawai: finalData.id_pegawai || finalData.idPegawai,
+                nip: finalData.nip || keyInput,
+                username: finalData.username || username,
+                nama: finalData.nama || finalData.username,
+                status: finalData.status_kepegawaian || finalData.status || 'PNS',
+                sub1: finalData.sub1 || 'MEDIS',
+                sub2: finalData.sub2 || 'FUNGSIONAL',
+                jabatan: finalData.jabatan || '',
+                ruangan: finalData.ruangan || '',
+                linksMap: window.tryParseJson(finalData.links_map || finalData.linksMap, {}),
+                detailPersonal: window.tryParseJson(finalData.detail_personal || finalData.detailPersonal, {}),
+                detailJabatan: window.tryParseJson(finalData.detail_jabatan || finalData.detailJabatan, {}),
+                detailMedis: window.tryParseJson(finalData.detail_medis || finalData.detailMedis, {}),
+                riwayatPendidikan: window.tryParseJson(finalData.riwayat_pendidikan || finalData.riwayatPendidikan, []),
+                verifikasiStatus: finalData.verifikasi_status || finalData.verifikasiStatus || 'PENDING',
+                verifikasiCatatan: finalData.verifikasi_catatan || finalData.verifikasiCatatan || ''
+            };
+
+            window.showDashboardView();
+            window.showToast(`Selamat Datang kembali, ${currentPegawai.nama || currentPegawai.username}!`, "success");
         };
 
         window.handleAuthSubmit = async function(e) {
@@ -1637,6 +1703,7 @@
             const isSt = (currentPegawai.sub2 === 'STRUKTURAL');
             const secSt = document.getElementById('section-form-struktural');
             const secFn = document.getElementById('section-form-fungsional');
+            const secMedis = document.getElementById('section-form-medis');
             const badgeJalur = document.getElementById('display-jalur-jabatan');
 
             if (badgeJalur) {
@@ -1646,6 +1713,9 @@
 
             if (secSt) secSt.classList.toggle('hidden', !isSt);
             if (secFn) secFn.classList.toggle('hidden', isSt);
+            
+            // Sembunyikan otomatis formulir Legalitas Medis (Seksi III) jika memilih Struktural
+            if (secMedis) secMedis.classList.toggle('hidden', isSt);
 
             const el = document.getElementById(isSt ? 'f-st-nama-jabatan' : 'f-fn-nama-jabatan');
             if (el) {
@@ -1673,7 +1743,7 @@
             window.setVal('f-bas-gelar-depan', dp.gelarDepan);
             
             // PEMISAHAN LOGIS MUTLAK: Hanya tarik dp.namaTanpaGelar tanpa fallback ke username akun
-            window.setVal('f-bas-nama-ijazah', dp.namaTanpaGelar || '');
+            window.setVal('f-bas-nama-ijazah', dp.namaTanpaGelar || currentPegawai.nama || '');
             window.setVal('f-bas-gelar-belakang', dp.gelarBelakang);
             
             window.updateAutoFullnamePreview();
@@ -1712,12 +1782,16 @@
             /* Seksi III: Medis */
             window.setVal('f-med-no-str', dm.noStr);
             window.setVal('f-med-tgl-str', dm.tglStr);
-            window.setVal('f-med-exp-str', dm.expStr || dm.mblStr || '');
+            
             const cbLifetime = document.getElementById('f-med-str-lifetime');
             if (cbLifetime) {
                 cbLifetime.checked = !!dm.strLifetime || dm.expStr === 'Seumur Hidup' || dm.mblStr === 'Seumur Hidup';
                 window.handleStrLifetimeToggle();
             }
+            if (cbLifetime && !cbLifetime.checked) {
+                window.setVal('f-med-exp-str', dm.expStr || dm.mblStr || '');
+            }
+            
             window.setVal('f-med-no-sip', dm.noSip);
             window.setVal('f-med-tgl-sip', dm.tglSip);
             window.setVal('f-med-exp-sip', dm.expSip || dm.mblSip || '');
