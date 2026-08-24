@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Engine Integration</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Dynamic Engine Integration</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -35,6 +35,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: radial-gradient(circle at 50% 0%, #dcfce7 0%, #f0fdf4 50%, #e6f4ea 100%);
             background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
         }
         .glass-panel {
             background: rgba(255, 255, 255, 0.96);
@@ -71,29 +72,129 @@
         .fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Smooth Mobile Tab Bar & Table Scroll */
+        .mobile-tab-scroll {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-tab-scroll::-webkit-scrollbar { display: none; }
+
+        /* Point 6: Merapikan Media Print A4 Landscape & Portrait */
         @media print {
             header, footer, .no-print,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
-            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer, #modal-print-profile {
+            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer {
                 display: none !important;
             }
-            body { background: white !important; color: black !important; font-size: 9pt; }
-            body.print-mode-matrix @page { size: A4 landscape; margin: 6mm 8mm; }
+
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 8.5pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            /* 1. Mode Landscape Cetak Matriks & Laporan Monitoring */
+            body.print-mode-matrix {
+                width: 100% !important;
+            }
+            body.print-mode-matrix @page {
+                size: A4 landscape;
+                margin: 6mm 8mm 6mm 8mm;
+            }
             body.print-mode-matrix #admin-view-dashboard,
             body.print-mode-matrix #admin-view-verifikasi,
             body.print-mode-matrix #admin-view-direktori,
-            body.print-mode-matrix #admin-view-master-data { display: none !important; }
-            body.print-mode-matrix #admin-view-laporan { display: block !important; visibility: visible !important; }
-            body.print-mode-matrix #print-matrix-area { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: transparent !important; position: static !important; width: 100% !important; }
-            body.print-mode-profile @page { size: A4 portrait; margin: 6mm 8mm; }
+            body.print-mode-matrix #admin-view-master-data,
+            body.print-mode-matrix #modal-print-profile {
+                display: none !important;
+            }
+            body.print-mode-matrix #admin-view-laporan {
+                display: block !important;
+                visibility: visible !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body.print-mode-matrix #print-matrix-area {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: transparent !important;
+                position: static !important;
+                width: 100% !important;
+            }
+
+            /* 2. Mode Portrait Cetak DRH Profil Pegawai */
+            body.print-mode-profile @page {
+                size: A4 portrait;
+                margin: 8mm 8mm 8mm 8mm;
+            }
             body.print-mode-profile #admin-view-dashboard,
             body.print-mode-profile #admin-view-verifikasi,
             body.print-mode-profile #admin-view-direktori,
             body.print-mode-profile #admin-view-laporan,
-            body.print-mode-profile #admin-view-master-data { display: none !important; }
-            body.print-mode-profile #modal-print-profile { display: block !important; position: static !important; background: transparent !important; box-shadow: none !important; border: none !important; max-width: 100% !important; height: auto !important; }
-            .table-scroll-container { max-height: none !important; overflow: visible !important; }
-            .no-print { display: none !important; }
+            body.print-mode-profile #admin-view-master-data {
+                display: none !important;
+            }
+            body.print-mode-profile #modal-print-profile {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                height: auto !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Reset Scroll & Container Layouts saat Cetak */
+            .table-scroll-container,
+            #panel-laporan-sub-matriks,
+            #panel-laporan-sub-monitoring,
+            #sheet-content-wrapper {
+                max-height: none !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto !important;
+            }
+
+            tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            th, td {
+                padding: 4px 6px !important;
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            thead th {
+                background-color: #f1f5f9 !important;
+                color: #000 !important;
+                font-weight: 800 !important;
+            }
+
+            .print-signature-block {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
         }
     </style>
 </head>
@@ -107,7 +208,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Menghubungkan Engine Realtime Supabase & GAS...</span>
+            <span>Memuat Engine System UMPEG...</span>
         </p>
     </div>
 
@@ -131,7 +232,7 @@
 
             <div class="flex items-center gap-2 text-xs">
                 <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse" id="ws-dot"></span>
+                    <span class="w-2 h-2 rounded-full bg-amber-500" id="ws-dot"></span>
                     <span id="ws-status-text">🔴 Offline / Unconfigured</span>
                 </div>
                 <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
@@ -149,32 +250,32 @@
     <main class="flex-1 w-full max-w-[98%] mx-auto p-3 sm:p-5 lg:p-6 space-y-4">
         
         <!-- Toast Box Notification -->
-        <div id="toast-box" class="fixed top-4 right-4 z-50 hidden fade-in max-w-xs p-3 rounded-xl shadow-xl border flex items-center gap-2 text-xs bg-white">
-            <i id="toast-icon" class="text-sm"></i>
-            <span id="toast-msg" class="font-semibold text-[11px]"></span>
+        <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
+            <i id="toast-icon" class="text-base shrink-0"></i>
+            <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
         </div>
 
-        <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200/90 text-xs overflow-x-auto shadow-xs">
-            <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+        <div class="mobile-tab-scroll items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
+            <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 min-w-[140px] h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
                 <i class="fa-solid fa-chart-pie"></i>
-                <span class="truncate">Executive Dashboard</span>
+                <span class="truncate">Dashboard</span>
             </button>
-            <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative">
+            <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 min-w-[160px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative whitespace-nowrap">
                 <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
-                <span class="truncate">Verifikasi Bundel (A-H)</span>
+                <span class="truncate">Verifikasi Bundel</span>
                 <span id="badge-verifikasi-count" class="px-1.5 py-0.2 rounded-full bg-amber-600 text-white font-extrabold text-[9px]">0</span>
             </button>
-            <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
                 <i class="fa-solid fa-address-book text-emerald-700"></i>
-                <span class="truncate">Buku Induk & ID Drive</span>
+                <span class="truncate">Buku Induk</span>
             </button>
-            <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
                 <i class="fa-solid fa-file-invoice text-emerald-700"></i>
-                <span class="truncate">Laporan Matriks & Monitoring</span>
+                <span class="truncate">Laporan Matriks</span>
             </button>
-            <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
                 <i class="fa-solid fa-database text-emerald-700"></i>
-                <span class="truncate">Kelola Master UMPEG</span>
+                <span class="truncate">Kelola Master</span>
             </button>
         </div>
 
@@ -314,7 +415,6 @@
                         <span class="text-[9px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Terurut Terbanyak</span>
                     </div>
 
-                    <!-- Increased height with vertical scrollbar -->
                     <div class="table-scroll-container overflow-y-auto max-h-[420px] rounded-xl border border-emerald-200/80 bg-white flex-1">
                         <table class="w-full text-left border-collapse text-[11px]">
                             <thead>
@@ -548,7 +648,7 @@
                     <div class="flex items-center gap-1.5 no-print self-end sm:self-auto">
                         <button onclick="window.printMatrixReport()" class="h-9 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-print"></i>
-                            <span>Cetak/Simpan PDF</span>
+                            <span>Cetak/Simpan PDF (A4 Landscape)</span>
                         </button>
                         <button onclick="window.exportMatrixToExcel()" class="h-9 px-3 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-file-excel"></i>
@@ -657,7 +757,7 @@
                     </div>
                 </div>
 
-                <div class="pt-6 mt-4 grid grid-cols-2 text-center text-[10.5px] border-t border-emerald-200 hidden print:grid">
+                <div class="pt-6 mt-4 grid grid-cols-2 text-center text-[10.5px] border-t border-emerald-200 hidden print:grid print-signature-block">
                     <div>
                         <p class="font-bold mb-12">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
                         <p class="font-black underline uppercase">( ________________________ )</p>
@@ -1098,7 +1198,7 @@
                 <h3 class="text-xs font-extrabold uppercase">Preview Cetak DRH / Dossier Pegawai</h3>
                 <div class="flex items-center gap-2">
                     <button onclick="window.triggerPrintProfile()" class="h-8 px-3 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak A4
+                        <i class="fa-solid fa-print"></i> Cetak A4 Portrait
                     </button>
                     <button onclick="window.closePrintProfileModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
@@ -1126,7 +1226,7 @@
 
                 <div id="sheet-content-body" class="space-y-3"></div>
 
-                <div class="pt-6 grid grid-cols-2 text-center text-[10px]">
+                <div class="pt-6 grid grid-cols-2 text-center text-[10px] print-signature-block">
                     <div>
                         <p class="font-bold mb-12">Mengetahui,<br><span id="sheet-pejabat-jabatan">Kepala Sub Bagian UMPEG</span></p>
                         <p class="font-black underline uppercase" id="sheet-pejabat-nama">( ________________________ )</p>
@@ -1143,12 +1243,11 @@
     </div>
 
     <script>
-        // Default Standby Configuration (Clean Defaults - No Hardcoded Dummy Creds)
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
-            supabaseUrl: "https://dlstwmavfxtktlwqajvj.supabase.co",
-            supabaseAnonKey: "sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O",
-            gasUrl: "https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec",
+            supabaseUrl: "",
+            supabaseAnonKey: "",
+            gasUrl: "",
             password: "kugoskom36"
         };
 
@@ -1516,7 +1615,7 @@
                 await window.listenRealtimeUpdates();
 
                 window.closeServerConfigModal();
-                window.showToast("BERHASIL! Kredensial Tertulis di Tabel Supabase & Realtime Aktif!", "success");
+                window.showToast("BERHASIL! Kredensial Tertulis di Supabase & Antena Realtime Aktif!", "success");
                 
                 window.pullAllDataFromGas(true);
 
@@ -2100,7 +2199,22 @@
             });
         };
 
+        /* Point 6: Peningkatan Fungsi Cetak PDF Landscape & Auto-Reset */
         window.printMatrixReport = function() {
+            window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
+            window.setText('matrix-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
+            window.setText('matrix-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG,');
+            window.setText('matrix-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
+
+            const logoImg = document.getElementById('matrix-logo-img');
+            if (logoImg && masterKopConfig.logoUrl) logoImg.src = masterKopConfig.logoUrl;
+
+            const ttdImg = document.getElementById('matrix-ttd-img');
+            if (ttdImg && masterKopConfig.ttdUrl) {
+                ttdImg.src = masterKopConfig.ttdUrl;
+                ttdImg.classList.remove('hidden');
+            }
+
             document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased print-mode-matrix";
             window.print();
         };
@@ -2616,6 +2730,7 @@
             }
         };
 
+        /* Point 6: Peningkatan Fungsi Cetak Profile DRH Portrait & Auto-Reset */
         window.openPrintProfileModal = function(nip) {
             const target = masterPegawaiDb.find(p => p.nip === nip);
             if (!target) return;
@@ -2681,6 +2796,11 @@
             document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased print-mode-profile";
             window.print();
         };
+
+        // Event Auto-Reset Class Body Setelah Selesai Print / Cetak PDF
+        window.addEventListener('afterprint', () => {
+            document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8";
+        });
 
         window.openDocViewer = function(title, url) {
             window.setText('modal-doc-title', title || 'Dokumen Pegawai');
