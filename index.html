@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Pegawai RSUD Sinjai - Self-Service & E-Arsip Digital</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -38,6 +37,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: radial-gradient(circle at 50% 0%, #dcfce7 0%, #f0fdf4 50%, #e6f4ea 100%);
             background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
         }
         .glass-panel {
             background: rgba(255, 255, 255, 0.96);
@@ -59,16 +59,94 @@
         .fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Optimasi Tampilan HP (Mobile Touch Friendly) */
+        @media (max-width: 640px) {
+            input, select, textarea {
+                font-size: 14px !important;
+            }
+            .mobile-input {
+                height: 44px !important;
+                font-size: 13px !important;
+            }
+            .mobile-btn {
+                min-height: 42px !important;
+            }
+            .mobile-no-wrap {
+                white-space: nowrap !important;
+            }
+        }
+
+        /* Point 6: Merapikan Media Print DRH Profil Pegawai A4 Portrait */
         @media print {
             header, footer, .no-print,
             #modal-edit-profile, #modal-add-link-item, #modal-doc-viewer, #modal-edu-item {
                 display: none !important;
             }
-            body { background: white !important; color: black !important; font-size: 9pt; }
-            @page { size: A4 portrait; margin: 6mm 8mm; }
-            #auth-section, #dashboard-section { display: none !important; }
-            #modal-print-profile { display: block !important; position: static !important; background: transparent !important; box-shadow: none !important; border: none !important; max-width: 100% !important; height: auto !important; }
-            .no-print { display: none !important; }
+
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 8.5pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+
+            body.print-mode-profile @page {
+                size: A4 portrait;
+                margin: 8mm 8mm 8mm 8mm;
+            }
+
+            body.print-mode-profile #auth-section,
+            body.print-mode-profile #dashboard-section {
+                display: none !important;
+            }
+
+            body.print-mode-profile #modal-print-profile {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                height: auto !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            #sheet-content-wrapper {
+                max-height: none !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto !important;
+            }
+
+            tr, .space-y-2.border, .print-signature-block {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            th, td {
+                padding: 4px 6px !important;
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            thead th {
+                background-color: #f1f5f9 !important;
+                color: #000 !important;
+                font-weight: 800 !important;
+            }
         }
     </style>
 </head>
@@ -100,77 +178,82 @@
                 </div>
             </div>
 
-            <div id="user-header-profile" class="hidden flex items-center gap-2">
-                <div class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-extrabold text-[9.5px]">
-                    <span class="w-2 h-2 rounded-full bg-slate-400" id="ws-dot"></span>
-                    <span id="header-sync-status">Koneksi Belum Diatur</span>
+            <div class="flex items-center gap-2">
+                <div id="ws-indicator-badge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[9.5px] whitespace-nowrap">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
+                    <span id="header-sync-status" class="truncate max-w-[110px] sm:max-w-none">🔴 Belum Diatur</span>
                 </div>
-                <button onclick="window.openPrintProfileModal()" class="h-8 px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer">
-                    <i class="fa-solid fa-print"></i>
-                    <span class="hidden sm:inline">Cetak DRH A4</span>
-                </button>
-                <button onclick="window.logoutSession()" class="h-8 px-3 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10px] border border-rose-300 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Keluar Sesi</span>
-                </button>
+                
+                <div id="user-header-profile" class="hidden flex items-center gap-1.5">
+                    <button onclick="window.openPrintProfileModal()" class="h-9 px-2.5 sm:px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] shadow-2xs flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">Cetak DRH A4</span>
+                    </button>
+                    <button onclick="window.logoutSession()" class="h-9 px-2.5 sm:px-3 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10px] border border-rose-300 flex items-center gap-1 transition-all cursor-pointer shadow-2xs whitespace-nowrap">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[98%] mx-auto p-3 sm:p-5 lg:p-6 space-y-4">
+    <main class="flex-1 w-full max-w-[98%] mx-auto p-2.5 sm:p-5 lg:p-6 space-y-4">
         
         <!-- Toast Notification Box -->
-        <div id="toast-box" class="fixed top-4 right-4 z-50 hidden fade-in max-w-xs p-3 rounded-xl shadow-xl border flex items-center gap-2 text-xs bg-white">
-            <i id="toast-icon" class="text-sm"></i>
-            <span id="toast-msg" class="font-semibold text-[11px]"></span>
+        <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
+            <i id="toast-icon" class="text-base shrink-0"></i>
+            <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
         </div>
 
-        <section id="auth-section" class="max-w-md mx-auto fade-in my-8 space-y-4">
-            <div class="glass-panel p-5 rounded-2xl border border-emerald-200/90 shadow-xl space-y-4">
+        <section id="auth-section" class="max-w-md mx-auto fade-in my-4 sm:my-8 space-y-4">
+            <div class="glass-panel p-4 sm:p-6 rounded-2xl border border-emerald-200/90 shadow-xl space-y-4">
                 <div class="text-center space-y-1">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-md glow-leaf mb-2">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
-                    <h2 class="text-sm font-black text-emerald-950 uppercase tracking-wide">Akses Portal Pegawai Mandiri</h2>
-                    <p class="text-[10px] text-slate-600">Masukkan NIP 18 Digit (PNS/PPPK) atau Nomor SK Kedinasan (Non-ASN)</p>
+                    <h2 class="text-sm sm:text-base font-black text-emerald-950 uppercase tracking-wide">Akses Portal Pegawai Mandiri</h2>
+                    <p class="text-[10.5px] text-slate-600 leading-snug">Masukkan Username & NIP 18 Digit (PNS/PPPK) atau Nomor SK (Non-ASN)</p>
                 </div>
 
-                <div class="flex bg-emerald-100/80 p-1 rounded-xl border border-emerald-200 text-xs font-bold">
-                    <button type="button" onclick="window.switchAuthTab('login')" id="btn-auth-tab-login" class="flex-1 py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer">Masuk Sesi NIP/SK</button>
-                    <button type="button" onclick="window.switchAuthTab('register')" id="btn-auth-tab-register" class="flex-1 py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer">Registrasi Profil Baru</button>
+                <div class="flex bg-emerald-100/80 p-1 rounded-xl border border-emerald-200 text-xs font-bold gap-1">
+                    <button type="button" onclick="window.switchAuthTab('login')" id="btn-auth-tab-login" class="flex-1 py-2 sm:py-1.5 rounded-lg bg-emerald-700 text-white shadow-2xs cursor-pointer text-[11px] sm:text-xs">Masuk Sesi NIP/SK</button>
+                    <button type="button" onclick="window.switchAuthTab('register')" id="btn-auth-tab-register" class="flex-1 py-2 sm:py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer text-[11px] sm:text-xs">Registrasi Profil Baru</button>
                 </div>
 
-                <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3">
+                <!-- FORM LOGIN -->
+                <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3.5">
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Username / Nama Akun Login</label>
-                        <input type="text" id="login-username-input" required placeholder="Ketik Username Anda..." class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Username / Nama Akun Login</label>
+                        <input type="text" id="login-username-input" required placeholder="Ketik Username Anda..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Kode Masuk (NIP 18 Digit / Nomor SK)</label>
-                        <input type="password" id="login-key-input" required placeholder="Ketik NIP 18 Digit / Nomor SK..." class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Kode Masuk (NIP 18 Digit / Nomor SK)</label>
+                        <input type="password" id="login-key-input" required placeholder="Ketik NIP 18 Digit / Nomor SK..." class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
-                    <button type="submit" class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                    <button type="submit" class="w-full h-11 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         <span>Buka Profil Pegawai</span>
                     </button>
                 </form>
 
-                <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3">
+                <!-- FORM REGISTRASI AKUN BARU -->
+                <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3.5">
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Nama Akun (Username Login)</label>
-                        <input type="text" id="auth-username" required placeholder="Contoh: username_anda" class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Nama Akun (Username Login)</label>
+                        <input type="text" id="auth-username" required placeholder="Contoh: username_anda" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
 
                     <div>
-                        <label id="lbl-auth-key" class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">Nomor NIP (18 Digit) / Nomor SK Kedinasan</label>
-                        <input type="text" id="auth-key-input" onkeyup="window.parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <label id="lbl-auth-key" class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Nomor NIP (18 Digit) / Nomor SK Kedinasan</label>
+                        <input type="text" id="auth-key-input" onkeyup="window.parseNipOrSkLiveOnAuth()" required placeholder="Contoh: 198811052015022001 / Nomor SK" class="w-full h-11 sm:h-10 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                         
                         <div id="auth-parse-box" class="hidden mt-1.5 p-2 rounded-lg bg-emerald-100/90 border border-emerald-300 text-[10px] text-emerald-950 font-medium">
                             <span id="auth-parse-detail"></span>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full h-10 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 pt-1">
+                    <button type="submit" class="w-full h-11 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
                         <i class="fa-solid fa-user-plus"></i>
                         <span>Buat Akun Pegawai</span>
                     </button>
@@ -179,43 +262,40 @@
         </section>
 
         <div id="dashboard-section" class="hidden space-y-4 fade-in">
-            
             <!-- TOP PROFILE HEADER CARD -->
-            <div class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+            <div class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-emerald-100 pb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-700 to-lime-500 text-white flex items-center justify-center text-xl font-black shadow-md glow-leaf shrink-0">
+                    <div class="flex items-start sm:items-center gap-3 w-full md:w-auto">
+                        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-700 to-lime-500 text-white flex items-center justify-center text-lg sm:text-xl font-black shadow-md glow-leaf shrink-0 mt-0.5 sm:mt-0">
                             <i class="fa-solid fa-user-doctor"></i>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <h2 id="p-nama" class="text-sm sm:text-base font-black text-emerald-950 tracking-wide uppercase">Nama Pegawai</h2>
-                                <span id="p-status-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[9px]">Belum Ditentukan</span>
-                                <div id="p-map-badge" class="px-2.5 py-0.5 rounded text-[8px] font-black uppercase flex items-center gap-1 bg-slate-100 text-slate-800 border border-slate-300">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <h2 id="p-nama" class="text-xs sm:text-base font-black text-emerald-950 tracking-wide uppercase truncate max-w-[200px] sm:max-w-none">Nama Pegawai</h2>
+                                <span id="p-status-badge" class="px-2 py-0.5 rounded-md bg-emerald-700 text-white font-extrabold text-[9px] whitespace-nowrap">Status</span>
+                                <div id="p-map-badge" class="px-2 py-0.5 rounded-md text-[8.5px] font-black uppercase flex items-center gap-1 bg-slate-100 text-slate-800 border border-slate-300 whitespace-nowrap">
                                     <i class="fa-solid fa-folder-closed text-xs"></i>
-                                    <span id="p-map-text">Status Map Belum Ditentukan</span>
+                                    <span id="p-map-text">Status Map</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 text-[10.5px] font-medium text-slate-700 mt-1 flex-wrap">
+                            <div class="flex items-center gap-2 text-[10px] sm:text-[10.5px] font-medium text-slate-700 mt-1 flex-wrap">
                                 <span id="p-id-display" class="font-mono font-bold text-emerald-900"><i class="fa-solid fa-fingerprint text-emerald-600 mr-0.5"></i>ID: -</span>
-                                <span>•</span>
+                                <span class="hidden sm:inline">•</span>
                                 <span id="p-nip-display" class="font-mono font-bold text-emerald-900"><i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i>NIP: -</span>
-                                <span>•</span>
+                                <span class="hidden sm:inline">•</span>
                                 <span id="p-jabatan"><i class="fa-solid fa-user-tie text-emerald-600 mr-0.5"></i>-</span>
-                                <span>•</span>
-                                <span id="p-ruangan"><i class="fa-solid fa-hospital text-emerald-600 mr-0.5"></i>-</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
-                        <button onclick="window.copyIdPegawai()" class="h-8 px-2.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-[10px] border border-emerald-300 transition-all flex items-center gap-1 shadow-2xs cursor-pointer">
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-emerald-100">
+                        <button onclick="window.copyIdPegawai()" class="flex-1 sm:flex-initial h-8 px-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-[10px] border border-emerald-300 transition-all flex items-center justify-center gap-1 shadow-2xs cursor-pointer whitespace-nowrap">
                             <i class="fa-regular fa-copy"></i>
                             <span>Salin ID</span>
                         </button>
-                        <button onclick="window.openEditProfileModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
+                        <button onclick="window.openEditProfileModal()" class="flex-1 sm:flex-initial h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
                             <i class="fa-solid fa-user-pen"></i>
-                            <span>Edit Akun & NIP</span>
+                            <span>Edit Akun</span>
                         </button>
                     </div>
                 </div>
@@ -224,34 +304,35 @@
                 <div id="correction-banner" class="hidden"></div>
             </div>
 
-            <!-- SUB-TAB SWITCHER -->
+            <!-- SUB-TAB SWITCHER RESPONSIVE FOR HP -->
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs shadow-2xs">
-                <button type="button" onclick="window.switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <button type="button" onclick="window.switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 h-10 sm:h-9 px-2 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-folder-tree"></i>
-                    <span>Lemari Berkas Digital (Form A - H)</span>
+                    <span class="truncate">Lemari Berkas (A-H)</span>
                 </button>
-                <button type="button" onclick="window.switchTab('form-profil')" id="tab-btn-form" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <button type="button" onclick="window.switchTab('form-profil')" id="tab-btn-form" class="flex-1 h-10 sm:h-9 px-2 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-file-pen"></i>
-                    <span>Formulir Detail Profil & Kedinasan</span>
+                    <span class="truncate">Form Detail Profil</span>
                 </button>
             </div>
 
+            <!-- TAB 1: LEMARI BERKAS DIGITAL (FORM A - H) -->
             <div id="tab-content-dashboard" class="space-y-3">
-                <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
+                <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
                         <div>
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-box-archive text-emerald-600"></i> REPOSITORI BERKAS DIGITAL (CEKLIST KERTAS KUNING UMPEG)
+                                <i class="fa-solid fa-box-archive text-emerald-600"></i> REPOSITORI BERKAS DIGITAL
                             </h3>
-                            <p class="text-[10px] text-slate-600">Kelola tautan Google Drive dokumen fisik Anda sesuai standar form A s/d H RSUD Sinjai.</p>
+                            <p class="text-[10px] text-slate-600">Kelola tautan Google Drive dokumen fisik Anda sesuai standar Ceklist UMPEG.</p>
                         </div>
                         
-                        <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
                             <div class="relative flex-1 sm:w-64">
-                                <input type="text" id="search-earsip-item" onkeyup="window.filterEarsipItems()" placeholder="Cari nama berkas digital..." class="w-full h-8 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                <input type="text" id="search-earsip-item" onkeyup="window.filterEarsipItems()" placeholder="Cari berkas digital..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
                             </div>
-                            <button type="button" onclick="window.toggleExpandAllCategories()" class="h-8 px-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-extrabold text-[10px] border border-emerald-300 shrink-0 cursor-pointer">
-                                Buka/Tutup Semua
+                            <button type="button" onclick="window.toggleExpandAllCategories()" class="h-9 px-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-extrabold text-[10px] border border-emerald-300 shrink-0 cursor-pointer whitespace-nowrap">
+                                Buka/Tutup
                             </button>
                         </div>
                     </div>
@@ -264,59 +345,58 @@
                 <form onsubmit="window.saveDetailProfileForm(event)" class="space-y-4">
                     
                     <!-- SECTION I: DATA PERSONAL -->
-                    <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+                    <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider border-b border-emerald-100 pb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-address-card text-emerald-600"></i> I. Data Personal & Identitas Kependudukan
+                            <i class="fa-solid fa-address-card text-emerald-600"></i> I. Data Personal & Kependudukan
                         </h3>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nama Lengkap (Tanpa Gelar) <span class="text-rose-600">*</span></label>
-                                <input type="text" id="f-bas-nama-ijazah" oninput="window.updateAutoFullnamePreview()" required placeholder="Contoh: Ahmad Hidayat" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Nama Lengkap (Tanpa Gelar) <span class="text-rose-600">*</span></label>
+                                <input type="text" id="f-bas-nama-ijazah" oninput="window.updateAutoFullnamePreview()" required placeholder="Contoh: Ahmad Hidayat" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Gelar Depan</label>
-                                <input type="text" id="f-bas-gelar-depan" oninput="window.updateAutoFullnamePreview()" placeholder="Contoh: Dr. / Drs. / Hj." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Gelar Depan</label>
+                                <input type="text" id="f-bas-gelar-depan" oninput="window.updateAutoFullnamePreview()" placeholder="Contoh: Dr. / Drs." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Gelar Belakang</label>
-                                <input type="text" id="f-bas-gelar-belakang" oninput="window.updateAutoFullnamePreview()" placeholder="Contoh: S.Kep., Ns. / M.Si." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Gelar Belakang</label>
+                                <input type="text" id="f-bas-gelar-belakang" oninput="window.updateAutoFullnamePreview()" placeholder="Contoh: S.Kep., Ns." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <!-- READ-ONLY AUTOMATIC FULLNAME -->
                             <div class="sm:col-span-2 lg:col-span-3 bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200">
-                                <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-0.5 flex items-center justify-between">
-                                    <span><i class="fa-solid fa-wand-magic-sparkles text-emerald-600 mr-1"></i> Nama Lengkap Kedinasan (Otomatis Tergabung & Read-Only)</span>
-                                    <span class="text-[8.5px] text-emerald-700 font-bold lowercase italic">*terkunci (otomatis dari kombinasi gelar & nama)</span>
+                                <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1 flex items-center justify-between flex-wrap gap-1">
+                                    <span><i class="fa-solid fa-wand-magic-sparkles text-emerald-600 mr-1"></i> Nama Kedinasan (Otomatis & Terkunci)</span>
                                 </label>
-                                <input type="text" id="f-bas-nama-lengkap" readonly class="w-full h-9 bg-slate-100 border border-slate-300 rounded-lg px-3 font-extrabold text-emerald-950 text-xs cursor-not-allowed shadow-inner" placeholder="Otomatis terisi...">
+                                <input type="text" id="f-bas-nama-lengkap" readonly class="w-full h-11 sm:h-9 bg-slate-100 border border-slate-300 rounded-lg px-3 font-extrabold text-emerald-950 text-xs cursor-not-allowed shadow-inner" placeholder="Otomatis terisi...">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIK KTP (16 Digit)</label>
-                                <input type="text" id="f-bas-nik" placeholder="7317..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">NIK KTP (16 Digit)</label>
+                                <input type="text" id="f-bas-nik" placeholder="7317..." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor Kartu Keluarga (KK)</label>
-                                <input type="text" id="f-bas-kk" placeholder="7317..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Nomor Kartu Keluarga (KK)</label>
+                                <input type="text" id="f-bas-kk" placeholder="7317..." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Tempat Lahir</label>
-                                <input type="text" id="f-bas-tempat-lahir" placeholder="Contoh: Sinjai" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Tempat Lahir</label>
+                                <input type="text" id="f-bas-tempat-lahir" placeholder="Contoh: Sinjai" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Tanggal Lahir</label>
-                                <input type="date" id="f-bas-tgl-lahir" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Tanggal Lahir</label>
+                                <input type="date" id="f-bas-tgl-lahir" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jenis Kelamin</label>
-                                <select id="f-bas-jk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Jenis Kelamin</label>
+                                <select id="f-bas-jk" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
                                     <option value="Laki-Laki">Laki-Laki</option>
                                     <option value="Perempuan">Perempuan</option>
@@ -324,8 +404,8 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Agama</label>
-                                <select id="f-bas-agama" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Agama</label>
+                                <select id="f-bas-agama" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Agama --</option>
                                     <option value="Islam">Islam</option>
                                     <option value="Kristen">Kristen</option>
@@ -336,8 +416,8 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Golongan Darah</label>
-                                <select id="f-bas-gol-darah" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Golongan Darah</label>
+                                <select id="f-bas-gol-darah" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Golongan Darah --</option>
                                     <option value="-">- Belum Tahu -</option>
                                     <option value="A">Golongan A</option>
@@ -348,8 +428,8 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Status Pernikahan</label>
-                                <select id="f-bas-status-nikah" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Status Pernikahan</label>
+                                <select id="f-bas-status-nikah" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Status Pernikahan --</option>
                                     <option value="Kawin">Kawin</option>
                                     <option value="Belum Kawin">Belum Kawin</option>
@@ -358,274 +438,43 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Kontak No. HP / WhatsApp (Format: 628...)</label>
-                                <input type="text" id="f-bas-hp" placeholder="628123456789" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">No. HP / WA (Format: 628...)</label>
+                                <input type="text" id="f-bas-hp" placeholder="628123456789" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono font-bold text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Email Resmi Active</label>
-                                <input type="email" id="f-bas-email" placeholder="pegawai@sinjaikab.go.id" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Email Resmi</label>
+                                <input type="email" id="f-bas-email" placeholder="pegawai@sinjaikab.go.id" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Alamat KTP</label>
-                                <input type="text" id="f-bas-alamat-ktp" placeholder="Jl. Sudirman No..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Alamat KTP</label>
+                                <input type="text" id="f-bas-alamat-ktp" placeholder="Jl. Sudirman No..." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Alamat Domisili Sekarang</label>
-                                <input type="text" id="f-bas-alamat-domisili" placeholder="Sinjai Utara..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Alamat Domisili</label>
+                                <input type="text" id="f-bas-alamat-domisili" placeholder="Sinjai Utara..." class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor NPWP</label>
-                                <input type="text" id="f-bas-npwp" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Nomor NPWP</label>
+                                <input type="text" id="f-bas-npwp" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor BPJS Kesehatan</label>
-                                <input type="text" id="f-bas-bpjs" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Nomor BPJS Kesehatan</label>
+                                <input type="text" id="f-bas-bpjs" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
                             </div>
-                        </div>
-                    </section>
-
-                    <!-- SECTION II: DATA KEDINASAN -->
-                    <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
-                        <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
-                            <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-briefcase text-emerald-600"></i> II. Rincian Kedudukan, Status & Jabatan Kedinasan
-                            </h3>
-                            <div class="flex items-center gap-2">
-                                <span id="display-jalur-jabatan" class="text-[9px] bg-emerald-100 text-emerald-950 font-black px-2.5 py-1 rounded border border-emerald-300">Jalur: Fungsional</span>
-                                <button type="button" onclick="window.toggleJalurJabatanForm()" class="px-2.5 py-1 rounded bg-emerald-700 text-white font-extrabold text-[10px] cursor-pointer hover:bg-emerald-800 transition-all shadow-2xs">
-                                    <i class="fa-solid fa-right-left mr-1"></i> Ubah Jalur
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs bg-emerald-50/60 p-3 rounded-xl border border-emerald-200/80 mb-3">
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Status Kepegawaian <span class="text-rose-600">*</span></label>
-                                <select id="f-bas-status-pegawai" required class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-emerald-950 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Status Kepegawaian --</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP / Nomor SK Kedinasan</label>
-                                <input type="text" id="f-bas-nip" readonly class="w-full h-9 bg-slate-100 border border-slate-300 rounded-lg px-3 font-mono font-bold text-slate-700 text-xs">
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Pangkat / Golongan</label>
-                                <select id="f-bas-golongan" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Golongan --</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Unit Kerja Penempatan <span class="text-rose-600">*</span></label>
-                                <select id="f-bas-ruangan" required class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor TASPEN</label>
-                                <input type="text" id="f-bas-taspen" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor KARPEG / KPE</label>
-                                <input type="text" id="f-bas-karpeg" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                        </div>
-
-                        <!-- SECTION STRUKTURAL -->
-                        <div id="section-form-struktural" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs hidden">
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nama Jabatan Struktural</label>
-                                <select id="f-st-nama-jabatan" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Jabatan Struktural --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Eselon / Tingkat Jabatan</label>
-                                <select id="f-st-eselon" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                                    <option value="NON_ESELON">NON_ESELON (Staf/Pelaksana - BUP 58 Thn)</option>
-                                    <option value="IV.b">IV.b (Kasubag/Kasi - BUP 58 Thn)</option>
-                                    <option value="IV.a">IV.a (Kasubag/Kasi - BUP 58 Thn)</option>
-                                    <option value="III.b">III.b (Kabid/Kabag - BUP 58 Thn)</option>
-                                    <option value="III.a">III.a (Kabid/Kabag - BUP 58 Thn)</option>
-                                    <option value="II.b">II.b (Direktur / Eselon II - BUP 60 Thn)</option>
-                                    <option value="II.a">II.a (Direktur Utama / Eselon II - BUP 60 Thn)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor SK Pengangkatan Jabatan</label>
-                                <input type="text" id="f-st-no-sk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Tanggal SK Jabatan</label>
-                                <input type="date" id="f-st-tgl-sk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">TMT SK Jabatan</label>
-                                <input type="date" id="f-st-tmt-sk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                        </div>
-
-                        <!-- SECTION FUNGSIONAL -->
-                        <div id="section-form-fungsional" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Kelompok Fungsional</label>
-                                <select id="f-fn-kelompok" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Kelompok --</option>
-                                    <option value="JFT">Jabatan Fungsional Tertentu (JFT)</option>
-                                    <option value="JFU">Jabatan Fungsional Umum / Pelaksana (JFU)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nama Jabatan Fungsional</label>
-                                <select id="f-fn-nama-jabatan" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Jabatan Fungsional --</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jenjang Fungsional</label>
-                                <select id="f-fn-jenjang" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
-                                    <option value="" disabled selected>-- Pilih Jenjang Fungsional --</option>
-                                    <option value="Keterampilan (Pemula / Terampil / Mahir / Penyelia)">Keterampilan (BUP 58 Thn)</option>
-                                    <option value="Ahli Pertama">Ahli Pertama (BUP 58 Thn)</option>
-                                    <option value="Ahli Muda">Ahli Muda (BUP 58 Thn)</option>
-                                    <option value="Ahli Madya">Ahli Madya (BUP 60 Thn)</option>
-                                    <option value="Ahli Utama">Ahli Utama / Dosen (BUP 65 Thn)</option>
-                                    <option value="Guru Besar / Profesor / Fungsional Khusus">Guru Besar / Khusus (BUP 70 Thn)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Nomor SK Jabatan Fungsional</label>
-                                <input type="text" id="f-fn-no-sk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">TMT SK Jabatan Fungsional</label>
-                                <input type="date" id="f-fn-tmt-sk" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-mono text-slate-900 text-xs focus:outline-none">
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- SECTION III: LEGALITAS MEDIS -->
-                    <section id="section-form-medis" class="glass-panel p-4 sm:p-5 rounded-2xl border border-emerald-200/90 shadow-xs space-y-4">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-100 pb-3">
-                            <h3 class="text-xs sm:text-sm font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-file-signature text-emerald-600"></i> III. LEGALITAS MEDIS & ORGANISASI PROFESI NAKES
-                            </h3>
-                            <span class="px-3 py-1 rounded-xl bg-amber-100/90 text-amber-900 border border-amber-300 font-extrabold text-[10px] shadow-2xs shrink-0">
-                                Persyaratan Operasional Nakes
-                            </span>
-                        </div>
-
-                        <div class="p-3.5 sm:p-4 rounded-xl bg-emerald-50/40 border border-emerald-300/80 space-y-3">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-2">
-                                <h4 class="text-xs font-black text-emerald-950 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-id-card text-emerald-600"></i> 1. Surat Tanda Registrasi (STR)
-                                </h4>
-                                <label class="flex items-center gap-1.5 text-[10.5px] font-bold text-emerald-900 cursor-pointer">
-                                    <input type="checkbox" id="f-med-str-lifetime" onchange="window.handleStrLifetimeToggle()" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-emerald-300 cursor-pointer">
-                                    <span>STR Berlaku Seumur Hidup</span>
-                                </label>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Nomor STR</label>
-                                    <input type="text" id="f-med-no-str" placeholder="Contoh: 120152120-3341" class="w-full h-9 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Tanggal Terbit STR</label>
-                                    <input type="date" id="f-med-tgl-str" class="w-full h-9 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Masa Berlaku STR (Expired)</label>
-                                    <input type="date" id="f-med-exp-str" class="w-full h-9 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 sm:p-4 rounded-xl bg-amber-50/40 border border-amber-300/90 space-y-3">
-                            <div class="border-b border-amber-200/80 pb-2">
-                                <h4 class="text-xs font-black text-amber-950 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-file-contract text-amber-600"></i> 2. Surat Izin Praktik (SIP RSUD Sinjai)
-                                </h4>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Nomor SIP RSUD</label>
-                                    <input type="text" id="f-med-no-sip" placeholder="Contoh: 503/014/SIP-DR/DPMPTSP" class="w-full h-9 bg-white border border-amber-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-amber-600 shadow-2xs">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Tanggal Terbit SIP</label>
-                                    <input type="date" id="f-med-tgl-sip" class="w-full h-9 bg-white border border-amber-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-amber-600 shadow-2xs">
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Masa Berlaku SIP (Wajib 5 Thn)</label>
-                                    <input type="date" id="f-med-exp-sip" class="w-full h-9 bg-white border border-amber-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-amber-600 shadow-2xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3.5 sm:p-4 rounded-xl bg-emerald-50/40 border border-emerald-300/80 space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">3. Organisasi Profesi</label>
-                                    <select id="f-med-org-profesi" class="w-full h-9 bg-white border border-emerald-300 rounded-xl px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs cursor-pointer">
-                                        <option value="" disabled selected>-- Pilih Organisasi Profesi --</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-slate-800 text-[10px] uppercase mb-1">Nomor Anggota Organisasi Profesi</label>
-                                    <input type="text" id="f-med-no-anggota-org" placeholder="Contoh: 181105/IDI/7307" class="w-full h-9 bg-white border border-emerald-300 rounded-xl px-3 font-mono font-semibold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- SECTION IV: RIWAYAT PENDIDIKAN -->
-                    <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
-                        <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
-                            <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-graduation-cap text-emerald-600"></i> IV. Riwayat Pendidikan Formal (SD s/d Terakhir)
-                            </h3>
-                            <button type="button" onclick="window.openAddEducationModal()" class="h-8 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs transition-all flex items-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Tambah Riwayat Pendidikan</span>
-                            </button>
-                        </div>
-
-                        <div class="overflow-x-auto rounded-xl border border-emerald-200 bg-white shadow-2xs">
-                            <table class="w-full text-left border-collapse text-[11px]">
-                                <thead>
-                                    <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 uppercase">
-                                        <th class="p-2.5">Jenjang</th>
-                                        <th class="p-2.5">Nama Sekolah / Perguruan Tinggi</th>
-                                        <th class="p-2.5">Jurusan / Program Studi</th>
-                                        <th class="p-2.5">Nomor STTB / Ijazah</th>
-                                        <th class="p-2.5">Nilai / IPK</th>
-                                        <th class="p-2.5 text-center w-16">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="edu-table-body" class="divide-y divide-emerald-100"></tbody>
-                            </table>
                         </div>
                     </section>
 
                     <!-- SUBMIT BUTTON -->
                     <div class="flex items-center justify-end gap-2 pt-2">
-                        <button type="button" onclick="window.switchTab('dashboard')" class="h-10 px-4 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
-                        <button type="submit" class="h-10 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button type="button" onclick="window.switchTab('dashboard')" class="h-11 sm:h-10 px-4 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer flex-1 sm:flex-initial">Batal</button>
+                        <button type="submit" class="h-11 sm:h-10 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-initial">
                             <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Simpan Seluruh Profil Kedinasan</span>
+                            <span>Simpan Profil</span>
                         </button>
                     </div>
 
@@ -640,8 +489,6 @@
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System)
     </footer>
 
-    
-    <!-- MODAL EDIT PROFILE -->
     <div id="modal-edit-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-md rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white space-y-3 p-4">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Edit Akun User & NIP Pegawai</h3>
@@ -748,14 +595,14 @@
         </div>
     </div>
 
-    <!-- MODAL PRINT PROFILE DRH A4 PORTRAIT -->
+    <!-- Point 6: MODAL PRINT PROFILE DRH A4 PORTRAIT -->
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
                 <h3 class="text-xs font-extrabold uppercase">Preview Cetak DRH / Dossier Pegawai Mandiri</h3>
                 <div class="flex items-center gap-2">
                     <button onclick="window.triggerPrintProfile()" class="h-8 px-3 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak A4
+                        <i class="fa-solid fa-print"></i> Cetak A4 Portrait
                     </button>
                     <button onclick="window.closePrintProfileModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
@@ -783,7 +630,7 @@
 
                 <div id="sheet-content-body" class="space-y-3"></div>
 
-                <div class="pt-6 grid grid-cols-2 text-center text-[10px]">
+                <div class="pt-6 grid grid-cols-2 text-center text-[10px] print-signature-block">
                     <div>
                         <p class="font-bold mb-12">Mengetahui,<br><span id="sheet-pejabat-jabatan">Kepala Sub Bagian UMPEG</span></p>
                         <p class="font-black underline uppercase" id="sheet-pejabat-nama">( ________________________ )</p>
@@ -800,9 +647,13 @@
     </div>
 
     <script>
-        const ANCHORED_SUPABASE_URL = "https://dlstwmavfxtktlwqajvj.supabase.co"; 
-        const ANCHORED_SUPABASE_ANON_KEY = "sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O";
+        // Point 1: Zero Hardcoded Credentials
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
+        let serverApiConfig = { 
+            gasUrl: '', 
+            supabaseUrl: '', 
+            supabaseAnonKey: '' 
+        };
 
         const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
         const DEFAULT_JABATAN = {
@@ -891,11 +742,10 @@
         let currentPegawai = null;
         let activeTab = 'dashboard';
         
-        /* EXPANDED CATEGORIES - DEFAULT CLOSED/COLLAPSED FOR ALL FORM A-H */
+        // Expanded categories: Default False/Collapsed untuk Form A - H
         let expandedCategories = { A: false, B: false, C: false, D: false, E: false, F: false, G: false, H: false }; 
         
         let activeAddLinkId = null;
-        let serverApiConfig = { gasUrl: '', supabaseUrl: ANCHORED_SUPABASE_URL, supabaseAnonKey: ANCHORED_SUPABASE_ANON_KEY };
         let supabaseClient = null;
         let realtimeChannel = null;
 
@@ -942,9 +792,26 @@
             const txt = document.getElementById('toast-msg');
             if (!toast) return;
             if (txt) txt.innerText = msg;
-            if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600" : "fa-solid fa-circle-info text-emerald-600";
+            if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600" : type === 'warning' ? "fa-solid fa-triangle-exclamation text-amber-600" : type === 'error' ? "fa-solid fa-circle-xmark text-rose-600" : "fa-solid fa-circle-info text-emerald-600";
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3500);
+        };
+
+        window.updateWsBadge = function(state, text) {
+            const badge = document.getElementById('ws-indicator-badge');
+            const dot = document.getElementById('ws-dot');
+            const txt = document.getElementById('header-sync-status');
+            if (!badge || !dot || !txt) return;
+
+            if (state === 'online') {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                txt.innerText = text || "🟢 Antena Realtime Aktif";
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[9.5px]";
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-amber-500";
+                txt.innerText = text || "🔴 Koneksi Belum Diatur";
+                badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[9.5px]";
+            }
         };
 
         window.generateIdPegawai = function(keyInput) {
@@ -1005,29 +872,22 @@
 
         window.initCloudConnectionAndRealtime = async function() {
             try {
-                const localCfg = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
-                if (localCfg) {
-                    const parsed = JSON.parse(localCfg);
+                const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
                     if (parsed.supabaseUrl) serverApiConfig.supabaseUrl = parsed.supabaseUrl;
                     if (parsed.supabaseAnonKey) serverApiConfig.supabaseAnonKey = parsed.supabaseAnonKey;
                     if (parsed.gasUrl) serverApiConfig.gasUrl = parsed.gasUrl;
                 }
             } catch(e) {}
 
-            const finalSupaUrl = serverApiConfig.supabaseUrl || ANCHORED_SUPABASE_URL;
-            const finalAnonKey = serverApiConfig.supabaseAnonKey || ANCHORED_SUPABASE_ANON_KEY;
-
-            /* Strict Zero Dummy Creds Protection: Return safely if unconfigured */
-            if (!finalSupaUrl || !finalAnonKey || !finalSupaUrl.startsWith('http') || !window.supabase) {
-                const dot = document.getElementById('ws-dot');
-                const txt = document.getElementById('header-sync-status');
-                if (dot) dot.className = "w-2 h-2 rounded-full bg-slate-400";
-                if (txt) txt.innerText = "Koneksi Belum Diatur";
+            if (!serverApiConfig.supabaseUrl || !serverApiConfig.supabaseAnonKey || !serverApiConfig.supabaseUrl.startsWith('http') || !window.supabase) {
+                window.updateWsBadge('offline', '🔴 Koneksi Belum Diatur');
                 return;
             }
 
             try {
-                supabaseClient = window.supabase.createClient(finalSupaUrl, finalAnonKey);
+                supabaseClient = window.supabase.createClient(serverApiConfig.supabaseUrl, serverApiConfig.supabaseAnonKey);
                 
                 const { data: sysConfig } = await supabaseClient
                     .from('system_config')
@@ -1061,16 +921,12 @@
                 }
 
                 window.populateMasterDropdowns();
-
-                const dot = document.getElementById('ws-dot');
-                const txt = document.getElementById('header-sync-status');
-                if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                if (txt) txt.innerText = "Antena Realtime Aktif";
+                window.updateWsBadge('online', '🟢 Antena Realtime Aktif');
 
                 if (!realtimeChannel) {
                     try {
                         realtimeChannel = supabaseClient
-                            .channel('perubahan-konfigurasi-pegawai')
+                            .channel('portal-pegawai-realtime-sync')
                             .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, async (payload) => {
                                 if (payload.new && payload.new.gas_url) {
                                     serverApiConfig.gasUrl = window.cleanAndFixGasUrl(payload.new.gas_url);
@@ -1092,6 +948,7 @@
                                     }
                                     if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                                     window.populateMasterDropdowns();
+                                    window.showToast("Master Data RSUD Diperbarui!", "info");
                                 }
                             })
                             .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async (payload) => {
@@ -1100,7 +957,7 @@
                                     currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
                                     if (payload.new.links_map) currentPegawai.linksMap = window.tryParseJson(payload.new.links_map);
                                     window.renderDashboard();
-                                    window.showToast("Pembaruan Status Verifikasi Diterima!", "info");
+                                    window.showToast("Status Audit Berkas Diterima!", "info");
                                 }
                             });
 
@@ -1108,10 +965,7 @@
                     } catch(wsErr) {}
                 }
             } catch (e) { 
-                const dot = document.getElementById('ws-dot');
-                const txt = document.getElementById('header-sync-status');
-                if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-500";
-                if (txt) txt.innerText = "Koneksi Standby";
+                window.updateWsBadge('offline', '🔴 Koneksi Standby');
             }
         };
 
@@ -1141,7 +995,17 @@
                         id_pegawai: recordPayload.idPegawai,
                         nip: recordPayload.nip,
                         username: recordPayload.username || recordPayload.nama,
+                        nama: recordPayload.nama || recordPayload.username,
+                        status_kepegawaian: recordPayload.status || 'PNS',
+                        sub1: recordPayload.sub1 || 'MEDIS',
+                        sub2: recordPayload.sub2 || 'FUNGSIONAL',
+                        jabatan: recordPayload.jabatan || '',
+                        ruangan: recordPayload.ruangan || '',
                         links_map: recordPayload.linksMap || {},
+                        detail_personal: recordPayload.detailPersonal || {},
+                        detail_jabatan: recordPayload.detailJabatan || {},
+                        detail_medis: recordPayload.detailMedis || {},
+                        riwayat_pendidikan: recordPayload.riwayatPendidikan || [],
                         verifikasi_status: recordPayload.verifikasiStatus || 'PENDING',
                         verifikasi_catatan: recordPayload.verifikasiCatatan || '',
                         last_updated_at: new Date().toISOString()
@@ -1259,136 +1123,137 @@
                 return;
             }
 
-            window.showToast("Mengecek Sesi Login di Supabase...", "info");
+            if (!supabaseClient) {
+                window.showToast("Koneksi Supabase belum aktif! Harap atur konfigurasi sistem dari Web UMPEG.", "error");
+                return;
+            }
+
+            window.showToast("Memeriksa data ke database Supabase...", "info");
 
             let loadedPegawai = null;
-            let gasFetchedData = null;
 
-            /* 1. Supabase Query First */
-            if (supabaseClient) {
-                try {
-                    let { data } = await supabaseClient
-                        .from('pegawai_lemari_digital')
-                        .select('*')
-                        .eq('nip', keyInput)
-                        .maybeSingle();
+            try {
+                // Point 2: Query wajib ke tabel Supabase pegawai_lemari_digital berdasarkan NIP / SK
+                let { data, error } = await supabaseClient
+                    .from('pegawai_lemari_digital')
+                    .select('*')
+                    .eq('nip', keyInput)
+                    .maybeSingle();
 
-                    if (!data) {
-                        const resUser = await supabaseClient
-                            .from('pegawai_lemari_digital')
-                            .select('*')
-                            .eq('username', username)
-                            .maybeSingle();
-                        data = resUser.data;
-                    }
-
-                    if (data) {
-                        loadedPegawai = {
-                            idPegawai: data.id_pegawai,
-                            nip: data.nip || keyInput,
-                            username: data.username || username,
-                            nama: data.username || username,
-                            status: '',
-                            sub1: 'MEDIS',
-                            sub2: 'FUNGSIONAL',
-                            jabatan: '',
-                            ruangan: '',
-                            linksMap: window.tryParseJson(data.links_map),
-                            detailPersonal: {},
-                            detailJabatan: {},
-                            detailMedis: {},
-                            riwayatPendidikan: [],
-                            verifikasiStatus: data.verifikasi_status || 'PENDING',
-                            verifikasiCatatan: data.verifikasi_catatan || ''
-                        };
-                    }
-                } catch (err) {
-                    console.warn("Notice query Supabase:", err);
-                }
-            }
-
-            /* 2. Fetch Detailed Form Data from GAS if available */
-            if (serverApiConfig.gasUrl) {
-                try {
-                    const targetQuery = encodeURIComponent(keyInput);
-                    const res = await fetch(`${serverApiConfig.gasUrl}?action=getPegawai&nip=${targetQuery}`);
-                    const gasJson = await res.json();
-                    
-                    if (gasJson && (gasJson.data || gasJson.pegawai)) {
-                        gasFetchedData = gasJson.data || gasJson.pegawai;
-                    }
-                } catch (gasErr) {
-                    console.warn("Notice fetch GAS getPegawai:", gasErr);
-                }
-            }
-
-            /* 3. Merge Identity & Details */
-            if (gasFetchedData) {
-                if (!loadedPegawai) {
+                if (data) {
                     loadedPegawai = {
-                        idPegawai: gasFetchedData.idPegawai || gasFetchedData.id_pegawai || window.generateIdPegawai(keyInput),
-                        nip: gasFetchedData.nip || keyInput,
-                        username: gasFetchedData.username || username,
-                        nama: gasFetchedData.nama || username,
-                        status: gasFetchedData.status || 'PNS',
-                        sub1: gasFetchedData.sub1 || 'MEDIS',
-                        sub2: gasFetchedData.sub2 || 'FUNGSIONAL',
-                        jabatan: gasFetchedData.jabatan || '',
-                        ruangan: gasFetchedData.ruangan || '',
-                        linksMap: window.tryParseJson(gasFetchedData.linksMap || gasFetchedData.links_map),
-                        detailPersonal: window.tryParseJson(gasFetchedData.detailPersonal || gasFetchedData.detail_personal),
-                        detailJabatan: window.tryParseJson(gasFetchedData.detailJabatan || gasFetchedData.detail_jabatan),
-                        detailMedis: window.tryParseJson(gasFetchedData.detailMedis || gasFetchedData.detail_medis),
-                        riwayatPendidikan: window.tryParseJson(gasFetchedData.riwayatPendidikan || gasFetchedData.riwayat_pendidikan, []),
-                        verifikasiStatus: gasFetchedData.verifikasiStatus || 'PENDING',
-                        verifikasiCatatan: gasFetchedData.verifikasiCatatan || ''
+                        idPegawai: data.id_pegawai,
+                        nip: data.nip || keyInput,
+                        username: data.username || username,
+                        nama: data.nama || data.username || username,
+                        status: data.status_kepegawaian || 'PNS',
+                        sub1: data.sub1 || 'MEDIS',
+                        sub2: data.sub2 || 'FUNGSIONAL',
+                        jabatan: data.jabatan || '',
+                        ruangan: data.ruangan || '',
+                        linksMap: window.tryParseJson(data.links_map),
+                        detailPersonal: window.tryParseJson(data.detail_personal),
+                        detailJabatan: window.tryParseJson(data.detail_jabatan),
+                        detailMedis: window.tryParseJson(data.detail_medis),
+                        riwayatPendidikan: window.tryParseJson(data.riwayat_pendidikan, []),
+                        verifikasiStatus: data.verifikasi_status || 'PENDING',
+                        verifikasiCatatan: data.verifikasi_catatan || ''
                     };
-                } else {
-                    loadedPegawai.nama = gasFetchedData.nama || loadedPegawai.nama;
-                    loadedPegawai.status = gasFetchedData.status || loadedPegawai.status;
-                    loadedPegawai.sub1 = gasFetchedData.sub1 || loadedPegawai.sub1;
-                    loadedPegawai.sub2 = gasFetchedData.sub2 || loadedPegawai.sub2;
-                    loadedPegawai.jabatan = gasFetchedData.jabatan || loadedPegawai.jabatan;
-                    loadedPegawai.ruangan = gasFetchedData.ruangan || loadedPegawai.ruangan;
-                    
-                    const pPersonal = window.tryParseJson(gasFetchedData.detailPersonal || gasFetchedData.detail_personal);
-                    if (Object.keys(pPersonal).length > 0) loadedPegawai.detailPersonal = pPersonal;
-                    
-                    const pJabatan = window.tryParseJson(gasFetchedData.detailJabatan || gasFetchedData.detail_jabatan);
-                    if (Object.keys(pJabatan).length > 0) loadedPegawai.detailJabatan = pJabatan;
-                    
-                    const pMedis = window.tryParseJson(gasFetchedData.detailMedis || gasFetchedData.detail_medis);
-                    if (Object.keys(pMedis).length > 0) loadedPegawai.detailMedis = pMedis;
-                    
-                    const pEdu = window.tryParseJson(gasFetchedData.riwayatPendidikan || gasFetchedData.riwayat_pendidikan, []);
-                    if (pEdu.length > 0) loadedPegawai.riwayatPendidikan = pEdu;
                 }
+            } catch (err) {
+                console.warn("Gagal query Supabase:", err);
             }
 
-            /* 4. Fallback for new account */
+            // Point 2: DITOLAK MUTLAK jika NIP/SK tidak ditemukan di database
             if (!loadedPegawai) {
-                loadedPegawai = {
-                    idPegawai: window.generateIdPegawai(keyInput),
-                    username: username,
-                    status: '',
-                    sub1: 'MEDIS',
-                    sub2: 'FUNGSIONAL',
-                    nip: keyInput,
-                    nama: username,
-                    jabatan: '',
-                    ruangan: '',
-                    detailPersonal: {},
-                    detailJabatan: {},
-                    detailMedis: {},
-                    riwayatPendidikan: [],
-                    linksMap: {}
-                };
-                window.triggerActionDrivenSyncQueue(loadedPegawai);
+                window.showToast("NIP / SK belum terdaftar di database! Silakan registrasi profil baru.", "error");
+                return;
             }
 
             currentPegawai = loadedPegawai;
             window.showDashboardView();
-            window.showToast(`Selamat Datang, ${currentPegawai.nama || currentPegawai.username}!`, "success");
+            window.showToast(`Selamat Datang kembali, ${currentPegawai.nama || currentPegawai.username}!`, "success");
+        };
+
+        window.handleAuthSubmit = async function(e) {
+            if (e) e.preventDefault();
+            const nipKey = window.getVal('auth-key-input');
+            const username = window.getVal('auth-username');
+
+            if (!nipKey || !username) {
+                window.showToast("Harap isi Username dan NIP/SK!", "warning");
+                return;
+            }
+
+            if (!supabaseClient) {
+                window.showToast("Koneksi Supabase belum aktif! Konfigurasi server dari Web UMPEG dahulu.", "error");
+                return;
+            }
+
+            window.showToast("Memeriksa ketersediaan NIP di Supabase...", "info");
+
+            try {
+                let { data: existingData } = await supabaseClient
+                    .from('pegawai_lemari_digital')
+                    .select('nip, username')
+                    .eq('nip', nipKey)
+                    .maybeSingle();
+
+                if (existingData) {
+                    window.showToast("NIP / SK ini sudah terdaftar! Silakan gunakan Masuk Sesi NIP/SK.", "warning");
+                    window.switchAuthTab('login');
+                    window.setVal('login-username-input', existingData.username || username);
+                    window.setVal('login-key-input', nipKey);
+                    return;
+                }
+            } catch (err) {
+                console.warn("Pemeriksaan duplikasi NIP gagal:", err);
+            }
+
+            // Generate unique random ID: RSUD-PEG-XXXXXXXX
+            const newIdPegawai = window.generateIdPegawai(nipKey);
+
+            currentPegawai = {
+                idPegawai: newIdPegawai,
+                username: username,
+                status: 'PNS',
+                sub1: 'MEDIS',
+                sub2: 'FUNGSIONAL',
+                nip: nipKey,
+                nama: username,
+                jabatan: '',
+                ruangan: '',
+                detailPersonal: {},
+                detailJabatan: {},
+                detailMedis: {},
+                riwayatPendidikan: [],
+                linksMap: {},
+                verifikasiStatus: 'PENDING',
+                verifikasiCatatan: ''
+            };
+            
+            // Point 2: Mengunci record di Supabase pegawai_lemari_digital pada detik pertama
+            try {
+                await supabaseClient.from('pegawai_lemari_digital').upsert({
+                    id_pegawai: newIdPegawai,
+                    nip: nipKey,
+                    username: username,
+                    nama: username,
+                    status_kepegawaian: 'PNS',
+                    sub1: 'MEDIS',
+                    sub2: 'FUNGSIONAL',
+                    links_map: {},
+                    verifikasi_status: 'PENDING',
+                    verifikasi_catatan: '',
+                    last_updated_at: new Date().toISOString()
+                });
+            } catch (supaErr) {
+                console.warn("Initial Supabase Insert Notice:", supaErr);
+            }
+
+            await window.triggerActionDrivenSyncQueue(currentPegawai);
+            window.showDashboardView();
+            window.showToast(`Akun berhasil dibuat & terdaftar di database!`, "success");
         };
 
         window.logoutSession = function() {
@@ -1561,7 +1426,6 @@
                     `;
                 });
 
-                /* DEFAULT COLLAPSED / CLOSED BY DEFAULT */
                 const isExp = expandedCategories[cat.code] === true;
 
                 container.innerHTML += `
@@ -1864,32 +1728,6 @@
             window.closeEditProfileModal();
         };
 
-        window.handleAuthSubmit = async function(e) {
-            e.preventDefault();
-            const nipKey = window.getVal('auth-key-input');
-            const username = window.getVal('auth-username');
-
-            currentPegawai = {
-                idPegawai: window.generateIdPegawai(nipKey),
-                username: username,
-                status: '',
-                sub1: 'MEDIS',
-                sub2: 'FUNGSIONAL',
-                nip: nipKey,
-                nama: username,
-                jabatan: '',
-                ruangan: '',
-                detailPersonal: {},
-                detailJabatan: {},
-                detailMedis: {},
-                riwayatPendidikan: [],
-                linksMap: {}
-            };
-            
-            await window.triggerActionDrivenSyncQueue(currentPegawai);
-            window.showDashboardView();
-        };
-
         window.copyIdPegawai = function() {
             if (!currentPegawai) return;
             const ta = document.createElement('textarea');
@@ -1898,6 +1736,7 @@
             window.showToast("ID Pegawai disalin.", "info");
         };
 
+        /* Point 6: Fungsi Cetak DRH Profil Pegawai Mandiri (A4 Portrait) */
         window.openPrintProfileModal = function() {
             if (!currentPegawai) return;
 
@@ -1966,6 +1805,11 @@
             window.print();
         };
 
+        // Point 6: Event Auto-Reset Class Body Setelah Selesai Cetak DRH A4
+        window.addEventListener('afterprint', () => {
+            document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-10";
+        });
+
         window.openAddEducationModal = function() { window.setVal('m-edu-institusi', ""); const m=document.getElementById('modal-edu-item'); if(m) m.classList.remove('hidden'); };
         window.closeAddEducationModal = function() { const m=document.getElementById('modal-edu-item'); if(m) m.classList.add('hidden'); };
 
@@ -2003,7 +1847,6 @@
                 window.populateMasterDropdowns();
                 window.showAuthView();
                 
-                /* Hide preloader smoothly */
                 const loader = document.getElementById('loading-screen');
                 if (loader) loader.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => { if (loader) loader.classList.add('hidden'); }, 300);
