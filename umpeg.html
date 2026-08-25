@@ -84,7 +84,6 @@
             table th, table td { font-size: 9.5px !important; padding: 6px 4px !important; }
         }
 
-        /* Media Print PDF A4 Bersih Tanpa Menu Web */
         @media print {
             header, footer, .no-print, .mobile-tab-scroll,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
@@ -199,7 +198,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
+<body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-16">
 
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
@@ -212,11 +211,9 @@
         </p>
     </div>
 
-    <!-- HEADER: Responsif & Presisi -->
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-2.5 sm:px-4 lg:px-6 py-2 shrink-0 no-print">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
             
-            <!-- Logo & Title -->
             <div class="flex items-center space-x-2 shrink-0">
                 <div id="app-header-logo-box" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf overflow-hidden shrink-0">
                     <i class="fa-solid fa-tower-cell" id="app-header-logo-icon"></i>
@@ -233,7 +230,6 @@
                 </div>
             </div>
 
-            <!-- Status Antena & Clock -->
             <div class="flex items-center gap-1.5 sm:gap-2 text-xs shrink-0">
                 <div id="ws-indicator-badge" class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0">
                     <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
@@ -253,36 +249,40 @@
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[98%] mx-auto p-2.5 sm:p-5 lg:p-6 space-y-4">
+    <!-- STICKY MOBILE NAVIGATION BAR -->
+    <nav class="sticky top-[49px] sm:top-[53px] z-30 glass-panel border-b border-emerald-200/90 py-1.5 px-2 no-print shadow-md">
+        <div class="w-full max-w-[98%] mx-auto">
+            <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
+                <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 min-w-[110px] sm:min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span class="truncate">Dashboard</span>
+                </button>
+                <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 min-w-[130px] sm:min-w-[160px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative whitespace-nowrap text-[11px] sm:text-xs">
+                    <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
+                    <span class="truncate">Verifikasi Bundel</span>
+                    <span id="badge-verifikasi-count" class="px-1.5 py-0.2 rounded-full bg-amber-600 text-white font-extrabold text-[8.5px]">0</span>
+                </button>
+                <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
+                    <i class="fa-solid fa-address-book text-emerald-700"></i>
+                    <span class="truncate">Buku Induk</span>
+                </button>
+                <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 min-w-[120px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
+                    <i class="fa-solid fa-file-invoice text-emerald-700"></i>
+                    <span class="truncate">Laporan Matriks</span>
+                </button>
+                <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
+                    <i class="fa-solid fa-database text-emerald-700"></i>
+                    <span class="truncate">Kelola Master</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 w-full max-w-[98%] mx-auto p-2.5 sm:p-5 lg:p-6 space-y-4 pt-3">
         
         <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
             <i id="toast-icon" class="text-base shrink-0"></i>
             <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
-        </div>
-
-        <!-- MOBILE TAB SCROLL -->
-        <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 sm:p-1.5 rounded-xl border border-emerald-200/90 text-xs shadow-xs no-print">
-            <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 min-w-[110px] sm:min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span class="truncate">Dashboard</span>
-            </button>
-            <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 min-w-[130px] sm:min-w-[160px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative whitespace-nowrap text-[11px] sm:text-xs">
-                <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
-                <span class="truncate">Verifikasi Bundel</span>
-                <span id="badge-verifikasi-count" class="px-1.5 py-0.2 rounded-full bg-amber-600 text-white font-extrabold text-[8.5px]">0</span>
-            </button>
-            <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
-                <i class="fa-solid fa-address-book text-emerald-700"></i>
-                <span class="truncate">Buku Induk</span>
-            </button>
-            <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 min-w-[120px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
-                <i class="fa-solid fa-file-invoice text-emerald-700"></i>
-                <span class="truncate">Laporan Matriks</span>
-            </button>
-            <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
-                <i class="fa-solid fa-database text-emerald-700"></i>
-                <span class="truncate">Kelola Master</span>
-            </button>
         </div>
 
         <!-- DASHBOARD VIEW -->
@@ -295,7 +295,6 @@
                     <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Production Mode - Realtime</span>
                 </div>
 
-                <!-- Stat Grid 5 Kolom Rapi -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
                     <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-emerald-200/80 shadow-xs h-full flex flex-col justify-between space-y-1">
                         <div class="flex items-center justify-between text-slate-500">
@@ -353,7 +352,6 @@
                     </div>
                 </div>
 
-                <!-- Card Sub-Grid Rapi -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
                     <div class="glass-panel p-3 rounded-xl border border-emerald-200/90 shadow-xs flex items-center justify-between h-full">
                         <div class="space-y-1">
@@ -402,8 +400,6 @@
             </section>
 
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-3">
-                
-                <!-- Panel Log Aktivitas Terkini Pegawai -->
                 <div class="lg:col-span-12 glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
                         <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
@@ -681,7 +677,6 @@
                     </button>
                 </div>
 
-                <!-- KOP SURAT PRINT ONLY -->
                 <div class="border-b-4 border-double border-slate-900 pb-3 hidden print:flex items-center justify-between gap-4 text-center">
                     <div class="w-20 h-20 flex items-center justify-center shrink-0">
                         <img id="matrix-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-20 max-w-20 object-contain">
@@ -987,11 +982,11 @@
                             <input type="text" id="cfg-pejabat-nama" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Jabatan Pejabat</label>
+                            <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jabatan Pejabat</label>
                             <input type="text" id="cfg-pejabat-jabatan" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:outline-none">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block font-bold text-slate-700 text-[10px] mb-0.5">NIP Pejabat</label>
+                            <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP Pejabat</label>
                             <input type="text" id="cfg-pejabat-nip" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
                         </div>
                     </div>
@@ -2868,7 +2863,7 @@
         };
 
         window.addEventListener('afterprint', () => {
-            document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8";
+            document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-16";
         });
 
         window.openDocViewer = function(title, url) {
