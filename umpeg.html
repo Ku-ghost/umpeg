@@ -72,7 +72,6 @@
         .fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Smooth Mobile Tab Bar & Table Scroll */
         .mobile-tab-scroll {
             display: flex;
             overflow-x: auto;
@@ -81,11 +80,16 @@
         }
         .mobile-tab-scroll::-webkit-scrollbar { display: none; }
 
-        /* Point 6: Merapikan Media Print A4 Landscape & Portrait */
+        @media (max-width: 640px) {
+            table th, table td { font-size: 9.5px !important; padding: 6px 4px !important; }
+        }
+
+        /* Media Print PDF A4 Bersih Tanpa Menu Web */
         @media print {
-            header, footer, .no-print,
+            header, footer, .no-print, .mobile-tab-scroll,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
-            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer {
+            #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer,
+            button, select, input {
                 display: none !important;
             }
 
@@ -98,10 +102,6 @@
                 width: 100% !important;
             }
 
-            /* 1. Mode Landscape Cetak Matriks & Laporan Monitoring */
-            body.print-mode-matrix {
-                width: 100% !important;
-            }
             body.print-mode-matrix @page {
                 size: A4 landscape;
                 margin: 6mm 8mm 6mm 8mm;
@@ -130,7 +130,6 @@
                 width: 100% !important;
             }
 
-            /* 2. Mode Portrait Cetak DRH Profil Pegawai */
             body.print-mode-profile @page {
                 size: A4 portrait;
                 margin: 8mm 8mm 8mm 8mm;
@@ -155,7 +154,6 @@
                 margin: 0 !important;
             }
 
-            /* Reset Scroll & Container Layouts saat Cetak */
             .table-scroll-container,
             #panel-laporan-sub-matriks,
             #panel-laporan-sub-monitoring,
@@ -200,7 +198,6 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8">
 
-    <!-- Loading Preloader Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
             <i class="fa-solid fa-tower-cell"></i>
@@ -212,34 +209,40 @@
         </p>
     </div>
 
-    <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-3 lg:px-6 py-2 shrink-0">
-        <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-2">
-            <div class="flex items-center space-x-2.5">
-                <div id="app-header-logo-box" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf overflow-hidden">
+    <!-- HEADER: Dibuat Responsif & Tidak Berantakan di HP -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-2.5 sm:px-4 lg:px-6 py-2 shrink-0 no-print">
+        <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-2 shrink-0">
+                <div id="app-header-logo-box" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf overflow-hidden shrink-0">
                     <i class="fa-solid fa-tower-cell" id="app-header-logo-icon"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <h1 class="text-xs sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase">PORTAL UMPEG RSUD SINJAI</h1>
-                        <button onclick="window.openConfigAuthModal()" class="text-[9px] px-2.5 py-0.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs" title="Konfigurasi Server Sync API & Cloud">
+                        <h1 class="text-[11px] sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase leading-tight">PORTAL UMPEG RSUD SINJAI</h1>
+                        <button onclick="window.openConfigAuthModal()" class="text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap" title="Konfigurasi Server Sync API & Cloud">
                             <i class="fa-solid fa-gears text-emerald-700"></i>
-                            <span>Konfigurasi Sistem</span>
+                            <span class="hidden xs:inline">Konfigurasi</span>
                         </button>
                     </div>
-                    <p class="text-[10px] text-emerald-700 font-medium hidden sm:block truncate max-w-xs md:max-w-md">Sistem Integrasi Realtime Google Sheets (GAS) & Supabase</p>
+                    <p class="text-[9.5px] text-emerald-700 font-medium hidden md:block truncate max-w-xs md:max-w-md">Sistem Integrasi Realtime Google Sheets (GAS) & Supabase</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 text-xs">
-                <div id="ws-indicator-badge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-amber-500" id="ws-dot"></span>
-                    <span id="ws-status-text">🔴 Offline / Unconfigured</span>
+            <!-- Status Antena & Clock (Disempurnakan agar TIDAK BERBENTUK BULAT RAKSASA di HP) -->
+            <div class="flex items-center gap-1.5 sm:gap-2 text-xs shrink-0">
+                <div id="ws-indicator-badge" class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
+                    <span id="ws-status-text" class="whitespace-nowrap">🔴 Offline</span>
                 </div>
-                <div id="auto-sync-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[10px] shadow-2xs">
-                    <i class="fa-solid fa-rotate text-emerald-300 text-xs" id="auto-sync-spinner"></i>
-                    <span id="auto-sync-text" class="hidden sm:inline">Auto-Sync Siap</span>
+                
+                <div id="auto-sync-status-badge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[9.5px] shadow-2xs shrink-0 whitespace-nowrap">
+                    <i class="fa-solid fa-rotate text-emerald-300 text-[10px]" id="auto-sync-spinner"></i>
+                    <span id="auto-sync-text">Auto-Sync</span>
                 </div>
-                <div class="flex items-center gap-1.5 pl-2 border-l border-emerald-200 text-[10px] text-emerald-900 font-mono hidden md:flex">
+
+                <div class="flex items-center gap-1 pl-1.5 border-l border-emerald-200 text-[9.5px] text-emerald-900 font-mono hidden lg:flex shrink-0 whitespace-nowrap">
                     <i class="fa-regular fa-clock text-emerald-600"></i>
                     <span id="live-clock" class="font-bold">--:--:-- WITA</span>
                 </div>
@@ -247,118 +250,107 @@
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[98%] mx-auto p-3 sm:p-5 lg:p-6 space-y-4">
+    <main class="flex-1 w-full max-w-[98%] mx-auto p-2.5 sm:p-5 lg:p-6 space-y-4">
         
-        <!-- Toast Box Notification -->
         <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
             <i id="toast-icon" class="text-base shrink-0"></i>
             <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
         </div>
 
-        <div class="mobile-tab-scroll items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
-            <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 min-w-[140px] h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+        <!-- MOBILE TAB SCROLL: Ditata Rapi dengan font proporsional -->
+        <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 sm:p-1.5 rounded-xl border border-emerald-200/90 text-xs shadow-xs no-print">
+            <button onclick="window.switchAdminTab('dashboard')" id="btn-admin-tab-dash" class="flex-1 min-w-[110px] sm:min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span class="truncate">Dashboard</span>
             </button>
-            <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 min-w-[160px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative whitespace-nowrap">
+            <button onclick="window.switchAdminTab('verifikasi')" id="btn-admin-tab-verifikasi" class="flex-1 min-w-[130px] sm:min-w-[160px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative whitespace-nowrap text-[11px] sm:text-xs">
                 <i class="fa-solid fa-clipboard-check text-emerald-700"></i>
                 <span class="truncate">Verifikasi Bundel</span>
-                <span id="badge-verifikasi-count" class="px-1.5 py-0.2 rounded-full bg-amber-600 text-white font-extrabold text-[9px]">0</span>
+                <span id="badge-verifikasi-count" class="px-1.5 py-0.2 rounded-full bg-amber-600 text-white font-extrabold text-[8.5px]">0</span>
             </button>
-            <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+            <button onclick="window.switchAdminTab('direktori')" id="btn-admin-tab-direktori" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
                 <i class="fa-solid fa-address-book text-emerald-700"></i>
                 <span class="truncate">Buku Induk</span>
             </button>
-            <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+            <button onclick="window.switchAdminTab('laporan')" id="btn-admin-tab-laporan" class="flex-1 min-w-[120px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
                 <i class="fa-solid fa-file-invoice text-emerald-700"></i>
                 <span class="truncate">Laporan Matriks</span>
             </button>
-            <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 min-w-[150px] h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap">
+            <button onclick="window.switchAdminTab('master-data')" id="btn-admin-tab-master" class="flex-1 min-w-[110px] sm:min-w-[150px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer whitespace-nowrap text-[11px] sm:text-xs">
                 <i class="fa-solid fa-database text-emerald-700"></i>
                 <span class="truncate">Kelola Master</span>
             </button>
         </div>
 
+        <!-- DASHBOARD VIEW -->
         <div id="admin-view-dashboard" class="space-y-4">
             <section class="space-y-3">
                 <div class="flex items-center justify-between border-b border-emerald-200/80 pb-2">
-                    <h2 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i> Ringkasan Eksekutif Kepegawaian RSUD Sinjai
+                    <h2 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i> Ringkasan Eksekutif Kepegawaian
                     </h2>
-                    <span class="text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Production Mode - Realtime Active</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Production Mode - Realtime</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-                    <div class="glass-glossy-card p-3 rounded-xl border border-emerald-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5">
+                <!-- Stat Grid 5 Kolom Rapi -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
+                    <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-emerald-200/80 shadow-xs h-full flex flex-col justify-between space-y-1">
                         <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-emerald-950 truncate pr-1">TOTAL PEGAWAI</span>
+                            <span class="text-[8.5px] sm:text-[9px] font-black uppercase tracking-wide text-emerald-950 truncate pr-1">TOTAL PEGAWAI</span>
                             <i class="fa-solid fa-users text-emerald-600 text-xs shrink-0"></i>
                         </div>
-                        <div class="text-xl font-black text-emerald-950 font-mono leading-none" id="stat-total-pegawai">0</div>
-                        <div class="text-[9px] text-emerald-900 font-bold leading-tight border-t border-emerald-200/60 pt-1.5">
+                        <div class="text-lg sm:text-xl font-black text-emerald-950 font-mono leading-none" id="stat-total-pegawai">0</div>
+                        <div class="text-[8.5px] sm:text-[9px] text-emerald-900 font-bold leading-tight border-t border-emerald-200/60 pt-1">
                             <div>Pria: <span id="stat-pria">0</span> • Wan: <span id="stat-wanita">0</span></div>
                         </div>
                     </div>
 
-                    <div class="glass-glossy-card p-3 rounded-xl border border-blue-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-blue-50/40">
+                    <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-blue-200/80 shadow-xs h-full flex flex-col justify-between space-y-1 bg-blue-50/40">
                         <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-blue-950 truncate pr-1">PNS (MAP BIRU)</span>
+                            <span class="text-[8.5px] sm:text-[9px] font-black uppercase tracking-wide text-blue-950 truncate pr-1">PNS (MAP BIRU)</span>
                             <i class="fa-solid fa-folder text-blue-600 text-xs shrink-0"></i>
                         </div>
-                        <div class="text-xl font-black text-blue-700 font-mono leading-none" id="stat-pns-total">0</div>
-                        <div class="text-[9px] text-blue-950 font-bold leading-tight border-t border-blue-200/60 pt-1.5">
+                        <div class="text-lg sm:text-xl font-black text-blue-700 font-mono leading-none" id="stat-pns-total">0</div>
+                        <div class="text-[8.5px] sm:text-[9px] text-blue-950 font-bold leading-tight border-t border-blue-200/60 pt-1">
                             <div>Status Map Biru Fisik</div>
                         </div>
                     </div>
 
-                    <div class="glass-glossy-card p-3 rounded-xl border border-amber-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-amber-50/40">
+                    <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-amber-200/80 shadow-xs h-full flex flex-col justify-between space-y-1 bg-amber-50/40">
                         <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-amber-950 truncate pr-1">PPPK (MAP KUNING)</span>
+                            <span class="text-[8.5px] sm:text-[9px] font-black uppercase tracking-wide text-amber-950 truncate pr-1">PPPK (MAP KUNING)</span>
                             <i class="fa-solid fa-folder text-amber-500 text-xs shrink-0"></i>
                         </div>
-                        <div class="text-xl font-black text-amber-700 font-mono leading-none" id="stat-pppk-total">0</div>
-                        <div class="text-[9px] text-amber-950 font-bold leading-tight border-t border-amber-200/60 pt-1.5">
+                        <div class="text-lg sm:text-xl font-black text-amber-700 font-mono leading-none" id="stat-pppk-total">0</div>
+                        <div class="text-[8.5px] sm:text-[9px] text-amber-950 font-bold leading-tight border-t border-amber-200/60 pt-1">
                             <div>Status Map Kuning Fisik</div>
                         </div>
                     </div>
 
-                    <div class="glass-glossy-card p-3 rounded-xl border border-emerald-300 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-emerald-50/40">
+                    <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-emerald-300 shadow-xs h-full flex flex-col justify-between space-y-1 bg-emerald-50/40">
                         <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-emerald-950 truncate pr-1">KONTRAK (MAP HIJAU)</span>
+                            <span class="text-[8.5px] sm:text-[9px] font-black uppercase tracking-wide text-emerald-950 truncate pr-1">KONTRAK (HIJAU)</span>
                             <i class="fa-solid fa-folder text-emerald-600 text-xs shrink-0"></i>
                         </div>
-                        <div class="text-xl font-black text-emerald-700 font-mono leading-none" id="stat-kontrak-total">0</div>
-                        <div class="text-[9px] text-emerald-950 font-bold leading-tight border-t border-emerald-200/60 pt-1.5">
+                        <div class="text-lg sm:text-xl font-black text-emerald-700 font-mono leading-none" id="stat-kontrak-total">0</div>
+                        <div class="text-[8.5px] sm:text-[9px] text-emerald-950 font-bold leading-tight border-t border-emerald-200/60 pt-1">
                             <div>Status Map Hijau Fisik</div>
                         </div>
                     </div>
 
-                    <div class="glass-glossy-card p-3 rounded-xl border border-rose-300 shadow-xs h-full flex flex-col justify-between space-y-1.5 bg-rose-50/40">
+                    <div class="glass-glossy-card p-2.5 sm:p-3 rounded-xl border border-rose-300 shadow-xs h-full flex flex-col justify-between space-y-1 bg-rose-50/40 col-span-2 sm:col-span-1">
                         <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-rose-950 truncate pr-1">HONORER (MERAH)</span>
+                            <span class="text-[8.5px] sm:text-[9px] font-black uppercase tracking-wide text-rose-950 truncate pr-1">HONORER (MERAH)</span>
                             <i class="fa-solid fa-folder text-rose-600 text-xs shrink-0"></i>
                         </div>
-                        <div class="text-xl font-black text-rose-700 font-mono leading-none" id="stat-honorer-total">0</div>
-                        <div class="text-[9px] text-rose-950 font-bold leading-tight border-t border-rose-200/60 pt-1.5">
+                        <div class="text-lg sm:text-xl font-black text-rose-700 font-mono leading-none" id="stat-honorer-total">0</div>
+                        <div class="text-[8.5px] sm:text-[9px] text-rose-950 font-bold leading-tight border-t border-rose-200/60 pt-1">
                             <div>Status Map Merah Fisik</div>
-                        </div>
-                    </div>
-
-                    <div class="glass-glossy-card p-3 rounded-xl border border-slate-200/80 shadow-xs h-full flex flex-col justify-between space-y-1.5">
-                        <div class="flex items-center justify-between text-slate-500">
-                            <span class="text-[9px] font-black uppercase tracking-wide text-slate-900 truncate pr-1">MEDIS / NON-MEDIS</span>
-                            <i class="fa-solid fa-user-doctor text-slate-600 text-xs shrink-0"></i>
-                        </div>
-                        <div class="text-xs font-black text-slate-800 font-mono leading-snug pt-0.5">
-                            <div><span id="stat-medis-total" class="text-emerald-700 font-bold">0</span> Medis</div>
-                            <div><span id="stat-nonmedis-total" class="text-slate-600 font-bold">0</span> Non-Medis</div>
-                        </div>
-                        <div class="text-[9px] text-slate-700 font-bold leading-tight border-t border-slate-200 pt-1.5">
-                            <div>Pembeda Nakes/Non-Nakes</div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Card Sub-Grid Rapi -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
                     <div class="glass-panel p-3 rounded-xl border border-emerald-200/90 shadow-xs flex items-center justify-between h-full">
                         <div class="space-y-1">
@@ -367,7 +359,7 @@
                                 <span class="text-teal-700" id="stat-fungsional-total">0</span> Fungsional • <span class="text-emerald-800" id="stat-struktural-total">0</span> Struktural
                             </div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-extrabold shrink-0 border border-teal-200">
+                        <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-extrabold shrink-0 border border-teal-200">
                             <i class="fa-solid fa-sitemap"></i>
                         </div>
                     </div>
@@ -377,7 +369,7 @@
                             <span class="text-[9px] text-rose-800 uppercase font-black block">Proyeksi Pensiun (≤ 2 Thn)</span>
                             <div class="text-sm font-black text-rose-700 font-mono" id="stat-pensiun-total">0 Pegawai</div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-rose-200 text-rose-800 flex items-center justify-center font-extrabold shrink-0 border border-rose-300">
+                        <div class="w-8 h-8 rounded-xl bg-rose-200 text-rose-800 flex items-center justify-center font-extrabold shrink-0 border border-rose-300">
                             <i class="fa-solid fa-hourglass-half"></i>
                         </div>
                     </div>
@@ -387,7 +379,7 @@
                             <span class="text-[9px] text-amber-900 uppercase font-black block">Radar Kenaikan Pangkat</span>
                             <div class="text-sm font-black text-amber-800 font-mono" id="stat-kp-total">0 Pegawai</div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-amber-200 text-amber-900 flex items-center justify-center font-extrabold shrink-0 border border-amber-300">
+                        <div class="w-8 h-8 rounded-xl bg-amber-200 text-amber-900 flex items-center justify-center font-extrabold shrink-0 border border-amber-300">
                             <i class="fa-solid fa-arrow-up-right-dots"></i>
                         </div>
                     </div>
@@ -399,7 +391,7 @@
                                 <span class="text-emerald-600" id="stat-verif-terverifikasi">0 Verified</span> • <span class="text-amber-600" id="stat-verif-pending">0 Pending</span>
                             </div>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-extrabold shrink-0 border border-emerald-200">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-extrabold shrink-0 border border-emerald-200">
                             <i class="fa-solid fa-clipboard-check"></i>
                         </div>
                     </div>
@@ -407,22 +399,37 @@
             </section>
 
             <section class="grid grid-cols-1 lg:grid-cols-12 gap-3">
-                <div class="lg:col-span-5 glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3 flex flex-col justify-between h-full">
-                    <div class="flex items-center justify-between border-b border-emerald-100 pb-2.5">
-                        <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-hospital-user text-emerald-600"></i> Sebaran Pegawai Per Unit Kerja
+                
+                <!-- Panel Log Aktivitas Terkini Pegawai (4 Log Terbaru) -->
+                <div class="lg:col-span-12 glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+                    <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
+                        <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i> Log Aktivitas Pembaruan Data Staf Terkini
                         </h3>
-                        <span class="text-[9px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Terurut Terbanyak</span>
+                        <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-extrabold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">Realtime Sinyal Stream</span>
                     </div>
 
-                    <div class="table-scroll-container overflow-y-auto max-h-[420px] rounded-xl border border-emerald-200/80 bg-white flex-1">
-                        <table class="w-full text-left border-collapse text-[11px]">
+                    <div id="activity-log-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                        <div class="p-3 rounded-xl bg-white border border-emerald-100 text-center text-slate-400 text-xs">Menunggu aktivitas pembaruan pegawai...</div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3 flex flex-col justify-between h-full">
+                    <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
+                        <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-hospital-user text-emerald-600"></i> Sebaran Pegawai Per Unit Kerja
+                        </h3>
+                        <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Terurut Terbanyak</span>
+                    </div>
+
+                    <div class="table-scroll-container overflow-y-auto max-h-[380px] rounded-xl border border-emerald-200/80 bg-white flex-1">
+                        <table class="w-full text-left border-collapse text-[9.5px] sm:text-[11px]">
                             <thead>
                                 <tr class="bg-emerald-100/90 text-emerald-950 font-extrabold border-b border-emerald-200 sticky top-0 z-10">
-                                    <th class="p-2.5 text-center w-10">#</th>
-                                    <th class="p-2.5">Unit Kerja / Ruangan Penempatan</th>
-                                    <th class="p-2.5 text-center w-20">Staf</th>
-                                    <th class="p-2.5 text-center w-24">Proporsi</th>
+                                    <th class="p-2 text-center w-8">#</th>
+                                    <th class="p-2">Unit Kerja / Ruangan Penempatan</th>
+                                    <th class="p-2 text-center w-16">Staf</th>
+                                    <th class="p-2 text-center w-20">Proporsi</th>
                                 </tr>
                             </thead>
                             <tbody id="unit-table-body" class="divide-y divide-emerald-100"></tbody>
@@ -430,23 +437,23 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-7 glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3 flex flex-col justify-between h-full">
-                    <div class="border-b border-emerald-100 pb-2.5 flex items-center justify-between">
+                <div class="lg:col-span-7 glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3 flex flex-col justify-between h-full">
+                    <div class="border-b border-emerald-100 pb-2 flex items-center justify-between">
                         <div>
-                            <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                            <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                                 <i class="fa-solid fa-chart-column text-emerald-600"></i> Grafik Kualifikasi Pendidikan SDM
                             </h3>
-                            <p class="text-[8.5px] text-slate-500 font-medium">Distribusi Jenjang Pendidikan Pegawai RSUD Sinjai Berdasarkan Status</p>
+                            <p class="text-[8px] sm:text-[8.5px] text-slate-500 font-medium">Distribusi Jenjang Pendidikan Pegawai RSUD Sinjai</p>
                         </div>
-                        <div class="flex items-center gap-2 text-[9px] font-extrabold">
-                            <span class="flex items-center gap-1 text-blue-900"><span class="w-2 h-2 rounded-full bg-blue-600"></span> PNS</span>
-                            <span class="flex items-center gap-1 text-amber-900"><span class="w-2 h-2 rounded-full bg-amber-500"></span> PPPK</span>
-                            <span class="flex items-center gap-1 text-rose-900"><span class="w-2 h-2 rounded-full bg-rose-600"></span> Non-ASN</span>
+                        <div class="flex items-center gap-1.5 text-[8.5px] font-extrabold">
+                            <span class="flex items-center gap-0.5 text-blue-900"><span class="w-2 h-2 rounded-full bg-blue-600"></span> PNS</span>
+                            <span class="flex items-center gap-0.5 text-amber-900"><span class="w-2 h-2 rounded-full bg-amber-500"></span> PPPK</span>
+                            <span class="flex items-center gap-0.5 text-rose-900"><span class="w-2 h-2 rounded-full bg-rose-600"></span> Non-ASN</span>
                         </div>
                     </div>
 
-                    <div class="bg-white p-3.5 rounded-xl border border-emerald-200/80 relative flex-1 flex flex-col justify-end">
-                        <div class="relative z-10 h-52 flex items-end justify-between px-2 pt-4 pb-1 border-b-2 border-slate-700 gap-2">
+                    <div class="bg-white p-2.5 sm:p-3.5 rounded-xl border border-emerald-200/80 relative flex-1 flex flex-col justify-end">
+                        <div class="relative z-10 h-44 flex items-end justify-between px-1 pt-4 pb-1 border-b-2 border-slate-700 gap-1.5">
                             <div class="flex-1 flex flex-col items-center h-full justify-end px-0.5">
                                 <div class="w-full flex items-end justify-center gap-0.5 h-full">
                                     <div class="flex-1 flex flex-col items-center h-full justify-end">
@@ -516,7 +523,7 @@
                             </div>
                         </div>
 
-                        <div class="flex text-[9px] font-black text-slate-800 pt-1.5 text-center">
+                        <div class="flex text-[8.5px] font-black text-slate-800 pt-1.5 text-center">
                             <div class="flex-1">S2 / Spesialis</div>
                             <div class="flex-1 border-l border-slate-200">S1 / Profesi</div>
                             <div class="flex-1 border-l border-slate-200">D3 / D4</div>
@@ -527,29 +534,30 @@
             </section>
         </div>
 
+        <!-- VERIFIKASI VIEW -->
         <div id="admin-view-verifikasi" class="hidden space-y-3 fade-in">
-            <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+            <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 border-b border-emerald-100 pb-2.5">
                     <div>
-                        <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                        <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-clipboard-check text-emerald-600"></i> Verifikasi & Audit Ceklist Bundel Digital (Form A s/d H)
-                            <span id="filter-verif-count-badge" class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[9px] ml-1">0 Pegawai</span>
+                            <span id="filter-verif-count-badge" class="px-2 py-0.5 rounded-full bg-emerald-700 text-white font-extrabold text-[8.5px] sm:text-[9px] ml-1">0 Pegawai</span>
                         </h3>
-                        <p class="text-[10px] text-slate-600">Inspeksi dokumen fisik/digital pegawai berdasarkan Ceklist Kertas Kuning UMPEG RSUD Sinjai.</p>
+                        <p class="text-[9.5px] sm:text-[10px] text-slate-600">Inspeksi dokumen fisik/digital pegawai berdasarkan Ceklist Kertas Kuning UMPEG RSUD Sinjai.</p>
                     </div>
 
-                    <button onclick="window.resetVerifikasiFilters()" class="h-8 px-3 rounded-lg text-[10px] text-emerald-800 font-extrabold hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-2xs cursor-pointer">
+                    <button onclick="window.resetVerifikasiFilters()" class="h-8 px-3 rounded-lg text-[9.5px] sm:text-[10px] text-emerald-800 font-extrabold hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-2xs cursor-pointer">
                         <i class="fa-solid fa-filter-circle-xmark"></i>
                         <span>Reset Filter</span>
                     </button>
                 </div>
 
-                <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <div class="bg-emerald-50/80 p-2.5 sm:p-3 rounded-xl border border-emerald-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                        <label class="block font-extrabold text-emerald-950 text-[9.5px] sm:text-[10px] uppercase mb-1">
                             <i class="fa-solid fa-filter text-emerald-600 mr-0.5"></i> Status Audit UMPEG
                         </label>
-                        <select id="filter-verif-audit" onchange="window.renderVerifikasiTable()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <select id="filter-verif-audit" onchange="window.renderVerifikasiTable()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                             <option value="ALL">Semua Status Audit</option>
                             <option value="PENDING" class="text-amber-800 font-bold">🟡 PENDING (Menunggu Audit)</option>
                             <option value="TERVERIFIKASI" class="text-emerald-800 font-bold">🟢 TERVERIFIKASI (Sesuai)</option>
@@ -558,18 +566,18 @@
                     </div>
 
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                        <label class="block font-extrabold text-emerald-950 text-[9.5px] sm:text-[10px] uppercase mb-1">
                             <i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i> Status Kepegawaian
                         </label>
-                        <select id="filter-verif-status" onchange="window.renderVerifikasiTable()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <select id="filter-verif-status" onchange="window.renderVerifikasiTable()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                         </select>
                     </div>
 
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                        <label class="block font-extrabold text-emerald-950 text-[9.5px] sm:text-[10px] uppercase mb-1">
                             <i class="fa-solid fa-sitemap text-emerald-600 mr-0.5"></i> Jalur Jabatan
                         </label>
-                        <select id="filter-verif-jalur" onchange="window.renderVerifikasiTable()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <select id="filter-verif-jalur" onchange="window.renderVerifikasiTable()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                             <option value="ALL">Semua Jalur Jabatan</option>
                             <option value="FUNGSIONAL">Fungsional (Pelayanan/Teknis)</option>
                             <option value="STRUKTURAL">Struktural (Manajemen)</option>
@@ -577,23 +585,23 @@
                     </div>
 
                     <div>
-                        <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                        <label class="block font-extrabold text-emerald-950 text-[9.5px] sm:text-[10px] uppercase mb-1">
                             <i class="fa-solid fa-magnifying-glass text-emerald-600 mr-0.5"></i> Cari Nama / NIP / ID Unik
                         </label>
-                        <input type="text" id="filter-verif-search" onkeyup="window.renderVerifikasiTable()" placeholder="Ketik kata kunci..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-800 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="filter-verif-search" onkeyup="window.renderVerifikasiTable()" placeholder="Ketik kata kunci..." class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-semibold text-slate-800 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
                 </div>
 
                 <div class="table-scroll-container overflow-x-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
-                    <table class="w-full text-left border-collapse text-[11px]">
+                    <table class="w-full text-left border-collapse text-[9.5px] sm:text-[11px]">
                         <thead>
                             <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 sticky top-0 z-10 uppercase tracking-wide">
-                                <th class="p-2.5">ID Unik & Nama Staf</th>
-                                <th class="p-2.5">Map & Status</th>
-                                <th class="p-2.5 text-center">Tautan Drive Digital</th>
-                                <th class="p-2.5 text-center">Status Audit UMPEG</th>
-                                <th class="p-2.5">Catatan / Keterangan Audit</th>
-                                <th class="p-2.5 text-center w-28">Aksi Audit</th>
+                                <th class="p-2 sm:p-2.5">ID Unik & Nama Staf</th>
+                                <th class="p-2 sm:p-2.5">Map & Status</th>
+                                <th class="p-2 sm:p-2.5 text-center">Tautan Drive Digital</th>
+                                <th class="p-2 sm:p-2.5 text-center">Status Audit UMPEG</th>
+                                <th class="p-2 sm:p-2.5">Catatan / Keterangan Audit</th>
+                                <th class="p-2 sm:p-2.5 text-center w-24 sm:w-28">Aksi Audit</th>
                             </tr>
                         </thead>
                         <tbody id="table-verifikasi-body" class="divide-y divide-emerald-100 bg-white"></tbody>
@@ -602,30 +610,31 @@
             </section>
         </div>
 
+        <!-- DIREKTORI BUKU INDUK VIEW -->
         <div id="admin-view-direktori" class="hidden space-y-3 fade-in">
-            <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
+            <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
                     <div>
-                        <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-address-book text-emerald-600"></i> Buku Induk Digital, ID Drive Acak (`RSUD-PEG-XXXXXXXX`) & Direct WA
+                        <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-address-book text-emerald-600"></i> Buku Induk Digital & Direct WA
                         </h3>
-                        <p class="text-[10px] text-slate-600">ID Unik Acak terenkripsi otomatis per pegawai untuk keamanan data di Supabase & Google Drive.</p>
+                        <p class="text-[9.5px] sm:text-[10px] text-slate-600">ID Unik Acak terenkripsi otomatis per pegawai untuk keamanan data di Supabase & Google Drive.</p>
                     </div>
 
                     <div class="relative w-full sm:w-64">
-                        <input type="text" id="search-direktori" onkeyup="window.filterDirektoriTable()" placeholder="Cari ID / Nama / NIP..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
+                        <input type="text" id="search-direktori" onkeyup="window.filterDirektoriTable()" placeholder="Cari ID / Nama / NIP..." class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-2xs">
                     </div>
                 </div>
 
                 <div class="table-scroll-container overflow-x-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
-                    <table class="w-full text-left border-collapse text-[11px]">
+                    <table class="w-full text-left border-collapse text-[9.5px] sm:text-[11px]">
                         <thead>
                             <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 sticky top-0 z-10 uppercase tracking-wide">
-                                <th class="p-2.5">ID Unik & Nama Staf</th>
-                                <th class="p-2.5">NIP / SK Kedinasan</th>
-                                <th class="p-2.5">Jabatan & Unit Kerja</th>
-                                <th class="p-2.5">Format Kontak WA (628...)</th>
-                                <th class="p-2.5 text-center w-[360px]">Aksi Buku Induk</th>
+                                <th class="p-2 sm:p-2.5">ID Unik & Nama Staf</th>
+                                <th class="p-2 sm:p-2.5">NIP / SK Kedinasan</th>
+                                <th class="p-2 sm:p-2.5">Jabatan & Unit Kerja</th>
+                                <th class="p-2 sm:p-2.5">Kontak WA</th>
+                                <th class="p-2 sm:p-2.5 text-center w-[260px] sm:w-[360px]">Aksi Buku Induk</th>
                             </tr>
                         </thead>
                         <tbody id="table-direktori-body" class="divide-y divide-emerald-100 bg-white"></tbody>
@@ -634,40 +643,42 @@
             </section>
         </div>
 
+        <!-- LAPORAN MATRIKS VIEW -->
         <div id="admin-view-laporan" class="hidden space-y-3 fade-in">
-            <section class="glass-panel p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3" id="print-matrix-area">
+            <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3" id="print-matrix-area">
                 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-200 pb-3">
                     <div>
                         <h3 class="text-xs sm:text-sm font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-file-invoice text-emerald-600"></i> Laporan Resmi Kepegawaian & SDM RSUD Sinjai
                         </h3>
-                        <p class="text-[10px] text-slate-600">Laporan Eksekutif Matriks Formasi Jabatan & Tabel Monitoring Kedinasan Staf.</p>
+                        <p class="text-[9.5px] sm:text-[10px] text-slate-600">Laporan Eksekutif Matriks Formasi Jabatan & Tabel Monitoring Kedinasan Staf.</p>
                     </div>
 
                     <div class="flex items-center gap-1.5 no-print self-end sm:self-auto">
-                        <button onclick="window.printMatrixReport()" class="h-9 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button onclick="window.printMatrixReport()" class="h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] sm:text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-print"></i>
-                            <span>Cetak/Simpan PDF (A4 Landscape)</span>
+                            <span>Cetak PDF</span>
                         </button>
-                        <button onclick="window.exportMatrixToExcel()" class="h-9 px-3 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button onclick="window.exportMatrixToExcel()" class="h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-[10px] sm:text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-file-excel"></i>
-                            <span>Export Excel (.xls)</span>
+                            <span>Excel</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-300/90 text-xs no-print">
-                    <button type="button" onclick="window.switchLaporanSubTab('matriks')" id="btn-laporan-sub-matriks" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                    <button type="button" onclick="window.switchLaporanSubTab('matriks')" id="btn-laporan-sub-matriks" class="flex-1 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
                         <i class="fa-solid fa-table-cells"></i>
-                        <span>Matriks SDM & Formasi Jabatan</span>
+                        <span>Matriks SDM & Formasi</span>
                     </button>
-                    <button type="button" onclick="window.switchLaporanSubTab('monitoring')" id="btn-laporan-sub-monitoring" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                    <button type="button" onclick="window.switchLaporanSubTab('monitoring')" id="btn-laporan-sub-monitoring" class="flex-1 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
                         <i class="fa-solid fa-id-card-clip"></i>
-                        <span>Monitoring Kedinasan Staf</span>
+                        <span>Monitoring Kedinasan</span>
                     </button>
                 </div>
 
+                <!-- KOP SURAT PRINT ONLY -->
                 <div class="border-b-4 border-double border-slate-900 pb-3 hidden print:flex items-center justify-between gap-4 text-center">
                     <div class="w-20 h-20 flex items-center justify-center shrink-0">
                         <img id="matrix-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-20 max-w-20 object-contain">
@@ -682,34 +693,34 @@
 
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
-                        <table class="w-full text-left border-collapse text-[10.5px]" id="table-export-matriks">
+                        <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10.5px]" id="table-export-matriks">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-black text-center border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10">
-                                    <th class="p-2.5 border-r border-emerald-700 w-10">NO.</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-left">JALUR / KUALIFIKASI KEDINASAN</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-16">PNS</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-20">PPPK (PW)</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-24">PPPK (PARUH WAKTU)</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-16">HONORER</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-16">KONTRAK</th>
-                                    <th class="p-2.5 border-r border-emerald-700 w-16">SUKARELA</th>
-                                    <th class="p-2.5 bg-emerald-950 w-20">TOTAL SDM</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-8">NO.</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">JALUR / KUALIFIKASI KEDINASAN</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-12 sm:w-16">PNS</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-16 sm:w-20">PPPK (PW)</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-16 sm:w-24">PPPK (PT)</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-12 sm:w-16">HONORER</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-12 sm:w-16">KONTRAK</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-12 sm:w-16">SUKARELA</th>
+                                    <th class="p-2 sm:p-2.5 bg-emerald-950 w-16 sm:w-20">TOTAL</th>
                                 </tr>
                             </thead>
                             <tbody id="matrix-report-tbody" class="divide-y divide-emerald-200"></tbody>
-                            <tfoot id="matrix-report-tfoot" class="bg-emerald-100/90 font-black border-t-2 border-emerald-800 text-emerald-950 text-[11px] sticky bottom-0 z-10"></tfoot>
+                            <tfoot id="matrix-report-tfoot" class="bg-emerald-100/90 font-black border-t-2 border-emerald-800 text-emerald-950 text-[10px] sm:text-[11px] sticky bottom-0 z-10"></tfoot>
                         </table>
                     </div>
                 </div>
 
                 <div id="panel-laporan-sub-monitoring" class="hidden space-y-3">
-                    <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 no-print">
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1">
+                    <div class="bg-emerald-50/80 p-2.5 sm:p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 no-print">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
                             <div class="w-full sm:w-44">
-                                <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
                                     <i class="fa-solid fa-sitemap text-emerald-600 mr-0.5"></i> Jalur Jabatan
                                 </label>
-                                <select id="filter-monitoring-jalur" onchange="window.renderSubTab2MonitoringKedinasan()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                <select id="filter-monitoring-jalur" onchange="window.renderSubTab2MonitoringKedinasan()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                                     <option value="ALL">Semua Jalur Jabatan</option>
                                     <option value="FUNGSIONAL">Fungsional (Pelayanan/Teknis)</option>
                                     <option value="STRUKTURAL">Struktural (Manajemen)</option>
@@ -717,10 +728,10 @@
                             </div>
 
                             <div class="w-full sm:w-48">
-                                <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
                                     <i class="fa-solid fa-graduation-cap text-emerald-600 mr-0.5"></i> Filter Pendidikan
                                 </label>
-                                <select id="filter-monitoring-pendidikan" onchange="window.renderSubTab2MonitoringKedinasan()" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                <select id="filter-monitoring-pendidikan" onchange="window.renderSubTab2MonitoringKedinasan()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                                     <option value="ALL">Semua Pendidikan</option>
                                     <option value="S2">S2 / Spesialis / Sp-1</option>
                                     <option value="S1">S1 / Profesi / Dokter</option>
@@ -730,26 +741,26 @@
                             </div>
 
                             <div class="flex-1">
-                                <label class="block font-extrabold text-emerald-950 text-[10px] uppercase mb-1">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
                                     <i class="fa-solid fa-magnifying-glass text-emerald-600 mr-0.5"></i> Cari Nama / NIP / ID
                                 </label>
-                                <input type="text" id="filter-monitoring-search" onkeyup="window.renderSubTab2MonitoringKedinasan()" placeholder="Ketik kata kunci..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-800 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                <input type="text" id="filter-monitoring-search" onkeyup="window.renderSubTab2MonitoringKedinasan()" placeholder="Ketik kata kunci..." class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-semibold text-slate-800 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                             </div>
                         </div>
                     </div>
 
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
-                        <table class="w-full text-left border-collapse text-[10.5px]" id="table-export-monitoring">
+                        <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10.5px]" id="table-export-monitoring">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-black text-center border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10">
-                                    <th class="p-2.5 border-r border-emerald-700 w-10">NO.</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-left">NAMA & NIP / SK PEGAWAI</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-left">JABATAN & UNIT KERJA</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-center w-32">PENDIDIKAN</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-center w-32">GOLONGAN | ESELON</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-center w-16">USIA</th>
-                                    <th class="p-2.5 border-r border-emerald-700 text-center w-28">SISA PENSIUN</th>
-                                    <th class="p-2.5 bg-emerald-950 text-center w-36">KENAIKAN PANGKAT (PNS)</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-8">NO.</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">NAMA & NIP / SK PEGAWAI</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">JABATAN & UNIT KERJA</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-center w-24">PENDIDIKAN</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-center w-28">GOLONGAN | ESELON</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-center w-14">USIA</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-center w-24">SISA PENSIUN</th>
+                                    <th class="p-2 sm:p-2.5 bg-emerald-950 text-center w-28">KENAIKAN PANGKAT</th>
                                 </tr>
                             </thead>
                             <tbody id="monitoring-report-tbody" class="divide-y divide-emerald-200"></tbody>
@@ -775,32 +786,33 @@
             </section>
         </div>
 
+        <!-- KELOLA MASTER VIEW -->
         <div id="admin-view-master-data" class="hidden space-y-3 fade-in">
-            <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs">
-                <button type="button" onclick="window.switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <div class="flex items-center gap-1 bg-emerald-100/90 p-1 sm:p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs no-print mobile-tab-scroll">
+                <button type="button" onclick="window.switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-folder-tree"></i>
-                    <span>Persyaratan Berkas (A-H)</span>
+                    <span>Persyaratan Berkas</span>
                 </button>
-                <button type="button" onclick="window.switchMasterSubTab('ruangan')" id="btn-master-sub-ruangan" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+                <button type="button" onclick="window.switchMasterSubTab('ruangan')" id="btn-master-sub-ruangan" class="flex-1 min-w-[130px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-hospital"></i>
-                    <span>Master Unit Kerja / Ruangan</span>
+                    <span>Master Unit Kerja</span>
                 </button>
-                <button type="button" onclick="window.switchMasterSubTab('jabatan')" id="btn-master-sub-jabatan" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+                <button type="button" onclick="window.switchMasterSubTab('jabatan')" id="btn-master-sub-jabatan" class="flex-1 min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-user-tie"></i>
-                    <span>Master Jabatan & Status</span>
+                    <span>Master Jabatan</span>
                 </button>
-                <button type="button" onclick="window.switchMasterSubTab('pend-gol')" id="btn-master-sub-pend-gol" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+                <button type="button" onclick="window.switchMasterSubTab('pend-gol')" id="btn-master-sub-pend-gol" class="flex-1 min-w-[130px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-graduation-cap"></i>
-                    <span>Pendidikan & Golongan</span>
+                    <span>Pendidikan & Gol</span>
                 </button>
-                <button type="button" onclick="window.switchMasterSubTab('pejabat')" id="btn-master-sub-pejabat" class="flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+                <button type="button" onclick="window.switchMasterSubTab('pejabat')" id="btn-master-sub-pejabat" class="flex-1 min-w-[130px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-file-signature"></i>
-                    <span>Pejabat & Kop Laporan</span>
+                    <span>Pejabat & Kop</span>
                 </button>
             </div>
 
             <div id="panel-master-sub-checklist" class="space-y-3">
-                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
                         <div>
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
@@ -810,10 +822,10 @@
                         </div>
                     </div>
 
-                    <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div class="bg-emerald-50/80 p-2.5 sm:p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div class="w-full sm:w-64">
-                            <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Pilih Kategori Form</label>
-                            <select id="input-new-checklist-cat" class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-2.5 text-xs font-extrabold text-emerald-950 focus:outline-none">
+                            <label class="block font-bold text-emerald-950 text-[9.5px] uppercase mb-0.5">Pilih Kategori Form</label>
+                            <select id="input-new-checklist-cat" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 text-xs font-extrabold text-emerald-950 focus:outline-none">
                                 <option value="A">Form A: Kualifikasi & Kompetensi Staf</option>
                                 <option value="B">Form B: Bukti Orientasi</option>
                                 <option value="C">Form C: Uraian Tugas</option>
@@ -825,11 +837,11 @@
                             </select>
                         </div>
                         <div class="flex-1">
-                            <label class="block font-bold text-emerald-950 text-[10px] uppercase mb-0.5">Nama Persyaratan Berkas Baru</label>
-                            <input type="text" id="input-new-checklist-name" placeholder="Contoh: Surat Bebas Narkoba / SKCK Terkini..." class="w-full h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs font-semibold text-slate-900 focus:outline-none">
+                            <label class="block font-bold text-emerald-950 text-[9.5px] uppercase mb-0.5">Nama Persyaratan Berkas Baru</label>
+                            <input type="text" id="input-new-checklist-name" placeholder="Contoh: Surat Bebas Narkoba / SKCK Terkini..." class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs font-semibold text-slate-900 focus:outline-none">
                         </div>
                         <div class="self-end">
-                            <button type="button" onclick="window.addNewMasterChecklistItem()" class="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            <button type="button" onclick="window.addNewMasterChecklistItem()" class="h-8 sm:h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-2xs transition-all flex items-center justify-center gap-1 cursor-pointer">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Tambah Berkas</span>
                             </button>
@@ -841,7 +853,7 @@
             </div>
 
             <div id="panel-master-sub-ruangan" class="hidden space-y-3">
-                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
                         <div>
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
@@ -850,8 +862,8 @@
                             <p class="text-[9.5px] text-slate-600">Daftar referensi pilihan unit kerja penempatan staf RSUD Sinjai.</p>
                         </div>
                         <div class="flex items-center gap-1.5 w-full sm:w-auto">
-                            <input type="text" id="input-new-ruangan" placeholder="Nama Unit Kerja Baru..." class="h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-64 shadow-2xs">
-                            <button onclick="window.addNewMasterRuangan()" class="h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
+                            <input type="text" id="input-new-ruangan" placeholder="Nama Unit Kerja Baru..." class="h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-64 shadow-2xs">
+                            <button onclick="window.addNewMasterRuangan()" class="h-8 sm:h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
                                 <i class="fa-solid fa-plus mr-1"></i> Tambah
                             </button>
                         </div>
@@ -861,19 +873,19 @@
             </div>
 
             <div id="panel-master-sub-jabatan" class="hidden space-y-3">
-                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
                         <div>
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider">Master Referensi Jabatan</h3>
                             <p class="text-[9.5px] text-slate-600">Kelola daftar Jabatan Struktural dan Fungsional RSUD Sinjai.</p>
                         </div>
                         <div class="flex items-center gap-1.5 w-full sm:w-auto">
-                            <select id="select-new-jabatan-type" class="h-9 bg-white border border-emerald-300 rounded-lg px-2.5 text-xs font-bold text-slate-800 focus:outline-none shadow-2xs">
+                            <select id="select-new-jabatan-type" class="h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 text-xs font-bold text-slate-800 focus:outline-none shadow-2xs">
                                 <option value="STRUKTURAL">STRUKTURAL</option>
                                 <option value="FUNGSIONAL">FUNGSIONAL</option>
                             </select>
-                            <input type="text" id="input-new-jabatan" placeholder="Nama Jabatan..." class="h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-48 shadow-2xs">
-                            <button onclick="window.addNewMasterJabatan()" class="h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
+                            <input type="text" id="input-new-jabatan" placeholder="Nama Jabatan..." class="h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-48 shadow-2xs">
+                            <button onclick="window.addNewMasterJabatan()" class="h-8 sm:h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
                                 <i class="fa-solid fa-plus mr-1"></i> Tambah
                             </button>
                         </div>
@@ -882,7 +894,7 @@
                 </section>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                    <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
                             <div>
                                 <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
@@ -890,8 +902,8 @@
                                 </h3>
                             </div>
                             <div class="flex items-center gap-1 w-full sm:w-auto">
-                                <input type="text" id="input-new-eselon" placeholder="Tingkat Eselon..." class="h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-32 shadow-2xs">
-                                <button onclick="window.addNewMasterEselon()" class="h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
+                                <input type="text" id="input-new-eselon" placeholder="Tingkat Eselon..." class="h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-32 shadow-2xs">
+                                <button onclick="window.addNewMasterEselon()" class="h-8 sm:h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
                                     <i class="fa-solid fa-plus mr-1"></i> Tambah
                                 </button>
                             </div>
@@ -901,7 +913,7 @@
                         </div>
                     </section>
 
-                    <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                    <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-emerald-200 pb-2.5">
                             <div>
                                 <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
@@ -909,8 +921,8 @@
                                 </h3>
                             </div>
                             <div class="flex items-center gap-1 w-full sm:w-auto">
-                                <input type="text" id="input-new-status-peg" placeholder="Status Baru..." class="h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-32 shadow-2xs">
-                                <button onclick="window.addNewMasterStatusPegawai()" class="h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
+                                <input type="text" id="input-new-status-peg" placeholder="Status Baru..." class="h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-emerald-600 w-full sm:w-32 shadow-2xs">
+                                <button onclick="window.addNewMasterStatusPegawai()" class="h-8 sm:h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shrink-0 shadow-2xs cursor-pointer">
                                     <i class="fa-solid fa-plus mr-1"></i> Tambah
                                 </button>
                             </div>
@@ -923,7 +935,7 @@
             </div>
 
             <div id="panel-master-sub-pend-gol" class="hidden space-y-3">
-                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4">
+                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div class="p-3.5 rounded-xl bg-white border border-emerald-200 space-y-2">
                             <h4 class="text-xs font-black text-emerald-950 uppercase border-b pb-1">Kualifikasi Pendidikan</h4>
@@ -956,7 +968,7 @@
             </div>
 
             <div id="panel-master-sub-pejabat" class="hidden space-y-3">
-                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-4 space-y-3">
+                <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat & Logo Kop Cetak Laporan (A4)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
                         <div>
@@ -981,7 +993,7 @@
                         </div>
                     </div>
                     <div class="pt-2 flex justify-end">
-                        <button onclick="window.updateKopMasterConfig()" class="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                        <button onclick="window.updateKopMasterConfig()" class="h-8 sm:h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Simpan Konfigurasi Pejabat & Kop Logo</span>
                         </button>
@@ -996,7 +1008,7 @@
     </footer>
 
     <!-- Modal Auth Password Config -->
-    <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-emerald-950 uppercase border-b pb-1.5">Administrator System Access</h3>
             <p class="text-[11px] text-slate-600">Masukkan kode sandi akses untuk membuka server sync, Supabase API & GAS Config.</p>
@@ -1009,7 +1021,7 @@
     </div>
 
     <!-- Modal Server Configuration -->
-    <div id="modal-config-server" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div id="modal-config-server" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
                 <div class="flex items-center gap-2">
@@ -1053,8 +1065,8 @@
         </div>
     </div>
 
-    <!-- Modal Audit Pegawai -->
-    <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <!-- Modal Audit Pegawai (Dengan Fitur Pratinjau Berkas Langsung) -->
+    <div id="modal-audit-pegawai" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-4xl rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
                 <div>
@@ -1093,7 +1105,7 @@
     </div>
 
     <!-- Modal Document Viewer -->
-    <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
                 <h3 class="text-xs font-extrabold uppercase truncate pr-2" id="modal-doc-title">Dokumen Pegawai</h3>
@@ -1111,7 +1123,7 @@
     </div>
 
     <!-- Modal Edit Staf Admin -->
-    <div id="modal-edit-staf-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div id="modal-edit-staf-admin" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-lg rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white max-h-[90vh]">
             <div class="p-3.5 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
                 <div>
@@ -1177,7 +1189,7 @@
     </div>
 
     <!-- Modal Confirm Delete -->
-    <div id="modal-confirm-delete" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
+    <div id="modal-confirm-delete" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-rose-300 shadow-2xl bg-white p-4 space-y-3">
             <div class="flex items-center gap-2 text-rose-700 font-extrabold text-xs uppercase border-b pb-1.5">
                 <i class="fa-solid fa-triangle-exclamation text-rose-600 text-base"></i>
@@ -1372,11 +1384,12 @@
             if (!toast) return;
             window.setText('toast-msg', msg);
             if (icon) icon.className = type === 'success' ? "fa-solid fa-circle-check text-emerald-600 text-sm" : type === 'error' ? "fa-solid fa-circle-exclamation text-rose-600 text-sm" : "fa-solid fa-circle-info text-emerald-600 text-sm";
-            toast.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl bg-white border-emerald-300 text-slate-800 flex items-center gap-2 border";
+            toast.className = "fixed top-4 right-4 z-50 fade-in max-w-xs p-3 rounded-xl shadow-xl bg-white border-emerald-300 text-slate-800 flex items-center gap-2 border no-print";
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3500);
         };
 
+        /* BADGE STATUS ANTEANA SUPABASE & REALTIME (Disusun Presisi Berbentuk Kotak rounded-lg tanpa pembengkakan) */
         window.updateWsBadge = function(state, text) {
             const dot = document.getElementById('ws-dot');
             const txt = document.getElementById('ws-status-text');
@@ -1384,17 +1397,17 @@
             if (!dot || !txt || !badge) return;
 
             if (state === 'online') {
-                dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                txt.innerText = text || "🟢 Realtime 3 Tabel Active";
-                badge.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0";
+                txt.innerHTML = `<span class="inline sm:hidden">🟢 Realtime</span><span class="hidden sm:inline">🟢 Realtime 3 Tabel Active</span>`;
+                badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             } else if (state === 'polling') {
-                dot.className = "w-2 h-2 rounded-full bg-teal-500 animate-pulse";
-                txt.innerText = text || "Polling Fallback Active";
-                badge.className = "px-2.5 py-1 rounded-full bg-teal-100 text-teal-900 border border-teal-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                dot.className = "w-2 h-2 rounded-full bg-teal-500 animate-pulse shrink-0";
+                txt.innerHTML = `<span class="inline sm:hidden">Polling</span><span class="hidden sm:inline">Polling Fallback Active</span>`;
+                badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-teal-100 text-teal-900 border border-teal-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             } else {
-                dot.className = "w-2 h-2 rounded-full bg-amber-500";
-                txt.innerText = text || "🔴 Offline / Unconfigured";
-                badge.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[9.5px] font-extrabold flex items-center gap-1.5 shadow-2xs";
+                dot.className = "w-2 h-2 rounded-full bg-amber-500 shrink-0";
+                txt.innerHTML = `<span class="inline sm:hidden">🔴 Offline</span><span class="hidden sm:inline">🔴 Offline / Unconfigured</span>`;
+                badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             }
         };
 
@@ -1460,11 +1473,25 @@
                 realtimeChannel = supabaseClient
                     .channel('public:umpeg_multi_tables')
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'system_config' }, () => { window.pullAllDataFromGas(false); })
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, () => { window.pullAllDataFromGas(false); })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pegawai_lemari_digital' }, async () => {
+                        // Instant refresh dari Supabase secara langsung tanpa perlu di-refresh manual
+                        if (supabaseClient) {
+                            try {
+                                const { data: directPegData } = await supabaseClient.from('pegawai_lemari_digital').select('*');
+                                if (directPegData && directPegData.length > 0) {
+                                    masterPegawaiDb = directPegData.map(item => normalizePegawaiData(item));
+                                    window.renderActiveView();
+                                    window.showToast("Data Pegawai Terintegrasi Realtime!", "success");
+                                    return;
+                                }
+                            } catch(err){}
+                        }
+                        window.pullAllDataFromGas(false);
+                    })
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'master_umpeg_config' }, () => { window.pullAllDataFromGas(false); })
                     .subscribe((status) => {
                         if (status === 'SUBSCRIBED') {
-                            window.updateWsBadge('online', '🟢 Realtime 3 Tabel Active');
+                            window.updateWsBadge('online');
                         } else { window.activatePollingFallback(); }
                     });
             } catch (e) { window.activatePollingFallback(); }
@@ -1472,7 +1499,7 @@
 
         window.activatePollingFallback = function() {
             if (!window.state.gasUrl || !window.state.gasUrl.startsWith('http')) return;
-            window.updateWsBadge('polling', 'Polling Fallback Active');
+            window.updateWsBadge('polling');
             if (pollingTimer) clearInterval(pollingTimer);
             pollingTimer = setInterval(() => { window.pullAllDataFromGas(false); }, 15000);
         };
@@ -1508,7 +1535,7 @@
                     window.activatePollingFallback();
                 }
             } else {
-                window.updateWsBadge('offline', '🔴 Offline / Unconfigured');
+                window.updateWsBadge('offline');
                 if (window.state.gasUrl && window.state.gasUrl.startsWith('http')) window.activatePollingFallback();
             }
         };
@@ -1557,7 +1584,7 @@
             const submitBtn = e && e.target ? e.target.querySelector('button[type="submit"]') : null;
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menyimpan ke Supabase...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menyimpan...';
             }
 
             try {
@@ -1615,7 +1642,7 @@
                 await window.listenRealtimeUpdates();
 
                 window.closeServerConfigModal();
-                window.showToast("BERHASIL! Kredensial Tertulis di Supabase & Antena Realtime Aktif!", "success");
+                window.showToast("BERHASIL! Antena Realtime Aktif!", "success");
                 
                 window.pullAllDataFromGas(true);
 
@@ -1663,7 +1690,8 @@
                 email: detailPersonal.email || raw.email || '',
                 golongan: detailPersonal.golongan || raw.golongan || '',
                 verifikasiStatus: raw.verifikasiStatus || raw.verifikasi_status || 'PENDING',
-                verifikasiCatatan: raw.verifikasiCatatan || raw.verifikasi_catatan || ''
+                verifikasiCatatan: raw.verifikasiCatatan || raw.verifikasi_catatan || '',
+                updatedAt: raw.updatedAt || raw.updated_at || raw.last_updated_at || ''
             };
         }
 
@@ -1701,7 +1729,7 @@
                     }
                     
                     window.renderActiveView();
-                    if (showToastNotice) window.showToast("Data Diperbarui Otomatis dari Server!", "success");
+                    if (showToastNotice) window.showToast("Data Diperbarui Otomatis!", "success");
                 }
             } catch(e) { console.warn("Gagal pull data dari GAS:", e); }
             finally {
@@ -1722,9 +1750,9 @@
                 }
                 if (btn) {
                     if (t === tabName) {
-                        btn.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer";
+                        btn.className = "flex-1 min-w-[110px] sm:min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs";
                     } else {
-                        btn.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative";
+                        btn.className = "flex-1 min-w-[110px] sm:min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer relative text-[11px] sm:text-xs";
                     }
                 }
             });
@@ -1741,8 +1769,8 @@
                     else panel.classList.add('hidden');
                 }
                 if (btn) {
-                    if (s === subName) btn.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer";
-                    else btn.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer";
+                    if (s === subName) btn.className = "flex-1 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs";
+                    else btn.className = "flex-1 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs";
                 }
             });
             if (subName === 'matriks') window.renderMatrixReport();
@@ -1759,8 +1787,8 @@
                     else panel.classList.add('hidden');
                 }
                 if (btn) {
-                    if (s === subName) btn.className = "flex-1 h-9 px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer";
-                    else btn.className = "flex-1 h-9 px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer";
+                    if (s === subName) btn.className = "flex-1 min-w-[130px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs";
+                    else btn.className = "flex-1 min-w-[130px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs";
                 }
             });
             if (subName === 'checklist') window.renderMasterChecklistConfig();
@@ -1800,11 +1828,6 @@
             window.setText('stat-kontrak-total', kontrak);
             window.setText('stat-honorer-total', honorer);
 
-            const medis = masterPegawaiDb.filter(p => p.sub1 === 'MEDIS').length;
-            const nonmedis = masterPegawaiDb.filter(p => p.sub1 === 'NONMEDIS' || p.sub1 === 'NON-MEDIS').length;
-            window.setText('stat-medis-total', medis);
-            window.setText('stat-nonmedis-total', nonmedis);
-
             const fung = masterPegawaiDb.filter(p => p.sub2 === 'FUNGSIONAL').length;
             const struk = masterPegawaiDb.filter(p => p.sub2 === 'STRUKTURAL').length;
             window.setText('stat-fungsional-total', fung);
@@ -1837,8 +1860,35 @@
             window.setText('stat-verif-pending', `${verifPending} Pending`);
             window.setText('badge-verifikasi-count', verifPending);
 
+            window.renderActivityLogWidget();
             window.renderUnitKerjaSummaryTable();
             window.renderEducationChartBars();
+        };
+
+        window.renderActivityLogWidget = function() {
+            const container = document.getElementById('activity-log-container');
+            if (!container) return;
+
+            const sorted = [...masterPegawaiDb].sort((a,b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')).slice(0, 4);
+
+            if (sorted.length === 0) {
+                container.innerHTML = `<div class="col-span-4 p-3 rounded-xl bg-white border border-emerald-100 text-center text-slate-400 text-xs">Belum ada aktivitas pembaruan pegawai.</div>`;
+                return;
+            }
+
+            container.innerHTML = sorted.map(p => `
+                <div class="p-2.5 sm:p-3 rounded-xl bg-white border border-emerald-200/90 shadow-2xs space-y-1 hover:border-emerald-400 transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 border border-emerald-300 truncate max-w-[100px]">${p.idPegawai || 'RSUD-PEG'}</span>
+                        <span class="text-[8.5px] font-mono font-bold text-slate-500">${p.updatedAt ? new Date(p.updatedAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) : 'Baru'}</span>
+                    </div>
+                    <div class="font-bold text-slate-900 text-[11px] sm:text-xs truncate" title="${p.nama}">${p.nama || p.username}</div>
+                    <div class="text-[9px] text-slate-500 flex items-center justify-between">
+                        <span class="truncate max-w-[110px]">${p.ruangan || '-'}</span>
+                        <span class="font-extrabold ${p.verifikasiStatus === 'TERVERIFIKASI' ? 'text-emerald-700' : p.verifikasiStatus === 'PERLU_PERBAIKAN' ? 'text-rose-700' : 'text-amber-700'}">${p.verifikasiStatus || 'PENDING'}</span>
+                    </div>
+                </div>
+            `).join('');
         };
 
         window.renderUnitKerjaSummaryTable = function() {
@@ -1864,15 +1914,15 @@
                 const pct = Math.round((u.count / total) * 100);
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/50 transition-colors">
-                        <td class="p-2.5 text-center font-bold text-slate-500">${i + 1}</td>
-                        <td class="p-2.5 font-bold text-slate-800">${u.name}</td>
-                        <td class="p-2.5 text-center font-mono font-bold text-emerald-950">${u.count}</td>
-                        <td class="p-2.5 text-center">
-                            <div class="flex items-center gap-1.5">
-                                <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <td class="p-1.5 sm:p-2.5 text-center font-bold text-slate-500">${i + 1}</td>
+                        <td class="p-1.5 sm:p-2.5 font-bold text-slate-800">${u.name}</td>
+                        <td class="p-1.5 sm:p-2.5 text-center font-mono font-bold text-emerald-950">${u.count}</td>
+                        <td class="p-1.5 sm:p-2.5 text-center">
+                            <div class="flex items-center gap-1">
+                                <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                                     <div class="bg-emerald-600 h-full rounded-full" style="width: ${pct}%"></div>
                                 </div>
-                                <span class="font-mono text-[9px] font-bold text-slate-600 w-8">${pct}%</span>
+                                <span class="font-mono text-[8.5px] font-bold text-slate-600 w-7">${pct}%</span>
                             </div>
                         </td>
                     </tr>
@@ -1940,36 +1990,36 @@
             window.setText('filter-verif-count-badge', `${filtered.length} Pegawai`);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Tidak ada data pegawai yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada data pegawai yang sesuai filter.</td></tr>`;
                 return;
             }
 
             filtered.forEach(p => {
                 const linkCount = Object.keys(p.linksMap || {}).length;
                 const statusBadge = p.verifikasiStatus === 'TERVERIFIKASI' 
-                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[9.5px]">🟢 TERVERIFIKASI</span>`
+                    ? `<span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[8.5px] whitespace-nowrap">🟢 VERIFIED</span>`
                     : p.verifikasiStatus === 'PERLU_PERBAIKAN'
-                    ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-extrabold text-[9.5px]">🔴 PERLU PERBAIKAN</span>`
-                    : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-extrabold text-[9.5px]">🟡 PENDING</span>`;
+                    ? `<span class="px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-extrabold text-[8.5px] whitespace-nowrap">🔴 REVISI</span>`
+                    : `<span class="px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-extrabold text-[8.5px] whitespace-nowrap">🟡 PENDING</span>`;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/60 transition-colors border-b border-emerald-100">
-                        <td class="p-2.5">
-                            <div class="font-bold text-slate-900">${p.nama || p.username}</div>
-                            <div class="text-[9.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
+                        <td class="p-1.5 sm:p-2.5">
+                            <div class="font-bold text-slate-900 leading-tight">${p.nama || p.username}</div>
+                            <div class="text-[8.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
                         </td>
-                        <td class="p-2.5">
+                        <td class="p-1.5 sm:p-2.5">
                             <div class="font-extrabold text-slate-800">${p.status || '-'}</div>
-                            <div class="text-[9.5px] text-slate-500">${p.ruangan || '-'}</div>
+                            <div class="text-[8.5px] text-slate-500 truncate max-w-[120px]">${p.ruangan || '-'}</div>
                         </td>
-                        <td class="p-2.5 text-center font-mono font-bold">
-                            <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-700">${linkCount} Berkas Taut</span>
+                        <td class="p-1.5 sm:p-2.5 text-center font-mono font-bold">
+                            <span class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300 text-slate-700 text-[8.5px]">${linkCount} Berkas</span>
                         </td>
-                        <td class="p-2.5 text-center">${statusBadge}</td>
-                        <td class="p-2.5 text-slate-600 truncate max-w-xs">${p.verifikasiCatatan || '-'}</td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="window.openAuditModal('${p.nip}')" class="h-7 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[10px] shadow-2xs cursor-pointer">
-                                <i class="fa-solid fa-file-signature mr-1"></i> Audit
+                        <td class="p-1.5 sm:p-2.5 text-center">${statusBadge}</td>
+                        <td class="p-1.5 sm:p-2.5 text-slate-600 truncate max-w-[140px]">${p.verifikasiCatatan || '-'}</td>
+                        <td class="p-1.5 sm:p-2.5 text-center">
+                            <button onclick="window.openAuditModal('${p.nip}')" class="h-6 sm:h-7 px-2 sm:px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[9px] sm:text-[10px] shadow-2xs cursor-pointer">
+                                <i class="fa-solid fa-file-signature mr-0.5"></i> Audit
                             </button>
                         </td>
                     </tr>
@@ -1994,7 +2044,7 @@
             const filtered = masterPegawaiDb.filter(p => !search || p.nama?.toLowerCase().includes(search) || p.nip?.toLowerCase().includes(search) || p.idPegawai?.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Data pegawai tidak ditemukan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Data pegawai tidak ditemukan.</td></tr>`;
                 return;
             }
 
@@ -2002,27 +2052,27 @@
                 const rawHp = p.hp || '';
                 const formattedHp = rawHp.startsWith('08') ? '628' + rawHp.substring(2) : rawHp;
                 const waButton = formattedHp 
-                    ? `<a href="https://wa.me/${formattedHp}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold text-[10px] inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-600"></i> ${formattedHp}</a>`
-                    : `<span class="text-slate-400 font-mono text-[10px]">-</span>`;
+                    ? `<a href="https://wa.me/${formattedHp}" target="_blank" class="px-2 py-0.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold text-[8.5px] inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp text-emerald-600"></i> ${formattedHp}</a>`
+                    : `<span class="text-slate-400 font-mono text-[8.5px]">-</span>`;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/60 transition-colors border-b border-emerald-100">
-                        <td class="p-2.5">
-                            <div class="font-bold text-slate-900">${p.nama || p.username}</div>
-                            <div class="text-[9.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
+                        <td class="p-1.5 sm:p-2.5">
+                            <div class="font-bold text-slate-900 leading-tight">${p.nama || p.username}</div>
+                            <div class="text-[8.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
                         </td>
-                        <td class="p-2.5 font-mono font-bold text-slate-800">${p.nip || '-'}</td>
-                        <td class="p-2.5">
-                            <div class="font-bold text-slate-800">${p.jabatan || '-'}</div>
-                            <div class="text-[9.5px] text-slate-500">${p.ruangan || '-'}</div>
+                        <td class="p-1.5 sm:p-2.5 font-mono font-bold text-slate-800">${p.nip || '-'}</td>
+                        <td class="p-1.5 sm:p-2.5">
+                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'}</div>
+                            <div class="text-[8.5px] text-slate-500">${p.ruangan || '-'}</div>
                         </td>
-                        <td class="p-2.5">${waButton}</td>
-                        <td class="p-2.5 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="window.openAuditModal('${p.nip}')" class="h-7 px-2.5 rounded-lg bg-emerald-700 text-white font-extrabold text-[10px] cursor-pointer" title="Audit Berkas"><i class="fa-solid fa-clipboard-check"></i> Audit</button>
-                                <button onclick="window.openPrintProfileModal('${p.nip}')" class="h-7 px-2.5 rounded-lg bg-teal-700 text-white font-extrabold text-[10px] cursor-pointer" title="Cetak DRH A4"><i class="fa-solid fa-print"></i> DRH</button>
-                                <button onclick="window.openEditStafAdminModal('${p.nip}')" class="h-7 px-2.5 rounded-lg bg-blue-700 text-white font-extrabold text-[10px] cursor-pointer" title="Edit Staf"><i class="fa-solid fa-pen"></i> Edit</button>
-                                <button onclick="window.confirmDeleteStaf('${p.nip}', '${p.idPegawai}')" class="h-7 px-2.5 rounded-lg bg-rose-700 text-white font-extrabold text-[10px] cursor-pointer" title="Hapus Permanen"><i class="fa-solid fa-trash"></i> Hapus</button>
+                        <td class="p-1.5 sm:p-2.5">${waButton}</td>
+                        <td class="p-1.5 sm:p-2.5 text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="window.openAuditModal('${p.nip}')" class="h-6 sm:h-7 px-1.5 sm:px-2.5 rounded-lg bg-emerald-700 text-white font-extrabold text-[8.5px] sm:text-[10px] cursor-pointer" title="Audit Berkas"><i class="fa-solid fa-clipboard-check"></i> <span class="hidden sm:inline">Audit</span></button>
+                                <button onclick="window.openPrintProfileModal('${p.nip}')" class="h-6 sm:h-7 px-1.5 sm:px-2.5 rounded-lg bg-teal-700 text-white font-extrabold text-[8.5px] sm:text-[10px] cursor-pointer" title="Cetak DRH A4"><i class="fa-solid fa-print"></i> <span class="hidden sm:inline">DRH</span></button>
+                                <button onclick="window.openEditStafAdminModal('${p.nip}')" class="h-6 sm:h-7 px-1.5 sm:px-2.5 rounded-lg bg-blue-700 text-white font-extrabold text-[8.5px] sm:text-[10px] cursor-pointer" title="Edit Staf"><i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">Edit</span></button>
+                                <button onclick="window.confirmDeleteStaf('${p.nip}', '${p.idPegawai}')" class="h-6 sm:h-7 px-1.5 sm:px-2.5 rounded-lg bg-rose-700 text-white font-extrabold text-[8.5px] sm:text-[10px] cursor-pointer" title="Hapus Permanen"><i class="fa-solid fa-trash"></i> <span class="hidden sm:inline">Hapus</span></button>
                             </div>
                         </td>
                     </tr>
@@ -2080,9 +2130,9 @@
 
                 tbody.innerHTML += `
                     <tr class="bg-emerald-100/60 border-b-2 border-emerald-400 font-extrabold uppercase tracking-widest text-emerald-950">
-                        <td class="p-2.5 border-r border-emerald-300 text-center">-</td>
-                        <td class="p-2.5 border-r border-emerald-300 text-left pl-3">KUALIFIKASI: ${jalurName}</td>
-                        <td colspan="7" class="p-2.5"></td>
+                        <td class="p-1.5 sm:p-2 border-r border-emerald-300 text-center">-</td>
+                        <td class="p-1.5 sm:p-2 border-r border-emerald-300 text-left pl-2">KUALIFIKASI: ${jalurName}</td>
+                        <td colspan="7" class="p-1.5 sm:p-2"></td>
                     </tr>
                 `;
 
@@ -2096,15 +2146,15 @@
 
                     tbody.innerHTML += `
                         <tr class="hover:bg-emerald-50/50 transition-colors border-b border-emerald-100 text-center font-mono">
-                            <td class="p-2 border-r border-emerald-200 font-bold">${rowNum++}</td>
-                            <td class="p-2 border-r border-emerald-200 text-left font-bold text-slate-800 font-sans pl-6"><i class="fa-solid fa-angle-right text-emerald-400 mr-1 text-[9px]"></i> ${k}</td>
-                            <td class="p-2 border-r border-emerald-200 text-blue-900 font-bold">${c.pns}</td>
-                            <td class="p-2 border-r border-emerald-200 text-amber-900 font-bold">${c.pppk_pw}</td>
-                            <td class="p-2 border-r border-emerald-200 text-amber-800 font-bold">${c.pppk_pt}</td>
-                            <td class="p-2 border-r border-emerald-200 text-rose-900 font-bold">${c.honorer}</td>
-                            <td class="p-2 border-r border-emerald-200 text-teal-900 font-bold">${c.kontrak}</td>
-                            <td class="p-2 border-r border-emerald-200 text-slate-700 font-bold">${c.sukarela}</td>
-                            <td class="p-2 font-black text-emerald-950 bg-emerald-50/80">${sum}</td>
+                            <td class="p-1.5 border-r border-emerald-200 font-bold">${rowNum++}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-left font-bold text-slate-800 font-sans pl-4"><i class="fa-solid fa-angle-right text-emerald-400 mr-1 text-[8.5px]"></i> ${k}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-blue-900 font-bold">${c.pns}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-amber-900 font-bold">${c.pppk_pw}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-amber-800 font-bold">${c.pppk_pt}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-rose-900 font-bold">${c.honorer}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-teal-900 font-bold">${c.kontrak}</td>
+                            <td class="p-1.5 border-r border-emerald-200 text-slate-700 font-bold">${c.sukarela}</td>
+                            <td class="p-1.5 font-black text-emerald-950 bg-emerald-50/80">${sum}</td>
                         </tr>
                     `;
                 });
@@ -2125,19 +2175,19 @@
             }
 
             if (rowNum === 1) {
-                tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">Data kepegawaian masih kosong.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Data kepegawaian masih kosong.</td></tr>`;
             }
 
             tfoot.innerHTML = `
                 <tr class="text-center font-mono">
-                    <td colspan="2" class="p-3 border-r border-emerald-800 text-right font-sans font-black pr-5 uppercase">Total Keseluruhan SDM RSUD</td>
-                    <td class="p-3 border-r border-emerald-800 text-blue-900">${totals.pns}</td>
-                    <td class="p-3 border-r border-emerald-800 text-amber-900">${totals.pppk_pw}</td>
-                    <td class="p-3 border-r border-emerald-800 text-amber-800">${totals.pppk_pt}</td>
-                    <td class="p-3 border-r border-emerald-800 text-rose-900">${totals.honorer}</td>
-                    <td class="p-3 border-r border-emerald-800 text-teal-900">${totals.kontrak}</td>
-                    <td class="p-3 border-r border-emerald-800 text-slate-800">${totals.sukarela}</td>
-                    <td class="p-3 text-emerald-950 font-black text-xs bg-emerald-200">${totals.grand}</td>
+                    <td colspan="2" class="p-2 border-r border-emerald-800 text-right font-sans font-black pr-3 uppercase">Total Keseluruhan SDM</td>
+                    <td class="p-2 border-r border-emerald-800 text-blue-900">${totals.pns}</td>
+                    <td class="p-2 border-r border-emerald-800 text-amber-900">${totals.pppk_pw}</td>
+                    <td class="p-2 border-r border-emerald-800 text-amber-800">${totals.pppk_pt}</td>
+                    <td class="p-2 border-r border-emerald-800 text-rose-900">${totals.honorer}</td>
+                    <td class="p-2 border-r border-emerald-800 text-teal-900">${totals.kontrak}</td>
+                    <td class="p-2 border-r border-emerald-800 text-slate-800">${totals.sukarela}</td>
+                    <td class="p-2 text-emerald-950 font-black text-xs bg-emerald-200">${totals.grand}</td>
                 </tr>
             `;
         };
@@ -2159,7 +2209,7 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Tidak ada data monitoring.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Tidak ada data monitoring.</td></tr>`;
                 return;
             }
 
@@ -2177,29 +2227,28 @@
                 }
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-emerald-50/50 transition-colors border-b border-emerald-100 text-xs">
-                        <td class="p-2 text-center font-bold font-mono text-slate-500">${i + 1}</td>
-                        <td class="p-2">
-                            <div class="font-extrabold text-slate-900">${p.nama || p.username}</div>
-                            <div class="text-[9.5px] font-mono font-bold text-emerald-800">NIP: ${p.nip || '-'}</div>
+                    <tr class="hover:bg-emerald-50/50 transition-colors border-b border-emerald-100">
+                        <td class="p-1.5 sm:p-2 text-center font-bold font-mono text-slate-500">${i + 1}</td>
+                        <td class="p-1.5 sm:p-2">
+                            <div class="font-extrabold text-slate-900 leading-tight">${p.nama || p.username}</div>
+                            <div class="text-[8.5px] font-mono font-bold text-emerald-800">NIP: ${p.nip || '-'}</div>
                         </td>
-                        <td class="p-2">
-                            <div class="font-bold text-slate-800">${p.jabatan || '-'}</div>
-                            <div class="text-[9.5px] text-slate-500">${p.ruangan || '-'}</div>
+                        <td class="p-1.5 sm:p-2">
+                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'}</div>
+                            <div class="text-[8.5px] text-slate-500">${p.ruangan || '-'}</div>
                         </td>
-                        <td class="p-2 text-center font-bold">${p.golongan || '-'}</td>
-                        <td class="p-2 text-center font-mono font-bold">${p.golongan || '-'} | ${p.detailJabatan?.eselon || 'NON_ESELON'}</td>
-                        <td class="p-2 text-center font-mono font-bold text-slate-800">${age} Thn</td>
-                        <td class="p-2 text-center font-mono font-bold ${typeof remYears === 'number' && remYears <= 2 ? 'text-rose-700 bg-rose-50' : 'text-emerald-900'}">
-                            ${remYears !== '-' ? remYears + ' Thn Lagi' : '-'}
+                        <td class="p-1.5 sm:p-2 text-center font-bold">${p.golongan || '-'}</td>
+                        <td class="p-1.5 sm:p-2 text-center font-mono font-bold">${p.golongan || '-'} | ${p.detailJabatan?.eselon || 'NON_ESELON'}</td>
+                        <td class="p-1.5 sm:p-2 text-center font-mono font-bold text-slate-800">${age} Thn</td>
+                        <td class="p-1.5 sm:p-2 text-center font-mono font-bold ${typeof remYears === 'number' && remYears <= 2 ? 'text-rose-700 bg-rose-50' : 'text-emerald-900'}">
+                            ${remYears !== '-' ? remYears + ' Thn' : '-'}
                         </td>
-                        <td class="p-2 text-center font-mono font-bold text-blue-900">${kpNext}</td>
+                        <td class="p-1.5 sm:p-2 text-center font-mono font-bold text-blue-900">${kpNext}</td>
                     </tr>
                 `;
             });
         };
 
-        /* Point 6: Peningkatan Fungsi Cetak PDF Landscape & Auto-Reset */
         window.printMatrixReport = function() {
             window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
             window.setText('matrix-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
@@ -2297,7 +2346,7 @@
                 } catch(e) {}
             }
             await window.sendToSheet('saveMaster', payload);
-            window.showToast("Master Config Disimpan & Terbroadcast Realtime!", "success");
+            window.showToast("Master Config Disimpan!", "success");
         };
 
         window.renderMasterRuanganCards = function() {
@@ -2510,13 +2559,34 @@
             if (container) {
                 container.innerHTML = masterChecklistConfig.map(cat => {
                     let itemsHtml = cat.items.map(it => {
-                        const isAttached = target.linksMap && target.linksMap[it.id];
+                        const rawVal = target.linksMap ? target.linksMap[it.id] : null;
+                        
+                        let links = [];
+                        if (Array.isArray(rawVal)) {
+                            links = rawVal;
+                        } else if (typeof rawVal === 'string' && rawVal) {
+                            links = [{ label: it.name, url: rawVal }];
+                        } else if (rawVal && typeof rawVal === 'object' && rawVal.url) {
+                            links = [rawVal];
+                        }
+
+                        const isAttached = links.length > 0;
+
+                        let linksButtonsHtml = isAttached ? links.map((l, idx) => `
+                            <button onclick="window.openDocViewer('${(l.label || it.name).replace(/'/g, "\\'")}', '${(l.url || l).replace(/'/g, "\\'")}')" 
+                                    class="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[9.5px] font-extrabold flex items-center gap-1 shadow-2xs transition-all cursor-pointer">
+                                <i class="fa-solid fa-eye text-emerald-200"></i>
+                                <span class="truncate max-w-[140px]">${l.label || 'Pratinjau Berkas'}</span>
+                            </button>
+                        `).join('') : `<span class="px-2 py-0.5 rounded text-[9px] font-extrabold bg-slate-100 text-slate-500">✖ Belum Taut</span>`;
+
                         return `
-                            <div class="flex items-center justify-between p-2 rounded bg-white border border-slate-200 text-xs">
-                                <span class="font-semibold text-slate-800">${it.name}</span>
-                                <span class="px-2 py-0.5 rounded text-[9px] font-extrabold ${isAttached ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-500'}">
-                                    ${isAttached ? '✔ Ada Dokumen' : '✖ Belum Taut'}
-                                </span>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 text-xs gap-2 shadow-2xs">
+                                <div>
+                                    <div class="font-bold text-slate-900">${it.name}</div>
+                                    <div class="text-[9.5px] text-slate-500">${isAttached ? 'Dokumen terlampir oleh pegawai' : 'Belum ada dokumen yang diunggah'}</div>
+                                </div>
+                                <div class="flex items-center gap-1.5 flex-wrap">${linksButtonsHtml}</div>
                             </div>
                         `;
                     }).join('');
@@ -2524,7 +2594,7 @@
                     return `
                         <div class="p-3 bg-emerald-50/60 border border-emerald-200 rounded-xl space-y-2">
                             <h4 class="font-black text-emerald-950 text-xs">${cat.title}</h4>
-                            <div class="space-y-1">${itemsHtml}</div>
+                            <div class="space-y-1.5">${itemsHtml}</div>
                         </div>
                     `;
                 }).join('');
@@ -2566,7 +2636,7 @@
 
             window.closeAuditModal();
             window.renderActiveView();
-            window.showToast("Hasil Audit Berhasil Disimpan & Terbroadcast Realtime!", "success");
+            window.showToast("Hasil Audit Berhasil Disimpan!", "success");
         };
 
         window.openEditStafAdminModal = function(nip = null) {
@@ -2694,7 +2764,7 @@
 
             window.closeEditStafAdminModal();
             window.renderActiveView();
-            window.showToast("Data Staf Berhasil Disimpan Tanpa Mereset Berkas!", "success");
+            window.showToast("Data Staf Berhasil Disimpan!", "success");
         };
 
         window.confirmDeleteStaf = function(nip, idPegawai) {
@@ -2726,11 +2796,10 @@
 
                 window.closeConfirmDeleteModal();
                 window.renderActiveView();
-                window.showToast("Data Staf Berhasil Dihapus Permanen!", "success");
+                window.showToast("Data Staf Berhasil Dihapus!", "success");
             }
         };
 
-        /* Point 6: Peningkatan Fungsi Cetak Profile DRH Portrait & Auto-Reset */
         window.openPrintProfileModal = function(nip) {
             const target = masterPegawaiDb.find(p => p.nip === nip);
             if (!target) return;
@@ -2797,7 +2866,6 @@
             window.print();
         };
 
-        // Event Auto-Reset Class Body Setelah Selesai Print / Cetak PDF
         window.addEventListener('afterprint', () => {
             document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-8";
         });
