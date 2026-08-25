@@ -1107,7 +1107,10 @@
                                     if (currentPegawai && payload.new && window.isMatchingKey(payload.new.nip, currentPegawai.nip)) {
                                         currentPegawai.verifikasiStatus = payload.new.verifikasi_status || 'PENDING';
                                         currentPegawai.verifikasiCatatan = payload.new.verifikasi_catatan || '';
-                                        if (payload.new.links_map) currentPegawai.linksMap = window.tryParseJson(payload.new.links_map, {});
+                                        const incomingLinks = payload.new.links_map || payload.new.link_url_drive;
+                                        if (incomingLinks) {
+                                            currentPegawai.linksMap = window.tryParseJson(incomingLinks, {});
+                                        }
                                         window.renderDashboard();
                                     }
                                 });
@@ -1288,7 +1291,7 @@
 
             if (supabaseClient) {
                 try {
-                    let { data, error } = await supabaseClient
+                    let { data } = await supabaseClient
                         .from('pegawai_lemari_digital')
                         .select('*')
                         .eq('nip', keyInput)
@@ -1298,7 +1301,7 @@
                 } catch (err) {}
             }
 
-            // Langsung tarik detail dari Google Sheets (GAS) berdasarkan NIP
+            // Tarik detail dari Google Sheets (GAS) berdasarkan NIP
             if (serverApiConfig.gasUrl) {
                  try {
                      const fetchUrl = serverApiConfig.gasUrl.includes('?') ? `${serverApiConfig.gasUrl}&action=getPegawai&nip=${keyInput}` : `${serverApiConfig.gasUrl}?action=getPegawai&nip=${keyInput}`;
@@ -1332,7 +1335,7 @@
                      sub2: gasData.sub2,
                      jabatan: gasData.jabatan,
                      ruangan: gasData.ruangan,
-                     links_map: gasData.linksMap,
+                     links_map: gasData.linksMap || gasData.link_url_drive,
                      detail_personal: gasData.detailPersonal,
                      detail_jabatan: gasData.detailJabatan,
                      detail_medis: gasData.detailMedis,
@@ -1345,12 +1348,16 @@
             const parsedPersonal = window.tryParseJson(finalData.detail_personal || finalData.detailPersonal, {});
             const parsedJabatan = window.tryParseJson(finalData.detail_jabatan || finalData.detailJabatan, {});
 
-            // PRIORITASKAN DATA AKTUAL DARI GOOGLE SHEETS (gasData) AGAR TIDAK TERTIMPA DEFAULT SUPABASE
             const effectiveStatus = (gasData && gasData.status) ? gasData.status : (foundData ? (foundData.status_kepegawaian || foundData.status) : 'PNS');
             const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1) : 'MEDIS');
             const effectiveSub2 = (gasData && gasData.sub2) ? gasData.sub2 : (parsedJabatan.sub2 || (foundData ? foundData.sub2 : 'FUNGSIONAL'));
             const effectiveJabatan = (gasData && gasData.jabatan) ? gasData.jabatan : (foundData ? foundData.jabatan : '');
             const effectiveRuangan = (gasData && gasData.ruangan) ? gasData.ruangan : (foundData ? foundData.ruangan : '');
+
+            // PENANGANAN LENGKAP PENARIKAN TAUTAN DRIVE (LINKS MAP)
+            const supaLinks = window.tryParseJson(foundData ? (foundData.links_map || foundData.link_url_drive || foundData.linksMap) : null, {});
+            const gasLinks = window.tryParseJson(gasData ? (gasData.linksMap || gasData.links_map || gasData.link_url_drive) : null, {});
+            const mergedLinks = (Object.keys(supaLinks).length > 0) ? supaLinks : gasLinks;
 
             currentPegawai = {
                 idPegawai: finalData.id_pegawai || finalData.idPegawai,
@@ -1362,7 +1369,7 @@
                 sub2: effectiveSub2,
                 jabatan: effectiveJabatan,
                 ruangan: effectiveRuangan,
-                linksMap: window.tryParseJson(finalData.links_map || finalData.linksMap, {}),
+                linksMap: mergedLinks,
                 detailPersonal: parsedPersonal,
                 detailJabatan: parsedJabatan,
                 detailMedis: window.tryParseJson(finalData.detail_medis || finalData.detailMedis, {}),
