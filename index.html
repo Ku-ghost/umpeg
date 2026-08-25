@@ -1321,7 +1321,6 @@
                  finalData.detail_jabatan = (Object.keys(foundData.detail_jabatan || {}).length > 0) ? foundData.detail_jabatan : gasData.detailJabatan;
                  finalData.detail_medis = (Object.keys(foundData.detail_medis || {}).length > 0) ? foundData.detail_medis : gasData.detailMedis;
                  finalData.riwayat_pendidikan = (foundData.riwayat_pendidikan && foundData.riwayat_pendidikan.length > 0) ? foundData.riwayat_pendidikan : gasData.riwayatPendidikan;
-                 if (!finalData.sub2 && gasData.sub2) finalData.sub2 = gasData.sub2;
             } else if (!foundData && gasData) {
                  finalData = {
                      id_pegawai: gasData.idPegawai,
@@ -1346,16 +1345,23 @@
             const parsedPersonal = window.tryParseJson(finalData.detail_personal || finalData.detailPersonal, {});
             const parsedJabatan = window.tryParseJson(finalData.detail_jabatan || finalData.detailJabatan, {});
 
+            // PRIORITASKAN DATA AKTUAL DARI GOOGLE SHEETS (gasData) AGAR TIDAK TERTIMPA DEFAULT SUPABASE
+            const effectiveStatus = (gasData && gasData.status) ? gasData.status : (foundData ? (foundData.status_kepegawaian || foundData.status) : 'PNS');
+            const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1) : 'MEDIS');
+            const effectiveSub2 = (gasData && gasData.sub2) ? gasData.sub2 : (parsedJabatan.sub2 || (foundData ? foundData.sub2 : 'FUNGSIONAL'));
+            const effectiveJabatan = (gasData && gasData.jabatan) ? gasData.jabatan : (foundData ? foundData.jabatan : '');
+            const effectiveRuangan = (gasData && gasData.ruangan) ? gasData.ruangan : (foundData ? foundData.ruangan : '');
+
             currentPegawai = {
                 idPegawai: finalData.id_pegawai || finalData.idPegawai,
                 nip: finalData.nip || keyInput,
                 username: finalData.username || username,
                 nama: finalData.nama || finalData.username,
-                status: finalData.status_kepegawaian || finalData.status || 'PNS',
-                sub1: finalData.sub1 || 'MEDIS',
-                sub2: finalData.sub2 || parsedJabatan.sub2 || 'FUNGSIONAL',
-                jabatan: finalData.jabatan || '',
-                ruangan: finalData.ruangan || '',
+                status: effectiveStatus,
+                sub1: effectiveSub1,
+                sub2: effectiveSub2,
+                jabatan: effectiveJabatan,
+                ruangan: effectiveRuangan,
                 linksMap: window.tryParseJson(finalData.links_map || finalData.linksMap, {}),
                 detailPersonal: parsedPersonal,
                 detailJabatan: parsedJabatan,
@@ -1655,21 +1661,21 @@
         window.populateMasterDropdowns = function() {
             const ruanganEl = document.getElementById('f-bas-ruangan');
             if (ruanganEl) {
-                const curr = ruanganEl.value || currentPegawai?.ruangan;
+                const curr = currentPegawai?.ruangan || ruanganEl.value;
                 ruanganEl.innerHTML = '<option value="" disabled selected>-- Pilih Unit Kerja Penempatan --</option>' + masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
                 if (curr) ruanganEl.value = curr;
             }
 
             const statusEl = document.getElementById('f-bas-status-pegawai');
             if (statusEl) {
-                const curr = statusEl.value || currentPegawai?.status;
+                const curr = currentPegawai?.status || statusEl.value;
                 statusEl.innerHTML = '<option value="" disabled selected>-- Pilih Status Kepegawaian --</option>' + masterStatusPegList.map(s => `<option value="${s}">${s}</option>`).join('');
                 if (curr) statusEl.value = curr;
             }
 
             const golSelect = document.getElementById('f-bas-golongan');
             if (golSelect) {
-                const curr = golSelect.value || currentPegawai?.detailPersonal?.golongan;
+                const curr = currentPegawai?.detailPersonal?.golongan || golSelect.value;
                 golSelect.innerHTML = '<option value="" disabled selected>-- Pilih Golongan --</option>' + masterGolonganList.map(g => `<option value="${g}">${g}</option>`).join('');
                 if (curr) golSelect.value = curr;
             }
@@ -1683,7 +1689,7 @@
 
             const orgSelect = document.getElementById('f-med-org-profesi');
             if (orgSelect) {
-                const curr = orgSelect.value || currentPegawai?.detailMedis?.orgProfesi;
+                const curr = currentPegawai?.detailMedis?.orgProfesi || orgSelect.value;
                 orgSelect.innerHTML = '<option value="" disabled selected>-- Pilih Organisasi Profesi --</option>' + masterOrgList.map(o => `<option value="${o}">${o}</option>`).join('');
                 if (curr) orgSelect.value = curr;
             }
