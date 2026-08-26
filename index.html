@@ -78,6 +78,7 @@
             .mobile-no-wrap { white-space: nowrap !important; }
         }
 
+        /* Format Cetak DRH Profil Pegawai A4 Portrait */
         @media print {
             header, footer, .no-print,
             #modal-edit-profile, #modal-add-link-item, #modal-doc-viewer, #modal-edu-item {
@@ -160,7 +161,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">PORTAL PEGAWAI RSUD SINJAI</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Memuat Sistem Mandiri Pegawai...</span>
+            <span>Memuat Portal Cabang Mandiri...</span>
         </p>
     </div>
 
@@ -182,9 +183,9 @@
             <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 <div id="ws-indicator-badge" class="flex items-center gap-1 px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[8.5px] sm:text-[9.5px] whitespace-nowrap shrink-0">
                     <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
-                    <span id="header-sync-status" class="whitespace-nowrap">🔴 Connecting...</span>
+                    <span id="header-sync-status" class="whitespace-nowrap">🔴 Offline</span>
                 </div>
-
+                
                 <div id="user-header-profile" class="hidden flex items-center gap-1 sm:gap-1.5 shrink-0">
                     <button onclick="window.openPrintProfileModal()" class="h-8 px-2 sm:px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] shadow-2xs flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap" title="Cetak DRH A4">
                         <i class="fa-solid fa-print"></i>
@@ -201,6 +202,7 @@
 
     <main class="flex-1 w-full max-w-7xl mx-auto p-2 sm:p-5 lg:p-6 space-y-4 overflow-x-hidden">
         
+        <!-- Toast Notification Box -->
         <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
             <i id="toast-icon" class="text-base shrink-0"></i>
             <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
@@ -221,6 +223,7 @@
                     <button type="button" onclick="window.switchAuthTab('register')" id="btn-auth-tab-register" class="flex-1 py-2 sm:py-1.5 rounded-lg text-emerald-950 hover:bg-emerald-200/60 cursor-pointer text-[11px] sm:text-xs">Registrasi Profil Baru</button>
                 </div>
 
+                <!-- FORM LOGIN -->
                 <form id="form-auth-login" onsubmit="window.handleLoginSubmit(event)" class="space-y-3.5" autocomplete="off">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Username / Nama Akun Login</label>
@@ -236,6 +239,7 @@
                     </button>
                 </form>
 
+                <!-- FORM REGISTRASI AKUN BARU -->
                 <form id="form-auth-register" onsubmit="window.handleAuthSubmit(event)" class="hidden space-y-3.5" autocomplete="off">
                     <div>
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase mb-1">Nama Akun (Username Login)</label>
@@ -261,6 +265,7 @@
 
         <div id="dashboard-section" class="hidden space-y-4 fade-in">
             
+            <!-- FITUR 1: BANNER PENGUMUMAN GLOBAL (REALTIME BROADCAST dari Admin UMPEG) -->
             <div id="global-announcement-banner" class="hidden p-3 rounded-2xl bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white shadow-md border border-emerald-600 text-xs flex items-center gap-3 fade-in">
                 <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-lg shrink-0 text-amber-300">
                     <i class="fa-solid fa-bullhorn animate-bounce"></i>
@@ -274,6 +279,7 @@
                 </div>
             </div>
 
+            <!-- FITUR 2: EARLY WARNING SYSTEM (PERINGATAN DINI STR & SIP KEDALUWARSA) -->
             <div id="early-warning-banner" class="hidden space-y-2 fade-in"></div>
 
             <div class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
@@ -313,8 +319,10 @@
                     </div>
                 </div>
 
+                <!-- BANNER CORRECTION / AUDIT -->
                 <div id="correction-banner" class="hidden"></div>
 
+                <!-- FITUR 3: TRACKER KENAIKAN PANGKAT (KP) & GAJI BERKALA (KGB) PROYEKSI -->
                 <div id="kp-kgb-tracker-container" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                     <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-300 flex items-center justify-between">
                         <div>
@@ -338,6 +346,7 @@
                 </div>
             </div>
 
+            <!-- SUB-TAB SWITCHER RESPONSIVE -->
             <div class="flex items-center gap-1.5 bg-emerald-100/90 p-1.5 rounded-xl border border-emerald-200 text-xs shadow-2xs overflow-x-auto mobile-tab-scroll">
                 <button type="button" onclick="window.switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 min-w-[140px] h-11 sm:h-9 px-2 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
                     <i class="fa-solid fa-folder-tree"></i>
@@ -349,6 +358,7 @@
                 </button>
             </div>
 
+            <!-- TAB 1: LEMARI BERKAS DIGITAL (FORM A - H) -->
             <div id="tab-content-dashboard" class="space-y-3">
                 <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
@@ -376,6 +386,7 @@
             <div id="tab-content-form-profil" class="hidden space-y-4">
                 <form onsubmit="window.saveDetailProfileForm(event)" class="space-y-4">
                     
+                    <!-- SECTION I: DATA PERSONAL -->
                     <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider border-b border-emerald-100 pb-2 flex items-center gap-2">
                             <i class="fa-solid fa-address-card text-emerald-600"></i> I. Data Personal & Kependudukan
@@ -509,6 +520,7 @@
                         </div>
                     </section>
 
+                    <!-- SECTION II: STATUS KEPEGAWAIAN & KEDINASAN -->
                     <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <div class="flex items-center justify-between border-b border-emerald-100 pb-2 flex-wrap gap-2">
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
@@ -522,19 +534,11 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                             <div>
                                 <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Status Kepegawaian <span class="text-rose-600">*</span></label>
                                 <select id="f-bas-status-pegawai" required class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Status Kepegawaian --</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Rumpun SDM / Kategori <span class="text-rose-600">*</span></label>
-                                <select id="f-bas-sub1" required onchange="window.handleSub1Change()" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-slate-900 text-xs focus:outline-none">
-                                    <option value="MEDIS">MEDIS / TENAGA KESEHATAN</option>
-                                    <option value="NON MEDIS">NON MEDIS / ADM / TEKNIS</option>
                                 </select>
                             </div>
 
@@ -553,6 +557,7 @@
                             </div>
                         </div>
 
+                        <!-- SUB-FORM STRUKTURAL -->
                         <div id="section-form-struktural" class="hidden space-y-3 pt-2 border-t border-emerald-100">
                             <h4 class="text-xs font-bold text-blue-900 uppercase flex items-center gap-1.5">
                                 <i class="fa-solid fa-sitemap"></i> Form Jabatan Struktural (Manajerial)
@@ -588,6 +593,7 @@
                             </div>
                         </div>
 
+                        <!-- SUB-FORM FUNGSIONAL -->
                         <div id="section-form-fungsional" class="space-y-3 pt-2 border-t border-emerald-100">
                             <h4 class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
                                 <i class="fa-solid fa-user-gear"></i> Form Jabatan Fungsional / Pelayanan
@@ -595,7 +601,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                                 <div>
                                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Kelompok Fungsional</label>
-                                    <input type="text" id="f-fn-kelompok" placeholder="Contoh: Keperawatan / Kebidanan / Administrasi" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                    <input type="text" id="f-fn-kelompok" placeholder="Contoh: Keperawatan / Kebidanan / Medis" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                 </div>
                                 <div>
                                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Jabatan Fungsional</label>
@@ -617,6 +623,7 @@
                         </div>
                     </section>
 
+                    <!-- SECTION III: LEGALITAS MEDIS / NAKES (Warna Kuning Tipis Amber) -->
                     <section id="section-form-medis" class="bg-amber-50/60 p-3.5 sm:p-4 rounded-2xl border border-amber-200 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-amber-950 uppercase tracking-wider border-b border-amber-200/80 pb-2 flex items-center gap-2">
                             <i class="fa-solid fa-user-nurse text-amber-600"></i> III. Legalitas Medis & Profesi (Nakes)
@@ -673,6 +680,7 @@
                         </div>
                     </section>
 
+                    <!-- SECTION IV: RIWAYAT PENDIDIKAN -->
                     <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
                             <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
@@ -700,6 +708,7 @@
                         </div>
                     </section>
 
+                    <!-- SUBMIT BUTTON -->
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button type="button" onclick="window.switchTab('dashboard')" class="h-12 sm:h-10 px-4 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer flex-1 sm:flex-initial">Batal</button>
                         <button type="submit" class="h-12 sm:h-10 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-initial">
@@ -714,10 +723,12 @@
         </div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide border-t border-emerald-700 shadow-lg">
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System)
     </footer>
 
+    <!-- MODAL EDIT PROFILE (EDIT USERNAME & NIP) -->
     <div id="modal-edit-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-md rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white space-y-3 p-4">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Edit Akun User & NIP Pegawai</h3>
@@ -739,6 +750,7 @@
         </div>
     </div>
 
+    <!-- MODAL ADD LINK -->
     <div id="modal-add-link-item" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white p-4 space-y-3">
             <div>
@@ -762,6 +774,7 @@
         </div>
     </div>
 
+    <!-- MODAL DOC VIEWER -->
     <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -787,6 +800,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDU ITEM -->
     <div id="modal-edu-item" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white p-4 space-y-3">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1">Tambah Riwayat Pendidikan</h3>
@@ -821,6 +835,7 @@
         </div>
     </div>
 
+    <!-- MODAL PRINT PROFILE DRH A4 PORTRAIT -->
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
@@ -873,11 +888,10 @@
 
     <script>
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
-
-        let serverApiConfig = {
-            gasUrl: '',
-            supabaseUrl: '',
-            supabaseAnonKey: ''
+        let serverApiConfig = { 
+            gasUrl: 'https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec', 
+            supabaseUrl: 'https://dlstwmavfxtktlwqajvj.supabase.co', 
+            supabaseAnonKey: 'sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O' 
         };
 
         const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
@@ -966,7 +980,9 @@
 
         let currentPegawai = null;
         let activeTab = 'dashboard';
+        
         let expandedCategories = { A: false, B: false, C: false, D: false, E: false, F: false, G: false, H: false }; 
+        
         let activeAddLinkId = null;
         let supabaseClient = null;
         let realtimeChannel = null;
@@ -1146,10 +1162,10 @@
                         } catch(wsErr) {}
                     }
                 } catch (e) { 
-                    window.updateWsBadge('offline', '🔴 Standby');
+                    window.updateWsBadge('offline', '🔴 Offline');
                 }
             } else {
-                window.updateWsBadge('offline', '🔴 Standby');
+                window.updateWsBadge('offline', '🔴 Unconfigured');
             }
 
             if (!configLoaded && serverApiConfig.gasUrl) {
@@ -1328,6 +1344,7 @@
                 } catch (err) {}
             }
 
+            // Tarik detail dari Google Sheets (GAS) berdasarkan NIP
             if (serverApiConfig.gasUrl) {
                  try {
                      const fetchUrl = serverApiConfig.gasUrl.includes('?') ? `${serverApiConfig.gasUrl}&action=getPegawai&nip=${keyInput}` : `${serverApiConfig.gasUrl}?action=getPegawai&nip=${keyInput}`;
@@ -1375,12 +1392,12 @@
             const parsedJabatan = window.tryParseJson(finalData.detail_jabatan || finalData.detailJabatan, {});
 
             const effectiveStatus = (gasData && gasData.status) ? gasData.status : (foundData ? (foundData.status_kepegawaian || foundData.status) : 'PNS');
+            const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1) : 'MEDIS');
             const effectiveSub2 = (gasData && gasData.sub2) ? gasData.sub2 : (parsedJabatan.sub2 || (foundData ? foundData.sub2 : 'FUNGSIONAL'));
-            const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1 || 'MEDIS') : 'MEDIS');
-
             const effectiveJabatan = (gasData && gasData.jabatan) ? gasData.jabatan : (foundData ? foundData.jabatan : '');
             const effectiveRuangan = (gasData && gasData.ruangan) ? gasData.ruangan : (foundData ? foundData.ruangan : '');
 
+            // PENANGANAN LENGKAP PENARIKAN TAUTAN DRIVE (LINKS MAP)
             const supaLinks = window.tryParseJson(foundData ? (foundData.links_map || foundData.link_url_drive || foundData.linksMap) : null, {});
             const gasLinks = window.tryParseJson(gasData ? (gasData.linksMap || gasData.links_map || gasData.link_url_drive) : null, {});
             const mergedLinks = (Object.keys(supaLinks).length > 0) ? supaLinks : gasLinks;
@@ -1419,7 +1436,7 @@
             }
 
             if (!supabaseClient) {
-                window.showToast("Koneksi Supabase belum aktif!", "error");
+                window.showToast("Koneksi Supabase belum aktif! Konfigurasi server dari Web UMPEG dahulu.", "error");
                 return;
             }
 
@@ -1516,6 +1533,9 @@
         window.renderDashboard = function() {
             if (!currentPegawai) return;
 
+            // -------------------------------------------------------------
+            // FITUR 1: BROADCAST PENGUMUMAN GLOBAL (PAPAN INFORMASI PEGAWAI)
+            // -------------------------------------------------------------
             const announcementBanner = document.getElementById('global-announcement-banner');
             const announcementText = document.getElementById('global-announcement-text');
             if (announcementBanner && announcementText) {
@@ -1528,12 +1548,16 @@
                 }
             }
 
+            // -------------------------------------------------------------
+            // FITUR 2: EARLY WARNING SYSTEM (PERINGATAN DINI STR & SIP)
+            // -------------------------------------------------------------
             const earlyWarningBox = document.getElementById('early-warning-banner');
             if (earlyWarningBox) {
                 const dm = currentPegawai.detailMedis || {};
                 const now = new Date();
                 let alertsHtml = '';
 
+                // Cek STR
                 if (dm.expStr && dm.expStr !== 'Seumur Hidup') {
                     const expDate = new Date(dm.expStr);
                     if (!isNaN(expDate.getTime())) {
@@ -1568,6 +1592,7 @@
                     }
                 }
 
+                // Cek SIP
                 if (dm.expSip) {
                     const expSipDate = new Date(dm.expSip);
                     if (!isNaN(expSipDate.getTime())) {
@@ -1610,6 +1635,9 @@
                 }
             }
 
+            // -------------------------------------------------------------
+            // FITUR 3: TRACKER KENAIKAN PANGKAT (KP) & GAJI BERKALA (KGB)
+            // -------------------------------------------------------------
             const kpTrackerBox = document.getElementById('kp-kgb-tracker-container');
             if (kpTrackerBox) {
                 const dj = currentPegawai.detailJabatan || {};
@@ -1637,8 +1665,9 @@
                 }
             }
 
+            // PROFIL SUMMARY RENDERER
             window.setText('p-nama', currentPegawai.nama || currentPegawai.username);
-            window.setText('p-status-badge', currentPegawai.status ? `${currentPegawai.status} • ${currentPegawai.sub1 || 'MEDIS'} • ${currentPegawai.sub2}` : 'Belum Ditentukan');
+            window.setText('p-status-badge', currentPegawai.status ? `${currentPegawai.status} • ${currentPegawai.sub1} • ${currentPegawai.sub2}` : 'Belum Ditentukan');
             window.setText('p-id-display', `<i class="fa-solid fa-fingerprint text-emerald-600 mr-0.5"></i>ID: ${currentPegawai.idPegawai}`);
             window.setText('p-nip-display', `<i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i>NIP: ${currentPegawai.nip}`);
             window.setText('p-jabatan', `<i class="fa-solid fa-user-tie text-emerald-600 mr-0.5"></i>${currentPegawai.jabatan || '-'}`);
@@ -1827,15 +1856,6 @@
                 if (curr) statusEl.value = curr;
             }
 
-            const sub1Select = document.getElementById('f-bas-sub1');
-            if (sub1Select) {
-                sub1Select.disabled = false;
-                sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
-                if (currentPegawai && currentPegawai.sub1) {
-                    sub1Select.value = currentPegawai.sub1;
-                }
-            }
-
             const golSelect = document.getElementById('f-bas-golongan');
             if (golSelect) {
                 const curr = currentPegawai?.detailPersonal?.golongan || golSelect.value;
@@ -1860,18 +1880,6 @@
             window.toggleJabatanFormType();
         };
 
-        window.handleSub1Change = function() {
-            if (!currentPegawai) return;
-            const val = window.getVal('f-bas-sub1');
-            if (val) {
-                currentPegawai.sub1 = val;
-                const secMedis = document.getElementById('section-form-medis');
-                if (secMedis) {
-                    secMedis.classList.toggle('hidden', currentPegawai.sub2 === 'STRUKTURAL' || val === 'NON MEDIS');
-                }
-            }
-        };
-
         window.toggleJalurJabatanForm = function() {
             if (!currentPegawai) return;
             window.captureCurrentFormInputToMemory();
@@ -1887,15 +1895,6 @@
             const secFn = document.getElementById('section-form-fungsional');
             const secMedis = document.getElementById('section-form-medis');
             const badgeJalur = document.getElementById('display-jalur-jabatan');
-            const sub1Select = document.getElementById('f-bas-sub1');
-
-            if (sub1Select) {
-                sub1Select.disabled = false;
-                sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
-                if (sub1Select.value) {
-                    currentPegawai.sub1 = sub1Select.value;
-                }
-            }
 
             if (badgeJalur) {
                 badgeJalur.innerText = isSt ? "Jalur: Struktural (Manajerial)" : "Jalur: Fungsional (Non-Manajerial)";
@@ -1904,7 +1903,9 @@
 
             if (secSt) secSt.classList.toggle('hidden', !isSt);
             if (secFn) secFn.classList.toggle('hidden', isSt);
-            if (secMedis) secMedis.classList.toggle('hidden', isSt || currentPegawai.sub1 === 'NON MEDIS');
+            
+            // Sembunyikan otomatis formulir Legalitas Medis (Seksi III) jika memilih Struktural
+            if (secMedis) secMedis.classList.toggle('hidden', isSt);
 
             const el = document.getElementById(isSt ? 'f-st-nama-jabatan' : 'f-fn-nama-jabatan');
             if (el) {
@@ -1923,9 +1924,9 @@
             const dj = currentPegawai.detailJabatan || {};
             const dm = currentPegawai.detailMedis || {};
 
+            /* Seksi I: Personal */
             if (currentPegawai.status) window.setVal('f-bas-status-pegawai', currentPegawai.status);
             if (dp.golongan) window.setVal('f-bas-golongan', dp.golongan);
-            if (currentPegawai.sub1) window.setVal('f-bas-sub1', currentPegawai.sub1);
             
             window.setVal('f-bas-nik', dp.nik); 
             window.setVal('f-bas-kk', dp.noKk || dp.kk);
@@ -1952,6 +1953,7 @@
             window.setVal('f-bas-taspen', dp.taspen); 
             window.setVal('f-bas-karpeg', dp.karpeg);
 
+            /* Seksi II: Jabatan */
             if (currentPegawai.sub2 === 'STRUKTURAL') {
                 window.setVal('f-st-nama-jabatan', dj.namaJabatan || currentPegawai.jabatan);
                 window.setVal('f-st-eselon', dj.eselon || 'NON_ESELON');
@@ -1966,6 +1968,7 @@
                 window.setVal('f-fn-tmt-sk', dj.tmtSk);
             }
 
+            /* Seksi III: Medis */
             window.setVal('f-med-no-str', dm.noStr);
             window.setVal('f-med-tgl-str', dm.tglStr);
             
@@ -1996,8 +1999,6 @@
 
             currentPegawai.status = window.getVal('f-bas-status-pegawai') || currentPegawai.status;
             currentPegawai.ruangan = window.getVal('f-bas-ruangan') || currentPegawai.ruangan;
-            currentPegawai.sub1 = window.getVal('f-bas-sub1') || currentPegawai.sub1 || 'MEDIS';
-
             if (selJab) currentPegawai.jabatan = selJab;
 
             const namaTanpaGelar = window.getVal('f-bas-nama-ijazah');
@@ -2159,7 +2160,6 @@
                         </h4>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
                             <div><strong>Status Kepegawaian:</strong> ${currentPegawai.status || '-'}</div>
-                            <div><strong>Rumpun SDM:</strong> ${currentPegawai.sub1 || 'MEDIS'}</div>
                             <div><strong>Unit Kerja Penempatan:</strong> ${currentPegawai.ruangan || '-'}</div>
                             <div><strong>Jalur Jabatan:</strong> ${currentPegawai.sub2 || 'FUNGSIONAL'}</div>
                             <div><strong>Nama Jabatan:</strong> ${currentPegawai.jabatan || '-'}</div>
@@ -2223,6 +2223,7 @@
             document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-10 overflow-x-hidden";
         });
 
+        /* Modal Handlers */
         window.openEditProfileModal = function() {
             if (!currentPegawai) return;
             window.setVal('edit-username', currentPegawai.username);
