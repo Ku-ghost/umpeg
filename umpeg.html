@@ -967,7 +967,17 @@
 
             <div id="panel-master-sub-pejabat" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
-                    <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat & Logo Kop Cetak Laporan (A4)</h3>
+                    <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat, Kop Cetak Laporan & Broadcast Pengumuman</h3>
+                    
+                    <!-- FITUR SENSASIONAL: BROADCAST PENGUMUMAN GLOBAL -->
+                    <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2">
+                        <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-bullhorn text-emerald-600"></i> Broadcast Teks Pengumuman Global (Muncul di Portal Pegawai)
+                        </label>
+                        <textarea id="cfg-global-announcement" rows="2" placeholder="Ketik pengumuman penting di sini, misal: 'Batas akhir pengumpulan SKP 2026 adalah tanggal 30 Agustus 2026'..." class="w-full bg-white border border-emerald-300 rounded-lg p-2.5 text-xs text-slate-900 font-medium focus:outline-none focus:border-emerald-600 shadow-2xs"></textarea>
+                        <p class="text-[9px] text-slate-500">* Kosongkan teks jika tidak ada pengumuman yang ingin ditayangkan pada halaman depan pegawai.</p>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
                         <div>
                             <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Logo Resmi RSUD Sinjai (PNG Link)</label>
@@ -993,7 +1003,7 @@
                     <div class="pt-2 flex justify-end">
                         <button onclick="window.updateKopMasterConfig()" class="h-8 sm:h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Simpan Konfigurasi Pejabat & Kop Logo</span>
+                            <span>Simpan Konfigurasi Pejabat & Broadcast Pengumuman</span>
                         </button>
                     </div>
                 </section>
@@ -1359,7 +1369,7 @@
         let masterGolonganList = [...DEFAULT_GOLONGAN];
         let masterOrgList = [...DEFAULT_ORG_PROFESI];
         let masterChecklistConfig = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
-        let masterKopConfig = { pejabatNama: '', pejabatJabatan: 'Kepala Sub Bagian UMPEG', pejabatNip: '', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png', ttdUrl: '' };
+        let masterKopConfig = { pejabatNama: '', pejabatJabatan: 'Kepala Sub Bagian UMPEG', pejabatNip: '', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png', ttdUrl: '', globalAnnouncement: '' };
 
         let pendingDeleteMaster = { type: null, category: null, index: null, itemId: null, targetNip: null, targetId: null };
         let activeAuditNip = null;
@@ -1791,6 +1801,14 @@
             else if (subName === 'ruangan') window.renderMasterRuanganCards();
             else if (subName === 'jabatan') { window.renderMasterJabatanGrid(); window.renderMasterEselonGrid(); window.renderMasterStatusPegGrid(); }
             else if (subName === 'pend-gol') { window.renderMasterEducationBadges(); window.renderMasterGolonganBadges(); window.renderMasterOrgBadges(); }
+            else if (subName === 'pejabat') {
+                if (document.getElementById('cfg-logo-url')) document.getElementById('cfg-logo-url').value = masterKopConfig.logoUrl || '';
+                if (document.getElementById('cfg-ttd-url')) document.getElementById('cfg-ttd-url').value = masterKopConfig.ttdUrl || '';
+                if (document.getElementById('cfg-pejabat-nama')) document.getElementById('cfg-pejabat-nama').value = masterKopConfig.pejabatNama || '';
+                if (document.getElementById('cfg-pejabat-jabatan')) document.getElementById('cfg-pejabat-jabatan').value = masterKopConfig.pejabatJabatan || '';
+                if (document.getElementById('cfg-pejabat-nip')) document.getElementById('cfg-pejabat-nip').value = masterKopConfig.pejabatNip || '';
+                if (document.getElementById('cfg-global-announcement')) document.getElementById('cfg-global-announcement').value = masterKopConfig.globalAnnouncement || '';
+            }
         };
 
         window.renderActiveView = function() {
@@ -2537,6 +2555,7 @@
             masterKopConfig.pejabatNama = document.getElementById('cfg-pejabat-nama')?.value || '';
             masterKopConfig.pejabatJabatan = document.getElementById('cfg-pejabat-jabatan')?.value || '';
             masterKopConfig.pejabatNip = document.getElementById('cfg-pejabat-nip')?.value || '';
+            masterKopConfig.globalAnnouncement = document.getElementById('cfg-global-announcement')?.value || '';
             window.saveMasterConfigToCloud();
         };
 
