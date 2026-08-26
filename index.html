@@ -534,11 +534,19 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                             <div>
                                 <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Status Kepegawaian <span class="text-rose-600">*</span></label>
                                 <select id="f-bas-status-pegawai" required class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-slate-900 text-xs focus:outline-none">
                                     <option value="" disabled selected>-- Pilih Status Kepegawaian --</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Rumpun SDM / Kategori <span class="text-rose-600">*</span></label>
+                                <select id="f-bas-sub1" required onchange="window.handleSub1Change()" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-extrabold text-slate-900 text-xs focus:outline-none">
+                                    <option value="MEDIS">MEDIS / TENAGA KESEHATAN</option>
+                                    <option value="NON MEDIS">NON MEDIS / ADM / TEKNIS</option>
                                 </select>
                             </div>
 
@@ -601,7 +609,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                                 <div>
                                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Kelompok Fungsional</label>
-                                    <input type="text" id="f-fn-kelompok" placeholder="Contoh: Keperawatan / Kebidanan / Medis" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
+                                    <input type="text" id="f-fn-kelompok" placeholder="Contoh: Keperawatan / Kebidanan / Administrasi" class="w-full h-11 sm:h-9 bg-white border border-emerald-300 rounded-lg px-3 font-semibold text-slate-900 text-xs focus:outline-none">
                                 </div>
                                 <div>
                                     <label class="block font-bold text-slate-700 text-[10px] uppercase mb-1">Jabatan Fungsional</label>
@@ -623,7 +631,7 @@
                         </div>
                     </section>
 
-                    <!-- SECTION III: LEGALITAS MEDIS / NAKES (Warna Kuning Tipis Amber) -->
+                    <!-- SECTION III: LEGALITAS MEDIS / NAKES -->
                     <section id="section-form-medis" class="bg-amber-50/60 p-3.5 sm:p-4 rounded-2xl border border-amber-200 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-amber-950 uppercase tracking-wider border-b border-amber-200/80 pb-2 flex items-center gap-2">
                             <i class="fa-solid fa-user-nurse text-amber-600"></i> III. Legalitas Medis & Profesi (Nakes)
@@ -1392,8 +1400,10 @@
             const parsedJabatan = window.tryParseJson(finalData.detail_jabatan || finalData.detailJabatan, {});
 
             const effectiveStatus = (gasData && gasData.status) ? gasData.status : (foundData ? (foundData.status_kepegawaian || foundData.status) : 'PNS');
-            const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1) : 'MEDIS');
             const effectiveSub2 = (gasData && gasData.sub2) ? gasData.sub2 : (parsedJabatan.sub2 || (foundData ? foundData.sub2 : 'FUNGSIONAL'));
+            const effectiveSub1Raw = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1 || 'MEDIS') : 'MEDIS');
+            const effectiveSub1 = (effectiveSub2 === 'STRUKTURAL') ? 'NON MEDIS' : effectiveSub1Raw;
+
             const effectiveJabatan = (gasData && gasData.jabatan) ? gasData.jabatan : (foundData ? foundData.jabatan : '');
             const effectiveRuangan = (gasData && gasData.ruangan) ? gasData.ruangan : (foundData ? foundData.ruangan : '');
 
@@ -1533,9 +1543,7 @@
         window.renderDashboard = function() {
             if (!currentPegawai) return;
 
-            // -------------------------------------------------------------
-            // FITUR 1: BROADCAST PENGUMUMAN GLOBAL (PAPAN INFORMASI PEGAWAI)
-            // -------------------------------------------------------------
+            // FITUR 1: BROADCAST PENGUMUMAN GLOBAL
             const announcementBanner = document.getElementById('global-announcement-banner');
             const announcementText = document.getElementById('global-announcement-text');
             if (announcementBanner && announcementText) {
@@ -1548,16 +1556,13 @@
                 }
             }
 
-            // -------------------------------------------------------------
             // FITUR 2: EARLY WARNING SYSTEM (PERINGATAN DINI STR & SIP)
-            // -------------------------------------------------------------
             const earlyWarningBox = document.getElementById('early-warning-banner');
             if (earlyWarningBox) {
                 const dm = currentPegawai.detailMedis || {};
                 const now = new Date();
                 let alertsHtml = '';
 
-                // Cek STR
                 if (dm.expStr && dm.expStr !== 'Seumur Hidup') {
                     const expDate = new Date(dm.expStr);
                     if (!isNaN(expDate.getTime())) {
@@ -1592,7 +1597,6 @@
                     }
                 }
 
-                // Cek SIP
                 if (dm.expSip) {
                     const expSipDate = new Date(dm.expSip);
                     if (!isNaN(expSipDate.getTime())) {
@@ -1635,9 +1639,7 @@
                 }
             }
 
-            // -------------------------------------------------------------
             // FITUR 3: TRACKER KENAIKAN PANGKAT (KP) & GAJI BERKALA (KGB)
-            // -------------------------------------------------------------
             const kpTrackerBox = document.getElementById('kp-kgb-tracker-container');
             if (kpTrackerBox) {
                 const dj = currentPegawai.detailJabatan || {};
@@ -1667,7 +1669,7 @@
 
             // PROFIL SUMMARY RENDERER
             window.setText('p-nama', currentPegawai.nama || currentPegawai.username);
-            window.setText('p-status-badge', currentPegawai.status ? `${currentPegawai.status} • ${currentPegawai.sub1} • ${currentPegawai.sub2}` : 'Belum Ditentukan');
+            window.setText('p-status-badge', currentPegawai.status ? `${currentPegawai.status} • ${currentPegawai.sub1 || 'MEDIS'} • ${currentPegawai.sub2}` : 'Belum Ditentukan');
             window.setText('p-id-display', `<i class="fa-solid fa-fingerprint text-emerald-600 mr-0.5"></i>ID: ${currentPegawai.idPegawai}`);
             window.setText('p-nip-display', `<i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i>NIP: ${currentPegawai.nip}`);
             window.setText('p-jabatan', `<i class="fa-solid fa-user-tie text-emerald-600 mr-0.5"></i>${currentPegawai.jabatan || '-'}`);
@@ -1856,6 +1858,11 @@
                 if (curr) statusEl.value = curr;
             }
 
+            const sub1Select = document.getElementById('f-bas-sub1');
+            if (sub1Select && currentPegawai) {
+                sub1Select.value = currentPegawai.sub1 || 'MEDIS';
+            }
+
             const golSelect = document.getElementById('f-bas-golongan');
             if (golSelect) {
                 const curr = currentPegawai?.detailPersonal?.golongan || golSelect.value;
@@ -1880,6 +1887,18 @@
             window.toggleJabatanFormType();
         };
 
+        window.handleSub1Change = function() {
+            if (!currentPegawai) return;
+            const val = window.getVal('f-bas-sub1');
+            if (val) {
+                currentPegawai.sub1 = val;
+                const secMedis = document.getElementById('section-form-medis');
+                if (secMedis) {
+                    secMedis.classList.toggle('hidden', currentPegawai.sub2 === 'STRUKTURAL' || val === 'NON MEDIS');
+                }
+            }
+        };
+
         window.toggleJalurJabatanForm = function() {
             if (!currentPegawai) return;
             window.captureCurrentFormInputToMemory();
@@ -1895,6 +1914,24 @@
             const secFn = document.getElementById('section-form-fungsional');
             const secMedis = document.getElementById('section-form-medis');
             const badgeJalur = document.getElementById('display-jalur-jabatan');
+            const sub1Select = document.getElementById('f-bas-sub1');
+
+            if (isSt) {
+                currentPegawai.sub1 = 'NON MEDIS';
+                if (sub1Select) {
+                    sub1Select.value = 'NON MEDIS';
+                    sub1Select.disabled = true;
+                    sub1Select.classList.add('bg-slate-100', 'cursor-not-allowed');
+                }
+            } else {
+                if (sub1Select) {
+                    sub1Select.disabled = false;
+                    sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                    if (sub1Select.value) {
+                        currentPegawai.sub1 = sub1Select.value;
+                    }
+                }
+            }
 
             if (badgeJalur) {
                 badgeJalur.innerText = isSt ? "Jalur: Struktural (Manajerial)" : "Jalur: Fungsional (Non-Manajerial)";
@@ -1904,8 +1941,7 @@
             if (secSt) secSt.classList.toggle('hidden', !isSt);
             if (secFn) secFn.classList.toggle('hidden', isSt);
             
-            // Sembunyikan otomatis formulir Legalitas Medis (Seksi III) jika memilih Struktural
-            if (secMedis) secMedis.classList.toggle('hidden', isSt);
+            if (secMedis) secMedis.classList.toggle('hidden', isSt || currentPegawai.sub1 === 'NON MEDIS');
 
             const el = document.getElementById(isSt ? 'f-st-nama-jabatan' : 'f-fn-nama-jabatan');
             if (el) {
@@ -1927,6 +1963,7 @@
             /* Seksi I: Personal */
             if (currentPegawai.status) window.setVal('f-bas-status-pegawai', currentPegawai.status);
             if (dp.golongan) window.setVal('f-bas-golongan', dp.golongan);
+            if (currentPegawai.sub1) window.setVal('f-bas-sub1', currentPegawai.sub1);
             
             window.setVal('f-bas-nik', dp.nik); 
             window.setVal('f-bas-kk', dp.noKk || dp.kk);
@@ -1999,6 +2036,13 @@
 
             currentPegawai.status = window.getVal('f-bas-status-pegawai') || currentPegawai.status;
             currentPegawai.ruangan = window.getVal('f-bas-ruangan') || currentPegawai.ruangan;
+            
+            if (isSt) {
+                currentPegawai.sub1 = 'NON MEDIS';
+            } else {
+                currentPegawai.sub1 = window.getVal('f-bas-sub1') || currentPegawai.sub1 || 'MEDIS';
+            }
+
             if (selJab) currentPegawai.jabatan = selJab;
 
             const namaTanpaGelar = window.getVal('f-bas-nama-ijazah');
@@ -2160,6 +2204,7 @@
                         </h4>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
                             <div><strong>Status Kepegawaian:</strong> ${currentPegawai.status || '-'}</div>
+                            <div><strong>Rumpun SDM:</strong> ${currentPegawai.sub1 || 'MEDIS'}</div>
                             <div><strong>Unit Kerja Penempatan:</strong> ${currentPegawai.ruangan || '-'}</div>
                             <div><strong>Jalur Jabatan:</strong> ${currentPegawai.sub2 || 'FUNGSIONAL'}</div>
                             <div><strong>Nama Jabatan:</strong> ${currentPegawai.jabatan || '-'}</div>
