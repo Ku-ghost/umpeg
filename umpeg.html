@@ -200,6 +200,7 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-16">
 
+    <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
             <i class="fa-solid fa-tower-cell"></i>
@@ -1378,6 +1379,17 @@
         let realtimeChannel = null;
         let pollingTimer = null;
 
+        window.tryParseJson = function(data, fallback = {}) {
+            if (!data) return fallback;
+            if (typeof data === 'object') return data;
+            try { return JSON.parse(data); } catch (e) { return fallback; }
+        };
+
+        window.isMatchingKey = function(val1, val2) {
+            if (!val1 || !val2) return false;
+            return String(val1).trim().toLowerCase() === String(val2).trim().toLowerCase();
+        };
+
         window.setText = function(id, val) { 
             const el = document.getElementById(id); 
             if (el) el.innerText = val !== undefined && val !== null ? val : ''; 
@@ -1542,7 +1554,7 @@
                         .maybeSingle();
 
                     if (masterCfg && masterCfg.config_data) {
-                        const cfg = masterCfg.config_data;
+                        const cfg = window.tryParseJson(masterCfg.config_data, masterCfg.config_data);
                         if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
                         if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
                         if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
@@ -1679,43 +1691,34 @@
             }
         };
 
-        function tryParse(str) {
-            try { return typeof str === 'string' ? JSON.parse(str) : (str || {}); } catch(e) { return {}; }
-        }
-
         function normalizePegawaiData(raw) {
             if (!raw) return null;
-            const detailPersonal = tryParse(raw.detailPersonal || raw.detail_personal);
-            const detailJabatan = tryParse(raw.detailJabatan || raw.detail_jabatan);
-            const detailMedis = tryParse(raw.detailMedis || raw.detail_medis);
-            const linksMap = tryParse(raw.linksMap || raw.link_url_drive || raw.links_map);
-            const riwayatEdu = tryParse(raw.riwayatPendidikan || raw.riwayat_pendidikan || []);
+            const detailPersonal = window.tryParseJson(raw.detailPersonal || raw.detail_personal, {});
+            const detailJabatan = window.tryParseJson(raw.detailJabatan || raw.detail_jabatan, {});
+            const detailMedis = window.tryParseJson(raw.detailMedis || raw.detail_medis, {});
+            const linksMap = window.tryParseJson(raw.linksMap || raw.link_url_drive || raw.links_map, {});
+            const riwayatEdu = window.tryParseJson(raw.riwayatPendidikan || raw.riwayat_pendidikan, []);
 
-            const rawSub2 = String(raw.sub2 || raw.SUB2 || detailJabatan.sub2 || 'FUNGSIONAL').toUpperCase();
-            let rawSub1 = String(raw.sub1 || raw.SUB1 || 'MEDIS').toUpperCase();
-
-            // Aturan Bisnis Otomatis: Jika Struktural, sub1 pasti NON MEDIS
-            if (rawSub2 === 'STRUKTURAL') {
-                rawSub1 = 'NON MEDIS';
-            }
+            const rawSub2 = String(raw.sub2 || raw.SUB2 || detailJabatan.sub2 || 'FUNGSIONAL').trim();
+            const rawSub1 = String(raw.sub1 || raw.SUB1 || detailPersonal.sub1 || detailJabatan.sub1 || 'MEDIS').trim();
 
             return {
-                idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || '',
-                nip: String(raw.nip || raw.NIP || '').trim(),
-                username: raw.username || raw.USERNAME || raw.nama || '',
-                nama: raw.nama || raw.NAMA || raw.username || '',
-                status: raw.status || raw.STATUS || raw.status_kepegawaian || 'PNS',
+                idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || raw.id || '',
+                nip: String(raw.nip || raw.NIP || raw.Nip || '').trim(),
+                username: raw.username || raw.USERNAME || raw.Username || raw.nama || '',
+                nama: raw.nama || raw.NAMA || raw.Nama || raw.nama_lengkap || detailPersonal.namaLengkap || detailPersonal.namaTanpaGelar || raw.username || '',
+                status: raw.status || raw.STATUS || raw.Status || raw.status_kepegawaian || raw.status_pegawai || 'PNS',
                 sub1: rawSub1,
                 sub2: rawSub2,
-                jabatan: raw.jabatan || raw.JABATAN || detailJabatan.namaJabatan || '-',
-                ruangan: raw.ruangan || raw.RUANGAN || detailJabatan.ruangan || '-',
+                jabatan: raw.jabatan || raw.JABATAN || raw.Jabatan || detailJabatan.namaJabatan || detailJabatan.jabatan || '-',
+                ruangan: raw.ruangan || raw.RUANGAN || raw.Ruangan || raw.unit_kerja || detailJabatan.ruangan || '-',
                 detailPersonal: detailPersonal,
                 detailJabatan: detailJabatan,
                 detailMedis: detailMedis,
                 linksMap: linksMap,
                 riwayatPendidikan: Array.isArray(riwayatEdu) ? riwayatEdu : [],
                 hp: detailPersonal.hp || raw.hp || raw.no_hp || '',
-                tmpLahir: detailPersonal.tmpLahir || raw.tmpLahir || raw.tempatLahir || '',
+                tmpLahir: detailPersonal.tmpLahir || detailPersonal.tempatLahir || raw.tmpLahir || raw.tempatLahir || '',
                 tglLahir: detailPersonal.tglLahir || raw.tglLahir || '',
                 jk: detailPersonal.jk || raw.jk || '',
                 email: detailPersonal.email || raw.email || '',
@@ -1733,7 +1736,20 @@
 
             try {
                 if (supabaseClient) {
-                    // 1. Fetch pegawai data from Supabase
+                    // 1. Fetch system_config
+                    try {
+                        const { data: sysCfg } = await supabaseClient
+                            .from('system_config')
+                            .select('*')
+                            .eq('id', window.state.appId)
+                            .maybeSingle();
+                        if (sysCfg) {
+                            if (sysCfg.gas_url) window.state.gasUrl = sysCfg.gas_url;
+                            if (sysCfg.system_password) serverApiConfig.password = sysCfg.system_password;
+                        }
+                    } catch(e) {}
+
+                    // 2. Fetch pegawai_lemari_digital
                     const { data: supaPegData, error: supaErr } = await supabaseClient
                         .from('pegawai_lemari_digital')
                         .select('*');
@@ -1742,7 +1758,7 @@
                         masterPegawaiDb = supaPegData.map(item => normalizePegawaiData(item));
                     }
 
-                    // 2. Fetch master configuration from Supabase
+                    // 3. Fetch master_umpeg_config
                     const { data: masterCfg } = await supabaseClient
                         .from('master_umpeg_config')
                         .select('*')
@@ -1750,7 +1766,7 @@
                         .maybeSingle();
 
                     if (masterCfg && masterCfg.config_data) {
-                        const cfg = masterCfg.config_data;
+                        const cfg = window.tryParseJson(masterCfg.config_data, masterCfg.config_data);
                         if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
                         if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
                         if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
@@ -1769,7 +1785,7 @@
                 const url = window.state.gasUrl || serverApiConfig.gasUrl;
                 if (url && url.startsWith('http')) {
                     try {
-                        const fetchUrl = url.includes('?') ? `${url}&sheet=all` : `${url}?sheet=all`;
+                        const fetchUrl = url.includes('?') ? `${url}&sheet=all&action=all` : `${url}?sheet=all&action=all`;
                         const res = await fetch(fetchUrl);
                         const json = await res.json();
 
@@ -1778,8 +1794,23 @@
                         else if (json && Array.isArray(json.data)) rawList = json.data;
                         else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
 
-                        if (rawList && rawList.length > 0 && masterPegawaiDb.length === 0) {
-                            masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
+                        if (rawList && rawList.length > 0) {
+                            if (masterPegawaiDb.length === 0) {
+                                masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
+                            } else {
+                                rawList.forEach(gasPeg => {
+                                    const normGas = normalizePegawaiData(gasPeg);
+                                    const existing = masterPegawaiDb.find(p => window.isMatchingKey(p.nip, normGas.nip) || window.isMatchingKey(p.idPegawai, normGas.idPegawai));
+                                    if (!existing) {
+                                        masterPegawaiDb.push(normGas);
+                                    } else {
+                                        if (!existing.sub1 || existing.sub1 === '-') existing.sub1 = normGas.sub1;
+                                        if (!existing.sub2 || existing.sub2 === '-') existing.sub2 = normGas.sub2;
+                                        if (!existing.jabatan || existing.jabatan === '-') existing.jabatan = normGas.jabatan;
+                                        if (!existing.ruangan || existing.ruangan === '-') existing.ruangan = normGas.ruangan;
+                                    }
+                                });
+                            }
                         }
                         
                         if (json && json.config) {
@@ -1800,7 +1831,6 @@
                 console.warn("Gagal pull data:", e); 
             } finally {
                 window.state.isSyncing = false;
-                const spinner = document.getElementById('auto-sync-spinner');
                 if (spinner) spinner.classList.remove('animate-spin');
             }
         };
@@ -2083,7 +2113,7 @@
                             <div class="text-[8.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5">
-                            <div class="font-extrabold text-slate-800">${p.status || '-'}</div>
+                            <div class="font-extrabold text-slate-800">${p.status || '-'} • <span class="text-emerald-700">${p.sub1}</span></div>
                             <div class="text-[8.5px] text-slate-500 truncate max-w-[120px]">${p.ruangan || '-'}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5 text-center font-mono font-bold">
@@ -2137,7 +2167,7 @@
                         </td>
                         <td class="p-1.5 sm:p-2.5 font-mono font-bold text-slate-800">${p.nip || '-'}</td>
                         <td class="p-1.5 sm:p-2.5">
-                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'}</div>
+                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'} (${p.sub1 || 'MEDIS'})</div>
                             <div class="text-[8.5px] text-slate-500">${p.ruangan || '-'}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5">${waButton}</td>
@@ -2732,7 +2762,7 @@
                     document.getElementById('edit-staf-sub2').value = target.sub2 || 'FUNGSIONAL';
                     
                     if (sub1Select) {
-                        sub1Select.value = target.sub2 === 'STRUKTURAL' ? 'NON MEDIS' : (target.sub1 || 'MEDIS');
+                        sub1Select.value = target.sub1 || 'MEDIS';
                     }
                     if (statusSelect) statusSelect.value = target.status || 'PNS';
                     if (ruanganSelect) ruanganSelect.value = target.ruangan || masterRuanganList[0];
@@ -2760,12 +2790,7 @@
 
         window.handleAdminEditJalurChange = function(targetJabatanValue = null) {
             const jalur = document.getElementById('edit-staf-sub2')?.value || 'FUNGSIONAL';
-            const sub1Select = document.getElementById('edit-staf-sub1');
             const jabatanSelect = document.getElementById('edit-staf-jabatan');
-
-            if (jalur === 'STRUKTURAL' && sub1Select) {
-                sub1Select.value = 'NON MEDIS';
-            }
 
             if (!jabatanSelect) return;
             
@@ -2813,13 +2838,14 @@
             target.nip = document.getElementById('edit-staf-nip')?.value;
             target.status = document.getElementById('edit-staf-status')?.value;
             target.sub2 = document.getElementById('edit-staf-sub2')?.value;
-            target.sub1 = target.sub2 === 'STRUKTURAL' ? 'NON MEDIS' : (document.getElementById('edit-staf-sub1')?.value || 'MEDIS');
+            target.sub1 = document.getElementById('edit-staf-sub1')?.value || 'MEDIS';
             target.jabatan = document.getElementById('edit-staf-jabatan')?.value;
             target.ruangan = document.getElementById('edit-staf-ruangan')?.value;
 
             target.detailJabatan.jabatan = target.jabatan;
             target.detailJabatan.ruangan = target.ruangan;
             target.detailJabatan.sub2 = target.sub2;
+            target.detailJabatan.sub1 = target.sub1;
 
             if (isNew) masterPegawaiDb.push(target);
 
@@ -2839,6 +2865,7 @@
                         detail_personal: target.detailPersonal,
                         detail_jabatan: target.detailJabatan,
                         detail_medis: target.detailMedis,
+                        riwayat_pendidikan: target.riwayatPendidikan,
                         verifikasi_status: target.verifikasiStatus || 'PENDING',
                         verifikasi_catatan: target.verifikasiCatatan || '',
                         last_updated_at: new Date().toISOString()
@@ -2972,7 +2999,7 @@
 
         window.closeDocViewer = function() {
             const iframe = document.getElementById('modal-doc-iframe');
-            if (iframe) iframe.src = 'about:blank';
+            if(iframe) iframe.src = 'about:blank';
             const modal = document.getElementById('modal-doc-viewer');
             if (modal) modal.classList.add('hidden');
         };
