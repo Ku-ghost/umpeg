@@ -213,7 +213,6 @@
 
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-2.5 sm:px-4 lg:px-6 py-2 shrink-0 no-print">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
-            
             <div class="flex items-center space-x-2 shrink-0">
                 <div id="app-header-logo-box" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf overflow-hidden shrink-0">
                     <i class="fa-solid fa-tower-cell" id="app-header-logo-icon"></i>
@@ -1159,7 +1158,7 @@
                         <select id="edit-staf-status" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none"></select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Sub Kategori 1</label>
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Rumpun SDM (Sub 1)</label>
                         <select id="edit-staf-sub1" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none">
                             <option value="MEDIS">MEDIS / NAKES</option>
                             <option value="NON MEDIS">NON MEDIS / ADM / TEKNIS</option>
@@ -1536,7 +1535,6 @@
                         window.saveLocalServerConfig();
                     }
 
-                    // Directly fetch master_umpeg_config from Cloud first
                     const { data: masterCfg } = await supabaseClient
                         .from('master_umpeg_config')
                         .select('*')
@@ -1693,23 +1691,31 @@
             const linksMap = tryParse(raw.linksMap || raw.link_url_drive || raw.links_map);
             const riwayatEdu = tryParse(raw.riwayatPendidikan || raw.riwayat_pendidikan || []);
 
+            const rawSub2 = String(raw.sub2 || raw.SUB2 || detailJabatan.sub2 || 'FUNGSIONAL').toUpperCase();
+            let rawSub1 = String(raw.sub1 || raw.SUB1 || 'MEDIS').toUpperCase();
+
+            // Aturan Bisnis Otomatis: Jika Struktural, sub1 pasti NON MEDIS
+            if (rawSub2 === 'STRUKTURAL') {
+                rawSub1 = 'NON MEDIS';
+            }
+
             return {
                 idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || '',
                 nip: String(raw.nip || raw.NIP || '').trim(),
                 username: raw.username || raw.USERNAME || raw.nama || '',
                 nama: raw.nama || raw.NAMA || raw.username || '',
                 status: raw.status || raw.STATUS || raw.status_kepegawaian || 'PNS',
-                sub1: raw.sub1 || raw.SUB1 || 'MEDIS',
-                sub2: raw.sub2 || raw.SUB2 || 'FUNGSIONAL',
-                jabatan: raw.jabatan || raw.JABATAN || '-',
-                ruangan: raw.ruangan || raw.RUANGAN || '-',
+                sub1: rawSub1,
+                sub2: rawSub2,
+                jabatan: raw.jabatan || raw.JABATAN || detailJabatan.namaJabatan || '-',
+                ruangan: raw.ruangan || raw.RUANGAN || detailJabatan.ruangan || '-',
                 detailPersonal: detailPersonal,
                 detailJabatan: detailJabatan,
                 detailMedis: detailMedis,
                 linksMap: linksMap,
                 riwayatPendidikan: Array.isArray(riwayatEdu) ? riwayatEdu : [],
                 hp: detailPersonal.hp || raw.hp || raw.no_hp || '',
-                tmpLahir: detailPersonal.tmpLahir || raw.tmpLahir || '',
+                tmpLahir: detailPersonal.tmpLahir || raw.tmpLahir || raw.tempatLahir || '',
                 tglLahir: detailPersonal.tglLahir || raw.tglLahir || '',
                 jk: detailPersonal.jk || raw.jk || '',
                 email: detailPersonal.email || raw.email || '',
@@ -1721,7 +1727,6 @@
         }
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
-            // First priority: Load directly from Supabase DB
             if (supabaseClient) {
                 try {
                     const { data: supaPegData, error: supaErr } = await supabaseClient
@@ -1737,7 +1742,6 @@
                 } catch (e) {}
             }
 
-            // Secondary fallback: GAS API Endpoint
             const url = window.state.gasUrl || serverApiConfig.gasUrl;
             if (!url || !url.startsWith('http')) return;
 
@@ -2687,7 +2691,7 @@
 
             window.closeAuditModal();
             window.renderActiveView();
-            window.showToast("Hasil Audit Berhasil Disimpan & Diteruskan!", "success");
+            window.showToast("Hasil Audit Berhasil Disimpan & Broadcast!", "success");
         };
 
         window.openEditStafAdminModal = function(nip = null) {
@@ -2696,6 +2700,8 @@
             
             const ruanganSelect = document.getElementById('edit-staf-ruangan');
             if (ruanganSelect) ruanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
+
+            const sub1Select = document.getElementById('edit-staf-sub1');
             
             if (nip) {
                 const target = masterPegawaiDb.find(p => p.nip === nip);
@@ -2703,8 +2709,11 @@
                     document.getElementById('edit-staf-target-id').value = target.idPegawai;
                     document.getElementById('edit-staf-nama').value = target.nama || target.username;
                     document.getElementById('edit-staf-nip').value = target.nip;
-                    document.getElementById('edit-staf-sub1').value = target.sub1 || 'MEDIS';
                     document.getElementById('edit-staf-sub2').value = target.sub2 || 'FUNGSIONAL';
+                    
+                    if (sub1Select) {
+                        sub1Select.value = target.sub2 === 'STRUKTURAL' ? 'NON MEDIS' : (target.sub1 || 'MEDIS');
+                    }
                     if (statusSelect) statusSelect.value = target.status || 'PNS';
                     if (ruanganSelect) ruanganSelect.value = target.ruangan || masterRuanganList[0];
                     window.handleAdminEditJalurChange(target.jabatan);
@@ -2713,8 +2722,8 @@
                 document.getElementById('edit-staf-target-id').value = '';
                 document.getElementById('edit-staf-nama').value = '';
                 document.getElementById('edit-staf-nip').value = '';
-                document.getElementById('edit-staf-sub1').value = 'MEDIS';
                 document.getElementById('edit-staf-sub2').value = 'FUNGSIONAL';
+                if (sub1Select) sub1Select.value = 'MEDIS';
                 if (statusSelect) statusSelect.value = masterStatusPegList[0] || 'PNS';
                 if (ruanganSelect) ruanganSelect.value = masterRuanganList[0];
                 window.handleAdminEditJalurChange();
@@ -2731,7 +2740,13 @@
 
         window.handleAdminEditJalurChange = function(targetJabatanValue = null) {
             const jalur = document.getElementById('edit-staf-sub2')?.value || 'FUNGSIONAL';
+            const sub1Select = document.getElementById('edit-staf-sub1');
             const jabatanSelect = document.getElementById('edit-staf-jabatan');
+
+            if (jalur === 'STRUKTURAL' && sub1Select) {
+                sub1Select.value = 'NON MEDIS';
+            }
+
             if (!jabatanSelect) return;
             
             const currentSelected = targetJabatanValue !== null ? targetJabatanValue : jabatanSelect.value;
@@ -2777,8 +2792,8 @@
             target.username = target.nama;
             target.nip = document.getElementById('edit-staf-nip')?.value;
             target.status = document.getElementById('edit-staf-status')?.value;
-            target.sub1 = document.getElementById('edit-staf-sub1')?.value;
             target.sub2 = document.getElementById('edit-staf-sub2')?.value;
+            target.sub1 = target.sub2 === 'STRUKTURAL' ? 'NON MEDIS' : (document.getElementById('edit-staf-sub1')?.value || 'MEDIS');
             target.jabatan = document.getElementById('edit-staf-jabatan')?.value;
             target.ruangan = document.getElementById('edit-staf-ruangan')?.value;
 
@@ -2815,7 +2830,7 @@
 
             window.closeEditStafAdminModal();
             window.renderActiveView();
-            window.showToast("Data Staf Berhasil Disimpan & Disiarkan!", "success");
+            window.showToast("Data Staf Berhasil Disimpan & Broadcast Sinyal!", "success");
         };
 
         window.confirmDeleteStaf = function(nip, idPegawai) {
@@ -2877,7 +2892,7 @@
                             <div><strong>NIP / SK:</strong> ${target.nip || '-'}</div>
                             <div><strong>NIK KTP:</strong> ${dp.nik || '-'}</div>
                             <div><strong>No. HP:</strong> ${dp.hp || '-'}</div>
-                            <div><strong>Tempat/Tgl Lahir:</strong> ${dp.tmpLahir || '-'}, ${dp.tglLahir || '-'}</div>
+                            <div><strong>Tempat/Tgl Lahir:</strong> ${dp.tmpLahir || dp.tempatLahir || '-'}, ${dp.tglLahir || '-'}</div>
                             <div><strong>Agama / JK:</strong> ${dp.agama || '-'} / ${dp.jk || '-'}</div>
                         </div>
                     </div>
@@ -2886,6 +2901,7 @@
                         <h4 class="font-bold uppercase text-emerald-950 border-b pb-1">II. Status & Kedinasan</h4>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
                             <div><strong>Status Pegawai:</strong> ${target.status || '-'}</div>
+                            <div><strong>Rumpun SDM:</strong> ${target.sub1 || 'MEDIS'}</div>
                             <div><strong>Unit Kerja:</strong> ${target.ruangan || '-'}</div>
                             <div><strong>Jabatan:</strong> ${target.jabatan || '-'} (${target.sub2})</div>
                             <div><strong>Golongan / Eselon:</strong> ${dp.golongan || '-'} / ${dj.eselon || 'NON_ESELON'}</div>
@@ -2945,7 +2961,6 @@
                 if (el) el.innerText = new Date().toLocaleTimeString('id-ID') + ' WITA';
             }, 1000);
             
-            // Execute Cloud-First Initialization
             window.initDynamicServices().finally(() => {
                 window.pullAllDataFromGas(false).finally(() => {
                     const loader = document.getElementById('loading-screen');
