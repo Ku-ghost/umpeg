@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Admin UMPEG RSUD Sinjai - Realtime Dynamic Engine</title>
+    <title>Portal Admin UMPEG RSUD Sinjai - Dynamic Engine Integration</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -200,7 +200,6 @@
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col antialiased selection:bg-leaf-500 selection:text-white text-xs pb-16">
 
-    <!-- Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
             <i class="fa-solid fa-tower-cell"></i>
@@ -208,37 +207,38 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span id="loading-status-text">Menghubungkan Engine Cloud-First Supabase...</span>
+            <span>Memuat Engine System UMPEG...</span>
         </p>
     </div>
 
     <header class="sticky top-0 z-40 glass-panel border-b border-emerald-200/80 px-2.5 sm:px-4 lg:px-6 py-2 shrink-0 no-print">
         <div class="w-full max-w-[98%] mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
+            
             <div class="flex items-center space-x-2 shrink-0">
                 <div id="app-header-logo-box" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-lime-500 flex items-center justify-center text-white font-black text-sm shadow-xs glow-leaf overflow-hidden shrink-0">
                     <i class="fa-solid fa-tower-cell" id="app-header-logo-icon"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <h1 class="text-[11px] sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase leading-tight">PORTAL ADMIN UMPEG</h1>
-                        <button onclick="window.openConfigAuthModal()" class="text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap" title="Konfigurasi Server Sync API & Supabase">
+                        <h1 class="text-[11px] sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase leading-tight">PORTAL UMPEG RSUD SINJAI</h1>
+                        <button onclick="window.openConfigAuthModal()" class="text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-extrabold flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap" title="Konfigurasi Server Sync API & Cloud">
                             <i class="fa-solid fa-gears text-emerald-700"></i>
-                            <span class="hidden xs:inline">Konfigurasi Server</span>
+                            <span class="hidden xs:inline">Konfigurasi</span>
                         </button>
                     </div>
-                    <p class="text-[9.5px] text-emerald-700 font-medium hidden md:block truncate max-w-xs md:max-w-md">Cloud-First Integration - Single Source of Truth</p>
+                    <p class="text-[9.5px] text-emerald-700 font-medium hidden md:block truncate max-w-xs md:max-w-md">Sistem Integrasi Realtime Google Sheets (GAS) & Supabase</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-2 text-xs shrink-0">
                 <div id="ws-indicator-badge" class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0">
                     <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
-                    <span id="ws-status-text" class="whitespace-nowrap">🔴 Menghubungkan Cloud...</span>
+                    <span id="ws-status-text" class="whitespace-nowrap">🔴 Offline</span>
                 </div>
                 
                 <div id="auto-sync-status-badge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-800 text-emerald-100 font-extrabold text-[9.5px] shadow-2xs shrink-0 whitespace-nowrap">
                     <i class="fa-solid fa-rotate text-emerald-300 text-[10px]" id="auto-sync-spinner"></i>
-                    <span id="auto-sync-text">Cloud-First</span>
+                    <span id="auto-sync-text">Auto-Sync</span>
                 </div>
 
                 <div class="flex items-center gap-1 pl-1.5 border-l border-emerald-200 text-[9.5px] text-emerald-900 font-mono hidden lg:flex shrink-0 whitespace-nowrap">
@@ -249,6 +249,7 @@
         </div>
     </header>
 
+    <!-- STICKY MOBILE NAVIGATION BAR -->
     <nav class="sticky top-[49px] sm:top-[53px] z-30 glass-panel border-b border-emerald-200/90 py-1.5 px-2 no-print shadow-md">
         <div class="w-full max-w-[98%] mx-auto">
             <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
@@ -291,7 +292,7 @@
                     <h2 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i> Ringkasan Eksekutif Kepegawaian
                     </h2>
-                    <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Cloud-First - Realtime</span>
+                    <span class="text-[8.5px] sm:text-[9px] text-emerald-800 font-semibold font-mono bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">Production Mode - Realtime</span>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
@@ -783,7 +784,7 @@
             </section>
         </div>
 
-        <!-- MASTER DATA VIEW -->
+        <!-- KELOLA MASTER VIEW -->
         <div id="admin-view-master-data" class="hidden space-y-3 fade-in">
             <div class="flex items-center gap-1 bg-emerald-100/90 p-1 sm:p-1.5 rounded-xl border border-emerald-200 text-xs overflow-x-auto shadow-2xs no-print mobile-tab-scroll">
                 <button type="button" onclick="window.switchMasterSubTab('checklist')" id="btn-master-sub-checklist" class="flex-1 min-w-[140px] h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-extrabold text-white bg-emerald-700 shadow-2xs transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer text-[11px] sm:text-xs">
@@ -968,6 +969,7 @@
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat, Kop Cetak Laporan & Broadcast Pengumuman</h3>
                     
+                    <!-- FITUR SENSASIONAL: BROADCAST PENGUMUMAN GLOBAL -->
                     <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2">
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase flex items-center gap-1.5">
                             <i class="fa-solid fa-bullhorn text-emerald-600"></i> Broadcast Teks Pengumuman Global (Muncul di Portal Pegawai)
@@ -1010,7 +1012,7 @@
     </main>
 
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide no-print border-t border-emerald-700 shadow-lg">
-        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost Serverless Dynamic Configuration
+        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Dynamic Configuration Driver)
     </footer>
 
     <!-- Modal Auth Password Config -->
@@ -1034,7 +1036,7 @@
                     <i class="fa-solid fa-tower-broadcast text-emerald-300 text-sm"></i>
                     <div>
                         <h3 class="text-xs font-extrabold uppercase">Konfigurasi Antena Supabase & GAS Engine</h3>
-                        <p class="text-[9px] text-emerald-200">Koneksi Realtime Tersentralisasi Plug-and-Play</p>
+                        <p class="text-[9px] text-emerald-200">Koneksi Multi-Table Realtime Tersentralisasi Plug-and-Play</p>
                     </div>
                 </div>
                 <button type="button" onclick="window.closeServerConfigModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
@@ -1159,10 +1161,10 @@
                         <select id="edit-staf-status" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none"></select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Rumpun SDM (Sub 1)</label>
+                        <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Sub Kategori 1</label>
                         <select id="edit-staf-sub1" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none">
                             <option value="MEDIS">MEDIS / NAKES</option>
-                            <option value="NON MEDIS">NON MEDIS / ADM / TEKNIS</option>
+                            <option value="NONMEDIS">NON-MEDIS</option>
                         </select>
                     </div>
                 </div>
@@ -1213,7 +1215,7 @@
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
-                <h3 class="text-xs font-extrabold uppercase">Preview Cetak Dossier Pegawai</h3>
+                <h3 class="text-xs font-extrabold uppercase">Preview Cetak DRH / Dossier Pegawai</h3>
                 <div class="flex items-center gap-2">
                     <button onclick="window.triggerPrintProfile()" class="h-8 px-3 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-print"></i> Cetak A4 Portrait
@@ -1263,9 +1265,9 @@
     <script>
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
-            supabaseUrl: "https://dlstwmavfxtktlwqajvj.supabase.co",
-            supabaseAnonKey: "sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O",
-            gasUrl: "https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec",
+            supabaseUrl: "",
+            supabaseAnonKey: "",
+            gasUrl: "",
             password: "kugoskom36"
         };
 
@@ -1379,17 +1381,6 @@
         let realtimeChannel = null;
         let pollingTimer = null;
 
-        window.tryParseJson = function(data, fallback = {}) {
-            if (!data) return fallback;
-            if (typeof data === 'object') return data;
-            try { return JSON.parse(data); } catch (e) { return fallback; }
-        };
-
-        window.isMatchingKey = function(val1, val2) {
-            if (!val1 || !val2) return false;
-            return String(val1).trim().toLowerCase() === String(val2).trim().toLowerCase();
-        };
-
         window.setText = function(id, val) { 
             const el = document.getElementById(id); 
             if (el) el.innerText = val !== undefined && val !== null ? val : ''; 
@@ -1414,7 +1405,7 @@
 
             if (state === 'online') {
                 dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0";
-                txt.innerHTML = `<span class="inline sm:hidden">🟢 Realtime</span><span class="hidden sm:inline">🟢 Cloud-First Online</span>`;
+                txt.innerHTML = `<span class="inline sm:hidden">🟢 Realtime</span><span class="hidden sm:inline">🟢 Realtime 3 Tabel Active</span>`;
                 badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             } else if (state === 'polling') {
                 dot.className = "w-2 h-2 rounded-full bg-teal-500 animate-pulse shrink-0";
@@ -1422,7 +1413,7 @@
                 badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-teal-100 text-teal-900 border border-teal-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-amber-500 shrink-0";
-                txt.innerHTML = `<span class="inline sm:hidden">🔴 Standby</span><span class="hidden sm:inline">🔴 Standby / Standalone</span>`;
+                txt.innerHTML = `<span class="inline sm:hidden">🔴 Offline</span><span class="hidden sm:inline">🔴 Offline / Unconfigured</span>`;
                 badge.className = "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[8.5px] sm:text-[9.5px] font-extrabold flex items-center gap-1 sm:gap-1.5 shadow-2xs whitespace-nowrap shrink-0";
             }
         };
@@ -1449,10 +1440,7 @@
                 const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    if (parsed.supabaseUrl) serverApiConfig.supabaseUrl = parsed.supabaseUrl;
-                    if (parsed.supabaseAnonKey) serverApiConfig.supabaseAnonKey = parsed.supabaseAnonKey;
-                    if (parsed.gasUrl) serverApiConfig.gasUrl = parsed.gasUrl;
-                    if (parsed.appId) serverApiConfig.appId = parsed.appId;
+                    serverApiConfig = { ...serverApiConfig, ...parsed };
                 }
             } catch(e) {}
 
@@ -1472,14 +1460,15 @@
                 return { status: 'error', message: 'URL GAS Kosong' };
             }
             try {
-                await fetch(url, {
+                const response = await fetch(url, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: actionType, data: payloadData })
                 });
-                return { status: 'success', message: 'Terkirim ke GAS' };
+                return await response.json();
             } catch (error) {
+                console.error("Gagal terhubung ke GAS:", error);
                 return { status: 'error', message: error.message };
             }
         };
@@ -1498,7 +1487,7 @@
                                 if (directPegData && directPegData.length > 0) {
                                     masterPegawaiDb = directPegData.map(item => normalizePegawaiData(item));
                                     window.renderActiveView();
-                                    window.showToast("Sinyal Realtime: Data Pegawai Diperbarui!", "success");
+                                    window.showToast("Data Pegawai Terintegrasi Realtime!", "success");
                                     return;
                                 }
                             } catch(err){}
@@ -1545,24 +1534,6 @@
                         serverApiConfig.supabaseUrl = window.state.supabaseUrl;
                         serverApiConfig.supabaseAnonKey = window.state.supabaseAnonKey;
                         window.saveLocalServerConfig();
-                    }
-
-                    const { data: masterCfg } = await supabaseClient
-                        .from('master_umpeg_config')
-                        .select('*')
-                        .eq('id', window.state.appId)
-                        .maybeSingle();
-
-                    if (masterCfg && masterCfg.config_data) {
-                        const cfg = window.tryParseJson(masterCfg.config_data, masterCfg.config_data);
-                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
-                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                        if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
-                        if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
-                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
-                        if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
-                        if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
-                        if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                     }
 
                     await window.listenRealtimeUpdates();
@@ -1691,34 +1662,35 @@
             }
         };
 
+        function tryParse(str) {
+            try { return typeof str === 'string' ? JSON.parse(str) : (str || {}); } catch(e) { return {}; }
+        }
+
         function normalizePegawaiData(raw) {
             if (!raw) return null;
-            const detailPersonal = window.tryParseJson(raw.detailPersonal || raw.detail_personal, {});
-            const detailJabatan = window.tryParseJson(raw.detailJabatan || raw.detail_jabatan, {});
-            const detailMedis = window.tryParseJson(raw.detailMedis || raw.detail_medis, {});
-            const linksMap = window.tryParseJson(raw.linksMap || raw.link_url_drive || raw.links_map, {});
-            const riwayatEdu = window.tryParseJson(raw.riwayatPendidikan || raw.riwayat_pendidikan, []);
-
-            const rawSub2 = String(raw.sub2 || raw.SUB2 || detailJabatan.sub2 || 'FUNGSIONAL').trim();
-            const rawSub1 = String(raw.sub1 || raw.SUB1 || detailPersonal.sub1 || detailJabatan.sub1 || 'MEDIS').trim();
+            const detailPersonal = tryParse(raw.detailPersonal || raw.detail_personal);
+            const detailJabatan = tryParse(raw.detailJabatan || raw.detail_jabatan);
+            const detailMedis = tryParse(raw.detailMedis || raw.detail_medis);
+            const linksMap = tryParse(raw.linksMap || raw.link_url_drive || raw.links_map);
+            const riwayatEdu = tryParse(raw.riwayatPendidikan || raw.riwayat_pendidikan || []);
 
             return {
-                idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || raw.id || '',
-                nip: String(raw.nip || raw.NIP || raw.Nip || '').trim(),
-                username: raw.username || raw.USERNAME || raw.Username || raw.nama || '',
-                nama: raw.nama || raw.NAMA || raw.Nama || raw.nama_lengkap || detailPersonal.namaLengkap || detailPersonal.namaTanpaGelar || raw.username || '',
-                status: raw.status || raw.STATUS || raw.Status || raw.status_kepegawaian || raw.status_pegawai || 'PNS',
-                sub1: rawSub1,
-                sub2: rawSub2,
-                jabatan: raw.jabatan || raw.JABATAN || raw.Jabatan || detailJabatan.namaJabatan || detailJabatan.jabatan || '-',
-                ruangan: raw.ruangan || raw.RUANGAN || raw.Ruangan || raw.unit_kerja || detailJabatan.ruangan || '-',
+                idPegawai: raw.idPegawai || raw.id_pegawai || raw.ID_PEGAWAI || '',
+                nip: String(raw.nip || raw.NIP || '').trim(),
+                username: raw.username || raw.USERNAME || raw.nama || '',
+                nama: raw.nama || raw.NAMA || raw.username || '',
+                status: raw.status || raw.STATUS || raw.status_kepegawaian || 'PNS',
+                sub1: raw.sub1 || raw.SUB1 || 'MEDIS',
+                sub2: raw.sub2 || raw.SUB2 || 'FUNGSIONAL',
+                jabatan: raw.jabatan || raw.JABATAN || '-',
+                ruangan: raw.ruangan || raw.RUANGAN || '-',
                 detailPersonal: detailPersonal,
                 detailJabatan: detailJabatan,
                 detailMedis: detailMedis,
                 linksMap: linksMap,
                 riwayatPendidikan: Array.isArray(riwayatEdu) ? riwayatEdu : [],
                 hp: detailPersonal.hp || raw.hp || raw.no_hp || '',
-                tmpLahir: detailPersonal.tmpLahir || detailPersonal.tempatLahir || raw.tmpLahir || raw.tempatLahir || '',
+                tmpLahir: detailPersonal.tmpLahir || raw.tmpLahir || '',
                 tglLahir: detailPersonal.tglLahir || raw.tglLahir || '',
                 jk: detailPersonal.jk || raw.jk || '',
                 email: detailPersonal.email || raw.email || '',
@@ -1730,43 +1702,28 @@
         }
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
-            window.state.isSyncing = true;
-            const spinner = document.getElementById('auto-sync-spinner');
-            if (spinner) spinner.classList.add('animate-spin');
+            const url = window.state.gasUrl || serverApiConfig.gasUrl;
+            if (!url || !url.startsWith('http')) return;
 
             try {
-                if (supabaseClient) {
-                    // 1. Fetch system_config
-                    try {
-                        const { data: sysCfg } = await supabaseClient
-                            .from('system_config')
-                            .select('*')
-                            .eq('id', window.state.appId)
-                            .maybeSingle();
-                        if (sysCfg) {
-                            if (sysCfg.gas_url) window.state.gasUrl = sysCfg.gas_url;
-                            if (sysCfg.system_password) serverApiConfig.password = sysCfg.system_password;
-                        }
-                    } catch(e) {}
+                window.state.isSyncing = true;
+                const spinner = document.getElementById('auto-sync-spinner');
+                if (spinner) spinner.classList.add('animate-spin');
 
-                    // 2. Fetch pegawai_lemari_digital
-                    const { data: supaPegData, error: supaErr } = await supabaseClient
-                        .from('pegawai_lemari_digital')
-                        .select('*');
+                const fetchUrl = url.includes('?') ? `${url}&sheet=all` : `${url}?sheet=all`;
+                const res = await fetch(fetchUrl);
+                const json = await res.json();
 
-                    if (supaPegData && !supaErr) {
-                        masterPegawaiDb = supaPegData.map(item => normalizePegawaiData(item));
-                    }
+                let rawList = [];
+                if (Array.isArray(json)) rawList = json;
+                else if (json && Array.isArray(json.data)) rawList = json.data;
+                else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
 
-                    // 3. Fetch master_umpeg_config
-                    const { data: masterCfg } = await supabaseClient
-                        .from('master_umpeg_config')
-                        .select('*')
-                        .eq('id', window.state.appId)
-                        .maybeSingle();
-
-                    if (masterCfg && masterCfg.config_data) {
-                        const cfg = window.tryParseJson(masterCfg.config_data, masterCfg.config_data);
+                if (rawList && rawList.length > 0) {
+                    masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
+                    
+                    if (json && json.config) {
+                        const cfg = json.config;
                         if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
                         if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
                         if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
@@ -1776,61 +1733,14 @@
                         if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
                         if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                     }
-
+                    
                     window.renderActiveView();
-                    if (showToastNotice) window.showToast("Data Cloud Supabase Berhasil Dimuat!", "success");
+                    if (showToastNotice) window.showToast("Data Diperbarui Otomatis!", "success");
                 }
-
-                // Dual Sync / Fallback dengan GAS jika URL terkonfigurasi
-                const url = window.state.gasUrl || serverApiConfig.gasUrl;
-                if (url && url.startsWith('http')) {
-                    try {
-                        const fetchUrl = url.includes('?') ? `${url}&sheet=all&action=all` : `${url}?sheet=all&action=all`;
-                        const res = await fetch(fetchUrl);
-                        const json = await res.json();
-
-                        let rawList = [];
-                        if (Array.isArray(json)) rawList = json;
-                        else if (json && Array.isArray(json.data)) rawList = json.data;
-                        else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
-
-                        if (rawList && rawList.length > 0) {
-                            if (masterPegawaiDb.length === 0) {
-                                masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
-                            } else {
-                                rawList.forEach(gasPeg => {
-                                    const normGas = normalizePegawaiData(gasPeg);
-                                    const existing = masterPegawaiDb.find(p => window.isMatchingKey(p.nip, normGas.nip) || window.isMatchingKey(p.idPegawai, normGas.idPegawai));
-                                    if (!existing) {
-                                        masterPegawaiDb.push(normGas);
-                                    } else {
-                                        if (!existing.sub1 || existing.sub1 === '-') existing.sub1 = normGas.sub1;
-                                        if (!existing.sub2 || existing.sub2 === '-') existing.sub2 = normGas.sub2;
-                                        if (!existing.jabatan || existing.jabatan === '-') existing.jabatan = normGas.jabatan;
-                                        if (!existing.ruangan || existing.ruangan === '-') existing.ruangan = normGas.ruangan;
-                                    }
-                                });
-                            }
-                        }
-                        
-                        if (json && json.config) {
-                            const cfg = json.config;
-                            if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
-                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                            if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
-                            if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
-                            if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
-                            if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
-                            if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
-                            if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
-                        }
-                        window.renderActiveView();
-                    } catch (e) { console.warn("Notice koneksi GAS:", e); }
-                }
-            } catch(e) { 
-                console.warn("Gagal pull data:", e); 
-            } finally {
+            } catch(e) { console.warn("Gagal pull data dari GAS:", e); }
+            finally {
                 window.state.isSyncing = false;
+                const spinner = document.getElementById('auto-sync-spinner');
                 if (spinner) spinner.classList.remove('animate-spin');
             }
         };
@@ -2113,7 +2023,7 @@
                             <div class="text-[8.5px] font-mono text-emerald-800 font-extrabold">${p.idPegawai}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5">
-                            <div class="font-extrabold text-slate-800">${p.status || '-'} • <span class="text-emerald-700">${p.sub1}</span></div>
+                            <div class="font-extrabold text-slate-800">${p.status || '-'}</div>
                             <div class="text-[8.5px] text-slate-500 truncate max-w-[120px]">${p.ruangan || '-'}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5 text-center font-mono font-bold">
@@ -2167,7 +2077,7 @@
                         </td>
                         <td class="p-1.5 sm:p-2.5 font-mono font-bold text-slate-800">${p.nip || '-'}</td>
                         <td class="p-1.5 sm:p-2.5">
-                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'} (${p.sub1 || 'MEDIS'})</div>
+                            <div class="font-bold text-slate-800 leading-tight">${p.jabatan || '-'}</div>
                             <div class="text-[8.5px] text-slate-500">${p.ruangan || '-'}</div>
                         </td>
                         <td class="p-1.5 sm:p-2.5">${waButton}</td>
@@ -2450,7 +2360,7 @@
                 } catch(e) {}
             }
             await window.sendToSheet('saveMaster', payload);
-            window.showToast("Master Config Berhasil Disimpan & Diteruskan!", "success");
+            window.showToast("Master Config Disimpan!", "success");
         };
 
         window.renderMasterRuanganCards = function() {
@@ -2741,7 +2651,7 @@
 
             window.closeAuditModal();
             window.renderActiveView();
-            window.showToast("Hasil Audit Berhasil Disimpan & Broadcast!", "success");
+            window.showToast("Hasil Audit Berhasil Disimpan!", "success");
         };
 
         window.openEditStafAdminModal = function(nip = null) {
@@ -2750,8 +2660,6 @@
             
             const ruanganSelect = document.getElementById('edit-staf-ruangan');
             if (ruanganSelect) ruanganSelect.innerHTML = masterRuanganList.map(r => `<option value="${r}">${r}</option>`).join('');
-
-            const sub1Select = document.getElementById('edit-staf-sub1');
             
             if (nip) {
                 const target = masterPegawaiDb.find(p => p.nip === nip);
@@ -2759,11 +2667,8 @@
                     document.getElementById('edit-staf-target-id').value = target.idPegawai;
                     document.getElementById('edit-staf-nama').value = target.nama || target.username;
                     document.getElementById('edit-staf-nip').value = target.nip;
+                    document.getElementById('edit-staf-sub1').value = target.sub1 || 'MEDIS';
                     document.getElementById('edit-staf-sub2').value = target.sub2 || 'FUNGSIONAL';
-                    
-                    if (sub1Select) {
-                        sub1Select.value = target.sub1 || 'MEDIS';
-                    }
                     if (statusSelect) statusSelect.value = target.status || 'PNS';
                     if (ruanganSelect) ruanganSelect.value = target.ruangan || masterRuanganList[0];
                     window.handleAdminEditJalurChange(target.jabatan);
@@ -2772,8 +2677,8 @@
                 document.getElementById('edit-staf-target-id').value = '';
                 document.getElementById('edit-staf-nama').value = '';
                 document.getElementById('edit-staf-nip').value = '';
+                document.getElementById('edit-staf-sub1').value = 'MEDIS';
                 document.getElementById('edit-staf-sub2').value = 'FUNGSIONAL';
-                if (sub1Select) sub1Select.value = 'MEDIS';
                 if (statusSelect) statusSelect.value = masterStatusPegList[0] || 'PNS';
                 if (ruanganSelect) ruanganSelect.value = masterRuanganList[0];
                 window.handleAdminEditJalurChange();
@@ -2791,7 +2696,6 @@
         window.handleAdminEditJalurChange = function(targetJabatanValue = null) {
             const jalur = document.getElementById('edit-staf-sub2')?.value || 'FUNGSIONAL';
             const jabatanSelect = document.getElementById('edit-staf-jabatan');
-
             if (!jabatanSelect) return;
             
             const currentSelected = targetJabatanValue !== null ? targetJabatanValue : jabatanSelect.value;
@@ -2837,15 +2741,14 @@
             target.username = target.nama;
             target.nip = document.getElementById('edit-staf-nip')?.value;
             target.status = document.getElementById('edit-staf-status')?.value;
+            target.sub1 = document.getElementById('edit-staf-sub1')?.value;
             target.sub2 = document.getElementById('edit-staf-sub2')?.value;
-            target.sub1 = document.getElementById('edit-staf-sub1')?.value || 'MEDIS';
             target.jabatan = document.getElementById('edit-staf-jabatan')?.value;
             target.ruangan = document.getElementById('edit-staf-ruangan')?.value;
 
             target.detailJabatan.jabatan = target.jabatan;
             target.detailJabatan.ruangan = target.ruangan;
             target.detailJabatan.sub2 = target.sub2;
-            target.detailJabatan.sub1 = target.sub1;
 
             if (isNew) masterPegawaiDb.push(target);
 
@@ -2865,21 +2768,18 @@
                         detail_personal: target.detailPersonal,
                         detail_jabatan: target.detailJabatan,
                         detail_medis: target.detailMedis,
-                        riwayat_pendidikan: target.riwayatPendidikan,
                         verifikasi_status: target.verifikasiStatus || 'PENDING',
                         verifikasi_catatan: target.verifikasiCatatan || '',
                         last_updated_at: new Date().toISOString()
                     });
-                } catch(err) {
-                    console.error("Supabase upsert error:", err);
-                }
+                } catch(err) {}
             }
 
             await window.sendToSheet('savePegawai', target);
 
             window.closeEditStafAdminModal();
             window.renderActiveView();
-            window.showToast("Data Staf Berhasil Disimpan & Broadcast Sinyal!", "success");
+            window.showToast("Data Staf Berhasil Disimpan!", "success");
         };
 
         window.confirmDeleteStaf = function(nip, idPegawai) {
@@ -2941,7 +2841,7 @@
                             <div><strong>NIP / SK:</strong> ${target.nip || '-'}</div>
                             <div><strong>NIK KTP:</strong> ${dp.nik || '-'}</div>
                             <div><strong>No. HP:</strong> ${dp.hp || '-'}</div>
-                            <div><strong>Tempat/Tgl Lahir:</strong> ${dp.tmpLahir || dp.tempatLahir || '-'}, ${dp.tglLahir || '-'}</div>
+                            <div><strong>Tempat/Tgl Lahir:</strong> ${dp.tmpLahir || '-'}, ${dp.tglLahir || '-'}</div>
                             <div><strong>Agama / JK:</strong> ${dp.agama || '-'} / ${dp.jk || '-'}</div>
                         </div>
                     </div>
@@ -2950,7 +2850,6 @@
                         <h4 class="font-bold uppercase text-emerald-950 border-b pb-1">II. Status & Kedinasan</h4>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
                             <div><strong>Status Pegawai:</strong> ${target.status || '-'}</div>
-                            <div><strong>Rumpun SDM:</strong> ${target.sub1 || 'MEDIS'}</div>
                             <div><strong>Unit Kerja:</strong> ${target.ruangan || '-'}</div>
                             <div><strong>Jabatan:</strong> ${target.jabatan || '-'} (${target.sub2})</div>
                             <div><strong>Golongan / Eselon:</strong> ${dp.golongan || '-'} / ${dj.eselon || 'NON_ESELON'}</div>
@@ -2999,7 +2898,7 @@
 
         window.closeDocViewer = function() {
             const iframe = document.getElementById('modal-doc-iframe');
-            if(iframe) iframe.src = 'about:blank';
+            if (iframe) iframe.src = 'about:blank';
             const modal = document.getElementById('modal-doc-viewer');
             if (modal) modal.classList.add('hidden');
         };
