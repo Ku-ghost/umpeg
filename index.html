@@ -358,7 +358,6 @@
                 </button>
             </div>
 
-            <!-- TAB 1: LEMARI BERKAS DIGITAL (FORM A - H) -->
             <div id="tab-content-dashboard" class="space-y-3">
                 <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
@@ -1401,8 +1400,7 @@
 
             const effectiveStatus = (gasData && gasData.status) ? gasData.status : (foundData ? (foundData.status_kepegawaian || foundData.status) : 'PNS');
             const effectiveSub2 = (gasData && gasData.sub2) ? gasData.sub2 : (parsedJabatan.sub2 || (foundData ? foundData.sub2 : 'FUNGSIONAL'));
-            const effectiveSub1Raw = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1 || 'MEDIS') : 'MEDIS');
-            const effectiveSub1 = (effectiveSub2 === 'STRUKTURAL') ? 'NON MEDIS' : effectiveSub1Raw;
+            const effectiveSub1 = (gasData && gasData.sub1) ? gasData.sub1 : (foundData ? (foundData.sub1 || 'MEDIS') : 'MEDIS');
 
             const effectiveJabatan = (gasData && gasData.jabatan) ? gasData.jabatan : (foundData ? foundData.jabatan : '');
             const effectiveRuangan = (gasData && gasData.ruangan) ? gasData.ruangan : (foundData ? foundData.ruangan : '');
@@ -1859,8 +1857,12 @@
             }
 
             const sub1Select = document.getElementById('f-bas-sub1');
-            if (sub1Select && currentPegawai) {
-                sub1Select.value = currentPegawai.sub1 || 'MEDIS';
+            if (sub1Select) {
+                sub1Select.disabled = false;
+                sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                if (currentPegawai && currentPegawai.sub1) {
+                    sub1Select.value = currentPegawai.sub1;
+                }
             }
 
             const golSelect = document.getElementById('f-bas-golongan');
@@ -1916,20 +1918,11 @@
             const badgeJalur = document.getElementById('display-jalur-jabatan');
             const sub1Select = document.getElementById('f-bas-sub1');
 
-            if (isSt) {
-                currentPegawai.sub1 = 'NON MEDIS';
-                if (sub1Select) {
-                    sub1Select.value = 'NON MEDIS';
-                    sub1Select.disabled = true;
-                    sub1Select.classList.add('bg-slate-100', 'cursor-not-allowed');
-                }
-            } else {
-                if (sub1Select) {
-                    sub1Select.disabled = false;
-                    sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
-                    if (sub1Select.value) {
-                        currentPegawai.sub1 = sub1Select.value;
-                    }
+            if (sub1Select) {
+                sub1Select.disabled = false;
+                sub1Select.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                if (sub1Select.value) {
+                    currentPegawai.sub1 = sub1Select.value;
                 }
             }
 
@@ -2036,12 +2029,7 @@
 
             currentPegawai.status = window.getVal('f-bas-status-pegawai') || currentPegawai.status;
             currentPegawai.ruangan = window.getVal('f-bas-ruangan') || currentPegawai.ruangan;
-            
-            if (isSt) {
-                currentPegawai.sub1 = 'NON MEDIS';
-            } else {
-                currentPegawai.sub1 = window.getVal('f-bas-sub1') || currentPegawai.sub1 || 'MEDIS';
-            }
+            currentPegawai.sub1 = window.getVal('f-bas-sub1') || currentPegawai.sub1 || 'MEDIS';
 
             if (selJab) currentPegawai.jabatan = selJab;
 
