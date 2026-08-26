@@ -249,7 +249,6 @@
         </div>
     </header>
 
-    <!-- STICKY MOBILE NAVIGATION BAR -->
     <nav class="sticky top-[49px] sm:top-[53px] z-30 glass-panel border-b border-emerald-200/90 py-1.5 px-2 no-print shadow-md">
         <div class="w-full max-w-[98%] mx-auto">
             <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
@@ -969,7 +968,6 @@
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
                     <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat, Kop Cetak Laporan & Broadcast Pengumuman</h3>
                     
-                    <!-- FITUR SENSASIONAL: BROADCAST PENGUMUMAN GLOBAL -->
                     <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2">
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase flex items-center gap-1.5">
                             <i class="fa-solid fa-bullhorn text-emerald-600"></i> Broadcast Teks Pengumuman Global (Muncul di Portal Pegawai)
@@ -1164,7 +1162,7 @@
                         <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Sub Kategori 1</label>
                         <select id="edit-staf-sub1" class="w-full h-9 bg-emerald-50/70 border border-emerald-300 rounded-lg px-2.5 font-extrabold text-slate-900 focus:outline-none">
                             <option value="MEDIS">MEDIS / NAKES</option>
-                            <option value="NONMEDIS">NON-MEDIS</option>
+                            <option value="NON MEDIS">NON MEDIS / ADM / TEKNIS</option>
                         </select>
                     </div>
                 </div>
@@ -1263,6 +1261,7 @@
     </div>
 
     <script>
+        // FALLBACK STANDALONE API CONFIG (Akses Otomatis di Mana Saja Tanpa Input Manual di Browser Baru)
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
             supabaseUrl: "",
@@ -1440,7 +1439,10 @@
                 const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    serverApiConfig = { ...serverApiConfig, ...parsed };
+                    if (parsed.supabaseUrl) serverApiConfig.supabaseUrl = parsed.supabaseUrl;
+                    if (parsed.supabaseAnonKey) serverApiConfig.supabaseAnonKey = parsed.supabaseAnonKey;
+                    if (parsed.gasUrl) serverApiConfig.gasUrl = parsed.gasUrl;
+                    if (parsed.appId) serverApiConfig.appId = parsed.appId;
                 }
             } catch(e) {}
 
