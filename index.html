@@ -155,12 +155,12 @@
 
     <div id="loading-screen" class="fixed inset-0 z-50 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-3xl shadow-lg glow-leaf mb-4 animate-bounce">
-            <i class="fa-solid fa-cloud-arrow-down"></i>
+            <i class="fa-solid fa-user-gear"></i>
         </div>
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">PORTAL PEGAWAI RSUD SINJAI</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span id="loading-status-text">Mengisi Koneksi Cloud-First Supabase...</span>
+            <span>Memuat Sistem Mandiri Pegawai...</span>
         </p>
     </div>
 
@@ -173,7 +173,7 @@
                 <div class="min-w-0">
                     <div class="flex items-center gap-1">
                         <h1 class="text-[10.5px] sm:text-sm font-extrabold text-emerald-950 tracking-wide uppercase truncate leading-tight">PORTAL PEGAWAI</h1>
-                        <span class="text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold whitespace-nowrap hidden xs:inline">Cloud-First</span>
+                        <span class="text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold whitespace-nowrap hidden xs:inline">Mandiri</span>
                     </div>
                     <p class="text-[9px] sm:text-[10px] text-emerald-700 font-medium hidden sm:block truncate">UPT RSUD Sinjai</p>
                 </div>
@@ -182,7 +182,7 @@
             <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 <div id="ws-indicator-badge" class="flex items-center gap-1 px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[8.5px] sm:text-[9.5px] whitespace-nowrap shrink-0">
                     <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" id="ws-dot"></span>
-                    <span id="header-sync-status" class="whitespace-nowrap">🔴 Menghubungkan Cloud...</span>
+                    <span id="header-sync-status" class="whitespace-nowrap">🔴 Connecting...</span>
                 </div>
 
                 <div id="user-header-profile" class="hidden flex items-center gap-1 sm:gap-1.5 shrink-0">
@@ -261,7 +261,6 @@
 
         <div id="dashboard-section" class="hidden space-y-4 fade-in">
             
-            <!-- Global Announcement Banner -->
             <div id="global-announcement-banner" class="hidden p-3 rounded-2xl bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 text-white shadow-md border border-emerald-600 text-xs flex items-center gap-3 fade-in">
                 <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-lg shrink-0 text-amber-300">
                     <i class="fa-solid fa-bullhorn animate-bounce"></i>
@@ -275,10 +274,8 @@
                 </div>
             </div>
 
-            <!-- Early Warning System Banner (STR/SIP Expiration) -->
             <div id="early-warning-banner" class="hidden space-y-2 fade-in"></div>
 
-            <!-- Profile Summary Card -->
             <div class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-emerald-100 pb-3">
                     <div class="flex items-start sm:items-center gap-3 w-full md:w-auto">
@@ -318,7 +315,6 @@
 
                 <div id="correction-banner" class="hidden"></div>
 
-                <!-- KP & KGB Tracker Box -->
                 <div id="kp-kgb-tracker-container" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                     <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-300 flex items-center justify-between">
                         <div>
@@ -380,7 +376,6 @@
             <div id="tab-content-form-profil" class="hidden space-y-4">
                 <form onsubmit="window.saveDetailProfileForm(event)" class="space-y-4">
                     
-                    <!-- Section I: Personal -->
                     <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
                         <h3 class="text-xs font-black text-emerald-950 uppercase tracking-wider border-b border-emerald-100 pb-2 flex items-center gap-2">
                             <i class="fa-solid fa-address-card text-emerald-600"></i> I. Data Personal & Kependudukan
@@ -723,7 +718,6 @@
         UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Hybrid Realtime System)
     </footer>
 
-    <!-- Modal Edit User Account -->
     <div id="modal-edit-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-md rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white space-y-3 p-4">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Edit Akun User & NIP Pegawai</h3>
@@ -745,7 +739,6 @@
         </div>
     </div>
 
-    <!-- Modal Add Link Item -->
     <div id="modal-add-link-item" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white p-4 space-y-3">
             <div>
@@ -769,7 +762,6 @@
         </div>
     </div>
 
-    <!-- Modal Document Viewer -->
     <div id="modal-doc-viewer" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0">
@@ -795,7 +787,6 @@
         </div>
     </div>
 
-    <!-- Modal Education Item -->
     <div id="modal-edu-item" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white p-4 space-y-3">
             <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1">Tambah Riwayat Pendidikan</h3>
@@ -830,7 +821,6 @@
         </div>
     </div>
 
-    <!-- Modal Print DRH Profile -->
     <div id="modal-print-profile" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in">
         <div class="glass-panel w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl bg-white">
             <div class="p-3 bg-emerald-900 text-white flex justify-between items-center border-b border-emerald-800 shrink-0 no-print">
@@ -884,16 +874,10 @@
     <script>
         const ANCHORED_APP_ID = 'RSUD_SINJAI_UMPEG_APP';
 
-        // =========================================================================
-        // ARSITEKTUR CLOUD-FIRST LOADING (PANDUAN UTAMA):
-        // Credentials tersimpan sebagai konstanta default Cloud. 
-        // Saat dibuka di perangkat baru/Incognito, web tidak buta/tuli,
-        // melainkan LANGSUNG terkoneksi ke Supabase sebagai Single Source of Truth!
-        // =========================================================================
         let serverApiConfig = {
-            gasUrl: 'https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec',
-            supabaseUrl: 'https://dlstwmavfxtktlwqajvj.supabase.co', 
-            supabaseAnonKey: 'sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O'
+            gasUrl: '',
+            supabaseUrl: '',
+            supabaseAnonKey: ''
         };
 
         const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
@@ -1039,7 +1023,7 @@
                 badge.className = "flex items-center gap-1 px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[8.5px] sm:text-[9.5px] whitespace-nowrap shrink-0 shadow-2xs";
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-amber-500 shrink-0";
-                txt.innerText = text || "🔴 Standby";
+                txt.innerText = text || "🔴 Offline";
                 badge.className = "flex items-center gap-1 px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[8.5px] sm:text-[9.5px] whitespace-nowrap shrink-0 shadow-2xs";
             }
         };
@@ -1083,7 +1067,6 @@
         };
 
         window.initCloudConnectionAndRealtime = async function() {
-            // STEP 1: Cek apakah ada kredensial tersimpan di localStorage sebagai CADANGAN HANYA JIKA OFFLINE
             try {
                 const saved = localStorage.getItem('RSUD_UMPEG_SERVER_CONFIG');
                 if (saved) {
@@ -1096,7 +1079,6 @@
 
             let configLoaded = false;
 
-            // STEP 2: Jika Supabase Client SDK tersedia & URL valid, tarik data LANGSUNG dari Cloud Supabase
             if (serverApiConfig.supabaseUrl && serverApiConfig.supabaseAnonKey && serverApiConfig.supabaseUrl.startsWith('http') && window.supabase) {
                 try {
                     supabaseClient = window.supabase.createClient(serverApiConfig.supabaseUrl, serverApiConfig.supabaseAnonKey);
@@ -1120,15 +1102,11 @@
                         }
                         if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                         configLoaded = true;
-
-                        // Simpan hasil tarikan Cloud ke localStorage HANYA SEBAGAI CADANGAN jika nanti offline
-                        localStorage.setItem('RSUD_UMPEG_CACHED_MASTER_CFG', JSON.stringify(cfg));
                     }
 
                     window.populateMasterDropdowns();
                     window.updateWsBadge('online', '🟢 Online');
 
-                    // STEP 3: Aktifkan Realtime WebSocket Listener Lintas Perangkat
                     if (!realtimeChannel) {
                         try {
                             realtimeChannel = supabaseClient
@@ -1174,7 +1152,6 @@
                 window.updateWsBadge('offline', '🔴 Standby');
             }
 
-            // Fallback jika Cloud belum mengembalikan config & ada GAS URL
             if (!configLoaded && serverApiConfig.gasUrl) {
                 try {
                      const fetchUrl = serverApiConfig.gasUrl.includes('?') ? `${serverApiConfig.gasUrl}&sheet=config` : `${serverApiConfig.gasUrl}?sheet=config`;
@@ -1539,7 +1516,6 @@
         window.renderDashboard = function() {
             if (!currentPegawai) return;
 
-            // 1. FITUR BANNERS PENGUMUMAN GLOBAL (BROADCAST)
             const announcementBanner = document.getElementById('global-announcement-banner');
             const announcementText = document.getElementById('global-announcement-text');
             if (announcementBanner && announcementText) {
@@ -1552,7 +1528,6 @@
                 }
             }
 
-            // 2. FITUR PERINGATAN DINI (EARLY WARNING SYSTEM) STR & SIP KEDALUWARSA
             const earlyWarningBox = document.getElementById('early-warning-banner');
             if (earlyWarningBox) {
                 const dm = currentPegawai.detailMedis || {};
@@ -1635,7 +1610,6 @@
                 }
             }
 
-            // 3. FITUR TRACKER KENAIKAN PANGKAT (KP) & GAJI BERKALA (KGB)
             const kpTrackerBox = document.getElementById('kp-kgb-tracker-container');
             if (kpTrackerBox) {
                 const dj = currentPegawai.detailJabatan || {};
@@ -2371,12 +2345,10 @@
         };
 
         window.onload = function() {
-            // STEP 1: Eksekusi Inisialisasi Cloud-First (Mengutamakan Tarikan Langsung Supabase)
             window.initCloudConnectionAndRealtime().finally(() => {
                 window.populateMasterDropdowns();
                 window.showAuthView();
                 
-                // STEP 2: Hilangkan Loading Screen setelah Cloud-First Load Selesai
                 const loader = document.getElementById('loading-screen');
                 if (loader) loader.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => { if (loader) loader.classList.add('hidden'); }, 300);
