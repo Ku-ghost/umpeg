@@ -1460,13 +1460,13 @@
                 return { status: 'error', message: 'URL GAS Kosong' };
             }
             try {
-                const response = await fetch(url, {
+                await fetch(url, {
                     method: 'POST',
-                    mode: 'cors',
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: actionType, data: payloadData })
                 });
-                return await response.json();
+                return { status: 'success', message: 'Terkirim ke GAS' };
             } catch (error) {
                 return { status: 'error', message: error.message };
             }
@@ -1727,43 +1727,30 @@
         }
 
         window.pullAllDataFromGas = async function(showToastNotice = false) {
-            if (supabaseClient) {
-                try {
+            window.state.isSyncing = true;
+            const spinner = document.getElementById('auto-sync-spinner');
+            if (spinner) spinner.classList.add('animate-spin');
+
+            try {
+                if (supabaseClient) {
+                    // 1. Fetch pegawai data from Supabase
                     const { data: supaPegData, error: supaErr } = await supabaseClient
                         .from('pegawai_lemari_digital')
                         .select('*');
 
                     if (supaPegData && !supaErr) {
                         masterPegawaiDb = supaPegData.map(item => normalizePegawaiData(item));
-                        window.renderActiveView();
-                        if (showToastNotice) window.showToast("Data Cloud Berhasil Dimuat!", "success");
-                        return;
                     }
-                } catch (e) {}
-            }
 
-            const url = window.state.gasUrl || serverApiConfig.gasUrl;
-            if (!url || !url.startsWith('http')) return;
+                    // 2. Fetch master configuration from Supabase
+                    const { data: masterCfg } = await supabaseClient
+                        .from('master_umpeg_config')
+                        .select('*')
+                        .eq('id', window.state.appId)
+                        .maybeSingle();
 
-            try {
-                window.state.isSyncing = true;
-                const spinner = document.getElementById('auto-sync-spinner');
-                if (spinner) spinner.classList.add('animate-spin');
-
-                const fetchUrl = url.includes('?') ? `${url}&sheet=all` : `${url}?sheet=all`;
-                const res = await fetch(fetchUrl);
-                const json = await res.json();
-
-                let rawList = [];
-                if (Array.isArray(json)) rawList = json;
-                else if (json && Array.isArray(json.data)) rawList = json.data;
-                else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
-
-                if (rawList && rawList.length > 0) {
-                    masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
-                    
-                    if (json && json.config) {
-                        const cfg = json.config;
+                    if (masterCfg && masterCfg.config_data) {
+                        const cfg = masterCfg.config_data;
                         if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
                         if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
                         if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
@@ -1773,12 +1760,45 @@
                         if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
                         if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                     }
-                    
+
                     window.renderActiveView();
-                    if (showToastNotice) window.showToast("Data Diperbarui Otomatis!", "success");
+                    if (showToastNotice) window.showToast("Data Cloud Supabase Berhasil Dimuat!", "success");
                 }
-            } catch(e) { console.warn("Gagal pull data dari GAS:", e); }
-            finally {
+
+                // Dual Sync / Fallback dengan GAS jika URL terkonfigurasi
+                const url = window.state.gasUrl || serverApiConfig.gasUrl;
+                if (url && url.startsWith('http')) {
+                    try {
+                        const fetchUrl = url.includes('?') ? `${url}&sheet=all` : `${url}?sheet=all`;
+                        const res = await fetch(fetchUrl);
+                        const json = await res.json();
+
+                        let rawList = [];
+                        if (Array.isArray(json)) rawList = json;
+                        else if (json && Array.isArray(json.data)) rawList = json.data;
+                        else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
+
+                        if (rawList && rawList.length > 0 && masterPegawaiDb.length === 0) {
+                            masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
+                        }
+                        
+                        if (json && json.config) {
+                            const cfg = json.config;
+                            if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
+                            if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
+                            if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
+                            if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
+                            if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
+                            if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
+                            if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
+                            if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
+                        }
+                        window.renderActiveView();
+                    } catch (e) { console.warn("Notice koneksi GAS:", e); }
+                }
+            } catch(e) { 
+                console.warn("Gagal pull data:", e); 
+            } finally {
                 window.state.isSyncing = false;
                 const spinner = document.getElementById('auto-sync-spinner');
                 if (spinner) spinner.classList.remove('animate-spin');
@@ -2823,7 +2843,9 @@
                         verifikasi_catatan: target.verifikasiCatatan || '',
                         last_updated_at: new Date().toISOString()
                     });
-                } catch(err) {}
+                } catch(err) {
+                    console.error("Supabase upsert error:", err);
+                }
             }
 
             await window.sendToSheet('savePegawai', target);
