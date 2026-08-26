@@ -1007,14 +1007,14 @@
     </main>
 
     <footer class="fixed bottom-0 left-0 right-0 z-40 bg-emerald-800 text-emerald-100 text-right px-4 sm:px-6 py-1.5 text-[10px] font-normal tracking-wide no-print border-t border-emerald-700 shadow-lg">
-        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost (Serverless Dynamic Configuration Driver)
+        UPT RSUD SINJAI - UMPEG ©2026 Ku-Ghost
     </footer>
 
     <!-- Modal Auth Password Config -->
     <div id="modal-config-auth" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm fade-in no-print">
         <div class="glass-panel w-full max-w-sm rounded-2xl flex flex-col overflow-hidden border border-emerald-300 shadow-2xl p-4 space-y-3 bg-white">
             <h3 class="text-xs font-extrabold text-emerald-950 uppercase border-b pb-1.5">Administrator System Access</h3>
-            <p class="text-[11px] text-slate-600">Masukkan kode sandi akses untuk membuka server sync, Supabase API & GAS Config.</p>
+            <p class="text-[11px] text-slate-600">Masukkan sandi untuk membuka server sync, Supabase API & GAS Config.</p>
             <input type="password" id="input-config-password" onkeydown="if(event.key==='Enter') window.verifyConfigPassword(event)" placeholder="Kode Sandi..." class="w-full h-9 bg-emerald-50 border border-emerald-300 rounded-lg px-3 font-mono text-center font-bold text-slate-900 text-xs focus:outline-none">
             <div class="flex gap-2 pt-1">
                 <button type="button" onclick="window.closeConfigAuthModal()" class="flex-1 h-9 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs cursor-pointer">Batal</button>
@@ -1030,8 +1030,8 @@
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-tower-broadcast text-emerald-300 text-sm"></i>
                     <div>
-                        <h3 class="text-xs font-extrabold uppercase">Konfigurasi Antena Supabase & GAS Engine</h3>
-                        <p class="text-[9px] text-emerald-200">Koneksi Multi-Table Realtime Tersentralisasi Plug-and-Play</p>
+                        <h3 class="text-xs font-extrabold uppercase">Konfigurasi Supabase & GAS Engine</h3>
+                        <p class="text-[9px] text-emerald-200">Realtime Tersentralisasi Plug-and-Play</p>
                     </div>
                 </div>
                 <button type="button" onclick="window.closeServerConfigModal()" class="w-7 h-7 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center cursor-pointer">
@@ -1260,9 +1260,9 @@
     <script>
         const DEFAULT_CONFIG = {
             appId: "RSUD_SINJAI_UMPEG_APP",
-            supabaseUrl: "",
-            supabaseAnonKey: "",
-            gasUrl: "",
+            supabaseUrl: "https://dlstwmavfxtktlwqajvj.supabase.co",
+            supabaseAnonKey: "sb_publishable_K9zKEyUzNT8ff2xcRqu0Hw_5ky7d-3O",
+            gasUrl: "https://script.google.com/macros/s/AKfycbyBW6N0gdbWS_emRM7ipW_K457ahEe7tFt9NlgIL-gOgA2IA7Pf8rhlVgwl5J6jt__G/exec",
             password: "kugoskom36"
         };
 
