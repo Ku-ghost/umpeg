@@ -312,7 +312,7 @@
                             <i class="fa-regular fa-copy"></i>
                             <span>Salin ID</span>
                         </button>
-                        <button onclick="window.openEditProfileModal()" class="flex-1 sm:flex-initial h-9 sm:h-8 px-3 rounded-xl sm:rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[11px] sm:text-[10px] shadow-2xs transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap">
+                        <button onclick="window.openEditProfileModal()" class="flex-1 sm:flex-initial h-9 sm:h-8 px-3 rounded-xl sm:rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-[11px] sm:text-[10px] shadow-2xs transition-all flex items-center justify-center gap-1 shadow-2xs cursor-pointer whitespace-nowrap">
                             <i class="fa-solid fa-user-pen"></i>
                             <span>Edit Akun</span>
                         </button>
@@ -2098,8 +2098,22 @@
         window.openPrintProfileModal = function() {
             if (!currentPegawai) return;
 
+            const dp = currentPegawai.detailPersonal || {};
+            let fullNameCombined = dp.namaTanpaGelar || currentPegawai.nama || currentPegawai.username || '-';
+            
+            if (dp.namaTanpaGelar) {
+                fullNameCombined = dp.namaTanpaGelar;
+            }
+
+            if (dp.gelarDepan && !fullNameCombined.startsWith(dp.gelarDepan)) {
+                fullNameCombined = `${dp.gelarDepan} ${fullNameCombined}`;
+            }
+            if (dp.gelarBelakang && !fullNameCombined.endsWith(dp.gelarBelakang)) {
+                fullNameCombined = `${fullNameCombined}, ${dp.gelarBelakang}`;
+            }
+
             window.setText('sheet-id-header', `ID REGISTRASI UMPEG: ${currentPegawai.idPegawai}`);
-            window.setText('sheet-sign-nama', `( ${currentPegawai.nama || currentPegawai.username} )`);
+            window.setText('sheet-sign-nama', `( ${fullNameCombined} )`);
             window.setText('sheet-print-date', new Date().toLocaleDateString('id-ID'));
 
             window.setText('sheet-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
@@ -2111,9 +2125,9 @@
 
             const body = document.getElementById('sheet-content-body');
             if (body) {
-                const dp = currentPegawai.detailPersonal || {};
                 const dj = currentPegawai.detailJabatan || {};
                 const dm = currentPegawai.detailMedis || {};
+                const isStruk = (currentPegawai.sub2 === 'STRUKTURAL');
                 const edu = currentPegawai.riwayatPendidikan || [];
 
                 let eduRows = edu.map((e, idx) => `
@@ -2131,75 +2145,103 @@
                     eduRows = `<tr><td colspan="6" class="text-center italic text-slate-500">Belum ada data riwayat pendidikan.</td></tr>`;
                 }
 
+                // Render rekap berkas digital (Form A-H)
+                let attachedDocsCount = 0;
+                let docsSummaryHtml = '';
+                if (currentPegawai.linksMap && Object.keys(currentPegawai.linksMap).length > 0) {
+                    const keys = Object.keys(currentPegawai.linksMap);
+                    attachedDocsCount = keys.length;
+                    docsSummaryHtml = keys.map(k => {
+                        const val = currentPegawai.linksMap[k];
+                        let label = k;
+                        if (Array.isArray(val) && val.length > 0) label = val[0].label || k;
+                        else if (val && typeof val === 'object') label = val.label || k;
+                        return `<span class="inline-block bg-slate-100 border border-slate-300 text-slate-800 text-[8.5px] px-1.5 py-0.5 rounded mr-1 mb-1 font-mono">✓ ${label}</span>`;
+                    }).join('');
+                } else {
+                    docsSummaryHtml = `<span class="italic text-slate-500 text-[9px]">Belum ada berkas digital terlampir</span>`;
+                }
+
                 body.innerHTML = `
-                    <div class="space-y-2 border p-3 rounded-xl">
-                        <h4 class="font-bold uppercase text-emerald-950 border-b pb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-address-card text-emerald-700"></i> I. Data Personal & Kependudukan
+                    <!-- I. DATA PERSONAL & KEPENDUDUKAN -->
+                    <div class="space-y-1.5 border border-slate-300 p-3 rounded-xl bg-white">
+                        <h4 class="font-black text-xs uppercase text-emerald-950 border-b border-slate-200 pb-1 flex items-center justify-between">
+                            <span>I. DATA PERSONAL & KEPENDUDUKAN</span>
+                            <span class="text-[9px] font-mono text-slate-500">NIK: ${dp.nik || '-'}</span>
                         </h4>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div><strong>Nama Lengkap:</strong> ${currentPegawai.nama || '-'}</div>
-                            <div><strong>NIP / SK Kedinasan:</strong> ${currentPegawai.nip || '-'}</div>
-                            <div><strong>NIK KTP:</strong> ${dp.nik || '-'}</div>
-                            <div><strong>Nomor KK:</strong> ${dp.noKk || dp.kk || '-'}</div>
-                            <div><strong>Tempat / Tgl Lahir:</strong> ${dp.tempatLahir || dp.tmpLahir || '-'}, ${dp.tglLahir || '-'}</div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[9.5px]">
+                            <div><strong>Nama Lengkap (Sesuai Ijazah):</strong> ${dp.namaTanpaGelar || currentPegawai.nama || '-'}</div>
+                            <div><strong>Gelar Depan / Belakang:</strong> ${dp.gelarDepan || '-'} / ${dp.gelarBelakang || '-'}</div>
+                            <div><strong>Nama Lengkap + Gelar:</strong> <span class="font-extrabold text-slate-900">${fullNameCombined}</span></div>
+                            <div><strong>NIP / SK Kedinasan:</strong> <span class="font-mono font-bold">${currentPegawai.nip || '-'}</span></div>
+                            <div><strong>NIK KTP (16 Digit):</strong> <span class="font-mono">${dp.nik || '-'}</span></div>
+                            <div><strong>Nomor Kartu Keluarga (KK):</strong> <span class="font-mono">${dp.noKk || dp.kk || '-'}</span></div>
+                            <div><strong>Tempat, Tgl Lahir:</strong> ${dp.tempatLahir || dp.tmpLahir || '-'}, ${dp.tglLahir || '-'}</div>
                             <div><strong>Jenis Kelamin / Agama:</strong> ${dp.jk || '-'} / ${dp.agama || '-'}</div>
-                            <div><strong>Golongan Darah / Nikah:</strong> ${dp.golDarah || '-'} / ${dp.statusNikah || '-'}</div>
-                            <div><strong>No. HP / WA:</strong> ${dp.hp || '-'}</div>
-                            <div><strong>Email Resmi:</strong> ${dp.email || '-'}</div>
-                            <div><strong>Alamat Domisili:</strong> ${dp.alamatDomisili || dp.alamatKtp || '-'}</div>
-                            <div><strong>NPWP:</strong> ${dp.npwp || '-'}</div>
-                            <div><strong>BPJS Kesehatan:</strong> ${dp.bpjs || '-'}</div>
-                            <div><strong>Nomor TASPEN:</strong> ${dp.taspen || '-'}</div>
-                            <div><strong>KARPEG / KPE:</strong> ${dp.karpeg || '-'}</div>
+                            <div><strong>Gol. Darah / Status Nikah:</strong> ${dp.golDarah || '-'} / ${dp.statusNikah || '-'}</div>
+                            <div><strong>No. Handphone / WA:</strong> <span class="font-mono">${dp.hp || '-'}</span></div>
+                            <div><strong>Email Resmi:</strong> <span class="font-mono">${dp.email || '-'}</span></div>
+                            <div><strong>Alamat KTP:</strong> ${dp.alamatKtp || '-'}</div>
+                            <div><strong>Alamat Domisili:</strong> ${dp.alamatDomisili || '-'}</div>
+                            <div><strong>Nomor NPWP:</strong> <span class="font-mono">${dp.npwp || '-'}</span></div>
+                            <div><strong>Nomor BPJS Kesehatan:</strong> <span class="font-mono">${dp.bpjs || '-'}</span></div>
+                            <div><strong>KARPEG / TASPEN:</strong> <span class="font-mono">${dp.karpeg || '-'} / ${dp.taspen || '-'}</span></div>
                         </div>
                     </div>
 
-                    <div class="space-y-2 border p-3 rounded-xl">
-                        <h4 class="font-bold uppercase text-emerald-950 border-b pb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-building-user text-emerald-700"></i> II. Status Kepegawaian & Kedinasan
+                    <!-- II. STATUS KEPEGAWAIAN & JABATAN KEDINASAN -->
+                    <div class="space-y-1.5 border border-slate-300 p-3 rounded-xl bg-white">
+                        <h4 class="font-black text-xs uppercase text-emerald-950 border-b border-slate-200 pb-1 flex items-center justify-between">
+                            <span>II. STATUS KEPEGAWAIAN & JABATAN KEDINASAN</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 border border-emerald-300">${currentPegawai.status || 'PNS'}</span>
                         </h4>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div><strong>Status Kepegawaian:</strong> ${currentPegawai.status || '-'}</div>
-                            <div><strong>Unit Kerja Penempatan:</strong> ${currentPegawai.ruangan || '-'}</div>
-                            <div><strong>Jalur Jabatan:</strong> ${currentPegawai.sub2 || 'FUNGSIONAL'}</div>
-                            <div><strong>Nama Jabatan:</strong> ${currentPegawai.jabatan || '-'}</div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[9.5px]">
+                            <div><strong>Status Kepegawaian:</strong> <span class="font-extrabold text-slate-900">${currentPegawai.status || '-'}</span></div>
+                            <div><strong>Unit Kerja / Ruangan:</strong> <span class="font-bold">${currentPegawai.ruangan || '-'}</span></div>
+                            <div><strong>Kategori / Jalur Jabatan:</strong> ${currentPegawai.sub1 || 'MEDIS'} / ${currentPegawai.sub2 || 'FUNGSIONAL'}</div>
+                            <div><strong>Nama Jabatan:</strong> <span class="font-bold text-slate-900">${currentPegawai.jabatan || dj.namaJabatan || '-'}</span></div>
                             <div><strong>Golongan / Pangkat:</strong> ${dp.golongan || '-'}</div>
-                            <div><strong>Tingkat Eselon:</strong> ${dj.eselon || 'NON_ESELON'}</div>
-                            <div><strong>Nomor SK Kedinasan:</strong> ${dj.noSk || '-'}</div>
-                            <div><strong>TMT SK / Jabatan:</strong> ${dj.tmtSk || '-'}</div>
+                            <div><strong>Tingkat Eselon / Jenjang:</strong> ${dj.eselon || dj.jenjang || 'NON_ESELON'}</div>
+                            <div><strong>Kelompok Fungsional:</strong> ${dj.kelompok || '-'}</div>
+                            <div><strong>Nomor SK Kedinasan:</strong> <span class="font-mono">${dj.noSk || '-'}</span></div>
+                            <div><strong>Tanggal SK:</strong> ${dj.tglSk || '-'}</div>
+                            <div><strong>TMT SK Kedinasan:</strong> <span class="font-mono font-bold">${dj.tmtSk || '-'}</span></div>
                         </div>
                     </div>
 
-                    <div class="space-y-2 border p-3 rounded-xl">
-                        <h4 class="font-bold uppercase text-emerald-950 border-b pb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-nurse text-emerald-700"></i> III. Legalitas Medis & Profesi (Nakes)
+                    <!-- III. LEGALITAS MEDIS & PROFESI (NAKES) -->
+                    ${isStruk ? '' : `
+                    <div class="space-y-1.5 border border-slate-300 p-3 rounded-xl bg-white">
+                        <h4 class="font-black text-xs uppercase text-amber-950 border-b border-slate-200 pb-1 flex items-center justify-between">
+                            <span>III. LEGALITAS MEDIS & PROFESI (NAKES)</span>
+                            <span class="text-[9px] font-bold text-amber-900">${dm.orgProfesi || 'Profesi Kesehatan'}</span>
                         </h4>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div><strong>Nomor STR:</strong> ${dm.noStr || '-'}</div>
-                            <div><strong>Masa Berlaku STR:</strong> ${dm.expStr || dm.mblStr || '-'}</div>
-                            <div><strong>Nomor SIP RSUD:</strong> ${dm.noSip || '-'}</div>
-                            <div><strong>Masa Berlaku SIP:</strong> ${dm.expSip || dm.mblSip || '-'}</div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[9.5px]">
+                            <div><strong>Nomor STR:</strong> <span class="font-mono font-bold">${dm.noStr || '-'}</span></div>
+                            <div><strong>Tgl Terbit / Masa Berlaku STR:</strong> ${dm.tglStr || '-'} s/d <span class="font-bold text-emerald-900">${dm.expStr || dm.mblStr || '-'}</span></div>
+                            <div><strong>Nomor SIP RSUD:</strong> <span class="font-mono font-bold">${dm.noSip || '-'}</span></div>
+                            <div><strong>Tgl Terbit / Masa Berlaku SIP:</strong> ${dm.tglSip || '-'} s/d <span class="font-bold text-emerald-900">${dm.expSip || dm.mblSip || '-'}</span></div>
                             <div><strong>Organisasi Profesi:</strong> ${dm.orgProfesi || '-'}</div>
-                            <div><strong>No. Anggota Org:</strong> ${dm.noAnggotaOrg || '-'}</div>
+                            <div><strong>No. Anggota Organisasi:</strong> <span class="font-mono">${dm.noAnggotaOrg || '-'}</span></div>
                         </div>
                     </div>
+                    `}
 
-                    <div class="space-y-2 border p-3 rounded-xl">
-                        <h4 class="font-bold uppercase text-emerald-950 border-b pb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-graduation-cap text-emerald-700"></i> IV. Riwayat Pendidikan Formal
-                        </h4>
+                    <!-- IV. RIWAYAT PENDIDIKAN FORMAL -->
+                    <div class="space-y-1.5 border border-slate-300 p-3 rounded-xl bg-white">
+                        <h4 class="font-black text-xs uppercase text-emerald-950 border-b border-slate-200 pb-1">IV. RIWAYAT PENDIDIKAN FORMAL</h4>
                         <table class="w-full text-left border-collapse text-[9.5px]">
                             <thead>
-                                <tr class="bg-slate-100 font-bold">
+                                <tr class="bg-slate-100 font-bold border-b border-slate-300">
                                     <th class="p-1 text-center w-6">No</th>
                                     <th class="p-1">Jenjang</th>
                                     <th class="p-1">Sekolah / Universitas</th>
-                                    <th class="p-1">Prodi / Jurusan</th>
-                                    <th class="p-1">No. Ijazah</th>
-                                    <th class="p-1 text-center">IPK</th>
+                                    <th class="p-1">Program Studi / Jurusan</th>
+                                    <th class="p-1">No. STTB / Ijazah</th>
+                                    <th class="p-1 text-center w-12">IPK</th>
                                 </tr>
                             </thead>
-                            <tbody>${eduRows}</tbody>
+                            <tbody class="divide-y divide-slate-200">${eduRows}</tbody>
                         </table>
                     </div>
                 `;
