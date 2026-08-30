@@ -89,7 +89,7 @@
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
             #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer,
             #toast-box, #loading-screen,
-            button, select, input {
+            button, select, input, label, form, .no-print-area {
                 display: none !important;
             }
 
@@ -105,7 +105,7 @@
 
             body.print-mode-matrix @page {
                 size: A4 landscape;
-                margin: 6mm 6mm 6mm 6mm;
+                margin: 8mm 8mm 8mm 8mm;
             }
             body.print-mode-matrix main {
                 padding: 0 !important;
@@ -182,13 +182,17 @@
                 page-break-inside: auto !important;
             }
 
+            thead {
+                display: table-header-group !important;
+            }
+
             tr {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
 
             th, td {
-                padding: 3px 5px !important;
+                padding: 4px 6px !important;
                 border: 1px solid #000 !important;
                 color: #000 !important;
                 font-size: 8pt !important;
@@ -203,12 +207,13 @@
             .print-signature-block {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
-                margin-top: 10px !important;
+                margin-top: 15px !important;
                 padding-top: 6px !important;
             }
 
             .matrix-print-kop {
                 display: flex !important;
+                margin-bottom: 10px !important;
             }
         }
     </style>
@@ -241,7 +246,7 @@
                             <span class="hidden xs:inline">Konfigurasi</span>
                         </button>
                     </div>
-                    <p class="text-[9.5px] text-emerald-700 font-medium hidden md:block truncate max-w-xs md:max-w-md">Sistem Integrasi Realtime Google Sheets (GAS) & Supabase</p>
+                    <p class="text-[9.5px] text-emerald-700 font-medium hidden md:block truncate max-w-xs md:max-w-md">Sistem Integrasi Realtime (GAS) & Supabase</p>
                 </div>
             </div>
 
@@ -626,7 +631,7 @@
         <!-- DIREKTORI BUKU INDUK VIEW -->
         <div id="admin-view-direktori" class="hidden space-y-3 fade-in">
             <section class="glass-panel p-3.5 sm:p-4 rounded-2xl border border-emerald-200/90 shadow-xs space-y-3">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-emerald-100 pb-2.5 no-print">
                     <div>
                         <h3 class="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-address-book text-emerald-600"></i> Buku Induk Digital Staf & Pengelompokan Unit Kerja
@@ -741,7 +746,7 @@
                             <div class="h-12 flex items-center justify-center my-0.5">
                                 <img id="unit-direktur-ttd-img" src="" alt="TTD Direktur" class="max-h-12 hidden object-contain">
                             </div>
-                            <p id="unit-direktur-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                            <p id="unit-direktur-nama" class="font-bold underline mt-1">( ________________________ )</p>
                             <p id="unit-direktur-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                         </div>
                         <div>
@@ -749,7 +754,7 @@
                             <div class="h-12 flex items-center justify-center my-0.5">
                                 <img id="unit-kasubag-ttd-img" src="" alt="TTD Kasubag" class="max-h-12 hidden object-contain">
                             </div>
-                            <p id="unit-pejabat-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                            <p id="unit-pejabat-nama" class="font-bold underline mt-1">( ________________________ )</p>
                             <p id="unit-pejabat-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                         </div>
                     </div>
@@ -889,7 +894,7 @@
                         <div class="h-12 flex items-center justify-center my-0.5">
                             <img id="matrix-direktur-ttd-img" src="" alt="TTD Direktur" class="max-h-12 hidden object-contain">
                         </div>
-                        <p id="matrix-direktur-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                        <p id="matrix-direktur-nama" class="font-bold underline mt-1">( ________________________ )</p>
                         <p id="matrix-direktur-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                     </div>
                     <div>
@@ -897,7 +902,7 @@
                         <div class="h-12 flex items-center justify-center my-0.5">
                             <img id="matrix-kasubag-ttd-img" src="" alt="TTD Kasubag" class="max-h-12 hidden object-contain">
                         </div>
-                        <p id="matrix-pejabat-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                        <p id="matrix-pejabat-nama" class="font-bold underline mt-1">( ________________________ )</p>
                         <p id="matrix-pejabat-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                     </div>
                 </div>
@@ -1412,13 +1417,13 @@
                 <div class="pt-6 grid grid-cols-2 text-center text-[10px] print-signature-block">
                     <div>
                         <p class="font-bold mb-12">Mengetahui,<br><span id="sheet-pejabat-jabatan">Kepala Sub Bagian UMPEG</span></p>
-                        <p class="font-black underline uppercase" id="sheet-pejabat-nama">( ________________________ )</p>
+                        <p class="font-bold underline" id="sheet-pejabat-nama">( ________________________ )</p>
                         <p class="text-[9px] font-mono text-slate-600" id="sheet-pejabat-nip">NIP. -</p>
                     </div>
                     <div>
                         <p class="font-bold">Sinjai, <span id="sheet-print-date">--/--/2026</span></p>
                         <p class="font-bold mb-12">Pegawai Yang Bersangkutan,</p>
-                        <p class="font-black underline uppercase" id="sheet-sign-nama">( ________________________ )</p>
+                        <p class="font-bold underline" id="sheet-sign-nama">( ________________________ )</p>
                     </div>
                 </div>
             </div>
