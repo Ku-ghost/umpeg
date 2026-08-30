@@ -84,7 +84,21 @@
             table th, table td { font-size: 9.5px !important; padding: 6px 4px !important; }
         }
 
+        /* ISOLASI KETAT DAN PEMBERSIHAN FORMAT CETAK PDF (ZERO LEAK) */
         @media print {
+            html, body {
+                background: white !important;
+                color: black !important;
+                font-size: 8.5pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+                box-shadow: none !important;
+            }
+
+            /* Sembunyikan seluruh elemen antarmuka Web Admin */
             header, footer, nav, .no-print, .mobile-tab-scroll,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
             #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer,
@@ -93,32 +107,38 @@
                 display: none !important;
             }
 
-            body {
-                background: white !important;
-                color: black !important;
-                font-size: 8.5pt !important;
-                margin: 0 !important;
+            /* Hapus jarak atas (margin/padding/flex gaps) agar Kop Surat langsung di atas */
+            main, #admin-view-laporan, #admin-view-direktori, #print-matrix-area, 
+            #panel-direktori-sub-perunit, #panel-laporan-sub-matriks, #panel-laporan-sub-monitoring, .glass-panel {
                 padding: 0 !important;
-                width: 100% !important;
+                margin: 0 !important;
+                border: none !important;
                 box-shadow: none !important;
+                background: transparent !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+                position: static !important;
+            }
+
+            /* Hilangkan spacing berlebih yang dihasilkan kelas Tailwind .space-y-* */
+            .space-y-1 > * + *, .space-y-2 > * + *, .space-y-3 > * + *, .space-y-4 > * + * {
+                margin-top: 0 !important;
             }
 
             body.print-mode-matrix @page {
                 size: A4 landscape;
-                margin: 8mm 8mm 8mm 8mm;
+                margin: 6mm 8mm 6mm 8mm;
             }
-            body.print-mode-matrix main {
-                padding: 0 !important;
-                margin: 0 !important;
-                max-width: 100% !important;
-                width: 100% !important;
-            }
+
             body.print-mode-matrix #admin-view-dashboard,
             body.print-mode-matrix #admin-view-verifikasi,
             body.print-mode-matrix #admin-view-master-data,
             body.print-mode-matrix #modal-print-profile {
                 display: none !important;
             }
+
             body.print-mode-matrix #admin-view-laporan,
             body.print-mode-matrix #admin-view-direktori {
                 display: block !important;
@@ -126,17 +146,6 @@
                 width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
-            }
-            body.print-mode-matrix #print-matrix-area,
-            body.print-mode-matrix #panel-direktori-sub-perunit,
-            body.print-mode-matrix .glass-panel {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-                position: static !important;
-                width: 100% !important;
             }
 
             body.print-mode-profile @page {
@@ -174,12 +183,15 @@
                 width: 100% !important;
                 border: none !important;
                 box-shadow: none !important;
+                padding: 0 !important;
+                margin-top: 4px !important;
             }
 
             table {
                 width: 100% !important;
                 border-collapse: collapse !important;
                 page-break-inside: auto !important;
+                margin-top: 4px !important;
             }
 
             thead {
@@ -192,7 +204,7 @@
             }
 
             th, td {
-                padding: 4px 6px !important;
+                padding: 3px 5px !important;
                 border: 1px solid #000 !important;
                 color: #000 !important;
                 font-size: 8pt !important;
@@ -204,16 +216,19 @@
                 font-weight: 800 !important;
             }
 
+            .matrix-print-kop {
+                display: flex !important;
+                margin-top: 0 !important;
+                margin-bottom: 6px !important;
+                padding-top: 0 !important;
+                align-items: center !important;
+            }
+
             .print-signature-block {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
-                margin-top: 15px !important;
-                padding-top: 6px !important;
-            }
-
-            .matrix-print-kop {
-                display: flex !important;
-                margin-bottom: 10px !important;
+                margin-top: 12px !important;
+                padding-top: 4px !important;
             }
         }
     </style>
@@ -227,7 +242,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Memuat Engine System UMPEG...</span>
+            <span>Memuat Engine System UMPEG</span>
         </p>
     </div>
 
@@ -299,7 +314,7 @@
 
     <main class="flex-1 w-full max-w-[98%] mx-auto p-2.5 sm:p-5 lg:p-6 space-y-4 pt-3">
         
-        <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white">
+        <div id="toast-box" class="fixed top-4 right-4 left-4 sm:left-auto z-50 hidden fade-in max-w-sm p-3.5 rounded-xl shadow-xl border flex items-center gap-2.5 text-xs bg-white no-print">
             <i id="toast-icon" class="text-base shrink-0"></i>
             <span id="toast-msg" class="font-semibold text-xs text-slate-800"></span>
         </div>
@@ -712,18 +727,18 @@
                         </div>
                     </div>
 
-                    <!-- Printable Header for Unit Report -->
-                    <div class="border-b-4 border-double border-slate-900 pb-3 matrix-print-kop hidden print:flex items-center justify-between gap-4 text-center">
-                        <div class="w-20 h-20 flex items-center justify-center shrink-0">
-                            <img id="unit-report-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-20 max-w-20 object-contain">
+                    <!-- Printable Header for Unit Report (KOP RESMI) -->
+                    <div class="border-b-4 border-double border-slate-900 pb-2 matrix-print-kop hidden print:flex items-center justify-between gap-4 text-center">
+                        <div class="w-16 h-16 flex items-center justify-center shrink-0">
+                            <img id="unit-report-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-16 max-w-16 object-contain">
                         </div>
                         <div class="flex-1 text-center space-y-0.5">
                             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
                             <h2 class="text-sm sm:text-base font-black uppercase tracking-widest text-emerald-950">UPT RUMAH SAKIT UMUM DAERAH SINJAI</h2>
-                            <p class="text-[9.5px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
-                            <h4 class="text-xs font-black uppercase underline pt-1 text-emerald-950">LAPORAN DAFTAR NOMINATIF PEGAWAI PER UNIT KERJA</h4>
+                            <p class="text-[9px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
+                            <h4 class="text-xs font-black uppercase underline pt-0.5 text-emerald-950">LAPORAN DAFTAR NOMINATIF PEGAWAI PER UNIT KERJA</h4>
                         </div>
-                        <div class="w-20 h-20 shrink-0 hidden sm:block"></div>
+                        <div class="w-16 h-16 shrink-0 hidden sm:block"></div>
                     </div>
 
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
@@ -798,16 +813,16 @@
                     </button>
                 </div>
 
-                <div class="border-b-4 border-double border-slate-900 pb-3 matrix-print-kop hidden print:flex items-center justify-between gap-4 text-center">
-                    <div class="w-20 h-20 flex items-center justify-center shrink-0">
-                        <img id="matrix-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-20 max-w-20 object-contain">
+                <div class="border-b-4 border-double border-slate-900 pb-2 matrix-print-kop hidden print:flex items-center justify-between gap-4 text-center">
+                    <div class="w-16 h-16 flex items-center justify-center shrink-0">
+                        <img id="matrix-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo RSUD Sinjai" class="max-h-16 max-w-16 object-contain">
                     </div>
                     <div class="flex-1 text-center space-y-0.5">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
                         <h2 class="text-sm sm:text-base font-black uppercase tracking-widest text-emerald-950">UPT RUMAH SAKIT UMUM DAERAH SINJAI</h2>
                         <p class="text-[9.5px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
                     </div>
-                    <div class="w-20 h-20 shrink-0 hidden sm:block"></div>
+                    <div class="w-16 h-16 shrink-0 hidden sm:block"></div>
                 </div>
 
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
@@ -2286,7 +2301,7 @@
 
             window.setText('unit-print-date', new Date().toLocaleDateString('id-ID'));
             
-            // Direktur RSUD Sinjai
+            // Direktur RSUD Sinjai (Preservasi Nama Asli tanpa Forced Uppercase)
             window.setText('unit-direktur-nama', masterKopConfig.direkturNama ? `( ${masterKopConfig.direkturNama} )` : '( ________________________ )');
             window.setText('unit-direktur-nip', masterKopConfig.direkturNip ? `NIP. ${masterKopConfig.direkturNip}` : 'NIP. -');
             const dirTtdImg = document.getElementById('unit-direktur-ttd-img');
@@ -2297,7 +2312,7 @@
                 dirTtdImg.classList.add('hidden');
             }
 
-            // Kasubag UMPEG
+            // Kasubag UMPEG (Preservasi Nama Asli tanpa Forced Uppercase)
             window.setText('unit-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('unit-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG,');
             window.setText('unit-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
@@ -2496,7 +2511,7 @@
 
             window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
             
-            // Direktur RSUD Sinjai
+            // Direktur RSUD Sinjai (Preservasi Huruf Kapital)
             window.setText('matrix-direktur-nama', masterKopConfig.direkturNama ? `( ${masterKopConfig.direkturNama} )` : '( ________________________ )');
             window.setText('matrix-direktur-nip', masterKopConfig.direkturNip ? `NIP. ${masterKopConfig.direkturNip}` : 'NIP. -');
             const dirTtdImg = document.getElementById('matrix-direktur-ttd-img');
@@ -2507,7 +2522,7 @@
                 dirTtdImg.classList.add('hidden');
             }
 
-            // Kasubag UMPEG
+            // Kasubag UMPEG (Preservasi Huruf Kapital)
             window.setText('matrix-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('matrix-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG,');
             window.setText('matrix-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
@@ -3090,6 +3105,7 @@
             window.setText('sheet-sign-nama', `( ${fullNameCombined} )`);
             window.setText('sheet-print-date', new Date().toLocaleDateString('id-ID'));
 
+            // Preservasi Casing Nama Pejabat Penandatangan
             window.setText('sheet-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('sheet-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG');
             window.setText('sheet-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
