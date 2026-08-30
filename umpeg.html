@@ -127,9 +127,14 @@
                 margin-top: 0 !important;
             }
 
+            /* Sembunyikan semua Icon FontAwesome dan Badge Angka pada mode cetak PDF */
+            i, .fa-solid, .fa-brands, .fa-regular, .fa, .no-print {
+                display: none !important;
+            }
+
             body.print-mode-matrix @page {
                 size: A4 landscape;
-                margin: 6mm 8mm 6mm 8mm;
+                margin: 6mm 10mm 6mm 10mm;
             }
 
             body.print-mode-matrix #admin-view-dashboard,
@@ -150,7 +155,7 @@
 
             body.print-mode-profile @page {
                 size: A4 portrait;
-                margin: 8mm 8mm 8mm 8mm;
+                margin: 8mm 10mm 8mm 10mm;
             }
             body.print-mode-profile #admin-view-dashboard,
             body.print-mode-profile #admin-view-verifikasi,
@@ -242,7 +247,7 @@
         <h2 class="text-sm font-black tracking-widest uppercase text-emerald-100">UPT RSUD SINJAI - UMPEG</h2>
         <p class="text-xs text-emerald-300 font-semibold mt-1 flex items-center gap-2">
             <i class="fa-solid fa-spinner animate-spin"></i>
-            <span>Memuat Engine System UMPEG</span>
+            <span>Memuat Engine System UMPEG...</span>
         </p>
     </div>
 
@@ -738,7 +743,7 @@
                             <p class="text-[9px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
                             <h4 class="text-xs font-black uppercase underline pt-0.5 text-emerald-950">LAPORAN DAFTAR NOMINATIF PEGAWAI PER UNIT KERJA</h4>
                         </div>
-                        <div class="w-16 h-16 shrink-0 hidden sm:block"></div>
+                        <div class="w-16 h-16 shrink-0"></div>
                     </div>
 
                     <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
@@ -821,8 +826,9 @@
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
                         <h2 class="text-sm sm:text-base font-black uppercase tracking-widest text-emerald-950">UPT RUMAH SAKIT UMUM DAERAH SINJAI</h2>
                         <p class="text-[9.5px] text-slate-700 font-medium">Jl. Jenderal Sudirman No. 47, Kel. Biringere, Sinjai Utara, Kab. Sinjai, Sulawesi Selatan 92611</p>
+                        <h4 id="matrix-report-title" class="text-xs font-black uppercase underline pt-0.5 text-emerald-950">LAPORAN REKAPITULASI MATRIKS SDM DAN FORMASI JABATAN</h4>
                     </div>
-                    <div class="w-16 h-16 shrink-0 hidden sm:block"></div>
+                    <div class="w-16 h-16 shrink-0"></div>
                 </div>
 
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
@@ -1410,9 +1416,9 @@
             </div>
 
             <div class="p-6 overflow-y-auto space-y-4 text-xs font-sans text-slate-900 bg-white" id="sheet-content-wrapper">
-                <div class="border-b-2 border-slate-900 pb-2 flex items-center justify-between gap-3 text-center">
+                <div class="border-b-4 border-double border-slate-900 pb-2 flex items-center justify-between gap-3 text-center">
                     <div class="w-16 h-16 flex items-center justify-center shrink-0">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo" class="max-h-16 object-contain">
+                        <img id="profile-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png" onerror="this.onerror=null; this.src='https://placehold.co/80x80/15803d/ffffff?text=RSUD+SINJAI'" alt="Logo" class="max-h-16 object-contain">
                     </div>
                     <div class="flex-1 text-center space-y-0.5">
                         <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-800">PEMERINTAH KABUPATEN SINJAI</h3>
@@ -2263,8 +2269,8 @@
                 tbody.innerHTML += `
                     <tr class="bg-emerald-100/90 border-b border-emerald-300 font-extrabold uppercase text-emerald-950 text-[9.5px] sm:text-[10px]">
                         <td colspan="3" class="p-2 text-left font-extrabold">
-                            <i class="fa-solid fa-hospital text-emerald-700 mr-1.5"></i> ${u.toUpperCase()} 
-                            <span class="text-[8.5px] bg-emerald-800 text-white px-2 py-0.2 rounded-full font-mono ml-2">${pegsInUnit.length} STAF</span>
+                            <i class="fa-solid fa-hospital text-emerald-700 mr-1.5 no-print"></i> ${u.toUpperCase()} 
+                            <span class="text-[8.5px] bg-emerald-800 text-white px-2 py-0.2 rounded-full font-mono ml-2 no-print">${pegsInUnit.length} STAF</span>
                         </td>
                     </tr>
                 `;
@@ -2507,6 +2513,13 @@
                 window.renderMatrixReport();
             } else {
                 window.renderSubTab2MonitoringKedinasan();
+            }
+
+            const titleEl = document.getElementById('matrix-report-title');
+            if (titleEl) {
+                titleEl.innerText = activeLaporanSubTab === 'matriks' 
+                    ? 'LAPORAN REKAPITULASI MATRIKS SDM DAN FORMASI JABATAN' 
+                    : 'LAPORAN MONITORING KEDINASAN PEGAWAI';
             }
 
             window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
@@ -3109,6 +3122,9 @@
             window.setText('sheet-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('sheet-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG');
             window.setText('sheet-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
+
+            const logoImg = document.getElementById('profile-logo-img');
+            if (logoImg && masterKopConfig.logoUrl) logoImg.src = masterKopConfig.logoUrl;
 
             const body = document.getElementById('sheet-content-body');
             if (body) {
