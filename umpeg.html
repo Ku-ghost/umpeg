@@ -84,11 +84,11 @@
             table th, table td { font-size: 9.5px !important; padding: 6px 4px !important; }
         }
 
-        /* Print Media Styles for Reports and Profiles */
         @media print {
-            header, footer, .no-print, .mobile-tab-scroll,
+            header, footer, nav, .no-print, .mobile-tab-scroll,
             #modal-config-auth, #modal-config-server, #modal-edit-staf-admin, 
             #modal-confirm-delete, #modal-audit-pegawai, #modal-doc-viewer,
+            #toast-box, #loading-screen,
             button, select, input {
                 display: none !important;
             }
@@ -100,11 +100,12 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 width: 100% !important;
+                box-shadow: none !important;
             }
 
             body.print-mode-matrix @page {
                 size: A4 landscape;
-                margin: 5mm 6mm 5mm 6mm;
+                margin: 6mm 6mm 6mm 6mm;
             }
             body.print-mode-matrix main {
                 padding: 0 !important;
@@ -187,10 +188,10 @@
             }
 
             th, td {
-                padding: 2px 4px !important;
+                padding: 3px 5px !important;
                 border: 1px solid #000 !important;
                 color: #000 !important;
-                font-size: 7.5pt !important;
+                font-size: 8pt !important;
             }
 
             thead th {
@@ -202,8 +203,8 @@
             .print-signature-block {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
-                margin-top: 6px !important;
-                padding-top: 4px !important;
+                margin-top: 10px !important;
+                padding-top: 6px !important;
             }
 
             .matrix-print-kop {
@@ -263,7 +264,6 @@
         </div>
     </header>
 
-    <!-- Navigation Tabs Bar -->
     <nav class="sticky top-[49px] sm:top-[53px] z-30 glass-panel border-b border-emerald-200/90 py-1.5 px-2 no-print shadow-md">
         <div class="w-full max-w-[98%] mx-auto">
             <div class="mobile-tab-scroll items-center gap-1 bg-emerald-100/90 p-1 rounded-xl border border-emerald-200/90 text-xs shadow-xs">
@@ -734,15 +734,22 @@
                         </table>
                     </div>
 
-                    <div class="pt-3 mt-2 grid grid-cols-2 text-center text-[10px] border-t border-emerald-200 matrix-print-signature hidden print:grid print-signature-block">
+                    <!-- Side-by-Side Dual Signature Block (Direktur + Kasubag UMPEG) -->
+                    <div class="pt-3 mt-3 grid grid-cols-2 text-center text-[10px] border-t border-slate-300 matrix-print-signature hidden print:grid print-signature-block">
                         <div>
-                            <p class="font-bold mb-8">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
-                            <p class="font-black underline uppercase">( ________________________ )</p>
+                            <p class="font-bold mb-1">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
+                            <div class="h-12 flex items-center justify-center my-0.5">
+                                <img id="unit-direktur-ttd-img" src="" alt="TTD Direktur" class="max-h-12 hidden object-contain">
+                            </div>
+                            <p id="unit-direktur-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                            <p id="unit-direktur-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                         </div>
                         <div>
-                            <p class="font-bold">Sinjai, <span id="unit-print-date">--/--/2026</span></p>
-                            <p id="unit-pejabat-jabatan" class="font-semibold text-slate-700 mb-1">Kepala Sub Bagian UMPEG,</p>
-                            <p id="unit-pejabat-nama" class="font-black underline uppercase mt-8">( ________________________ )</p>
+                            <p class="font-bold mb-1">Sinjai, <span id="unit-print-date">--/--/2026</span><br><span id="unit-pejabat-jabatan">Kepala Sub Bagian UMPEG,</span></p>
+                            <div class="h-12 flex items-center justify-center my-0.5">
+                                <img id="unit-kasubag-ttd-img" src="" alt="TTD Kasubag" class="max-h-12 hidden object-contain">
+                            </div>
+                            <p id="unit-pejabat-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
                             <p id="unit-pejabat-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                         </div>
                     </div>
@@ -875,18 +882,22 @@
                     </div>
                 </div>
 
-                <div class="pt-3 mt-2 grid grid-cols-2 text-center text-[10px] border-t border-emerald-200 matrix-print-signature hidden print:grid print-signature-block">
+                <!-- Side-by-Side Dual Signature Block (Direktur + Kasubag UMPEG) for Matrix Report -->
+                <div class="pt-3 mt-3 grid grid-cols-2 text-center text-[10px] border-t border-slate-300 matrix-print-signature hidden print:grid print-signature-block">
                     <div>
-                        <p class="font-bold mb-8">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
-                        <p class="font-black underline uppercase">( ________________________ )</p>
+                        <p class="font-bold mb-1">Mengetahui,<br>Direktur UPT RSUD Sinjai</p>
+                        <div class="h-12 flex items-center justify-center my-0.5">
+                            <img id="matrix-direktur-ttd-img" src="" alt="TTD Direktur" class="max-h-12 hidden object-contain">
+                        </div>
+                        <p id="matrix-direktur-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
+                        <p id="matrix-direktur-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                     </div>
                     <div>
-                        <p class="font-bold">Sinjai, <span id="matrix-print-date">--/--/2026</span></p>
-                        <p id="matrix-pejabat-jabatan" class="font-semibold text-slate-700 mb-1">Kepala Sub Bagian UMPEG,</p>
-                        <div id="matrix-ttd-container" class="h-10 flex items-center justify-center my-0.5">
-                            <img id="matrix-ttd-img" src="" alt="TTD Pejabat" class="max-h-10 hidden">
+                        <p class="font-bold mb-1">Sinjai, <span id="matrix-print-date">--/--/2026</span><br><span id="matrix-pejabat-jabatan">Kepala Sub Bagian UMPEG,</span></p>
+                        <div class="h-12 flex items-center justify-center my-0.5">
+                            <img id="matrix-kasubag-ttd-img" src="" alt="TTD Kasubag" class="max-h-12 hidden object-contain">
                         </div>
-                        <p id="matrix-pejabat-nama" class="font-black underline uppercase">( ________________________ )</p>
+                        <p id="matrix-pejabat-nama" class="font-black underline uppercase mt-1">( ________________________ )</p>
                         <p id="matrix-pejabat-nip" class="text-[8.5px] text-slate-600 font-mono">NIP. -</p>
                     </div>
                 </div>
@@ -1090,7 +1101,9 @@
 
             <div id="panel-master-sub-pejabat" class="hidden space-y-3">
                 <section class="glass-panel rounded-2xl border border-emerald-200/90 shadow-xs overflow-hidden p-3.5 sm:p-4 space-y-3">
-                    <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5">Master Pejabat, Kop Cetak Laporan & Broadcast Pengumuman</h3>
+                    <h3 class="text-xs font-black text-emerald-950 uppercase border-b pb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-file-signature text-emerald-600"></i> Master Pejabat (Direktur & Kasubag UMPEG), Kop & Broadcast Pengumuman
+                    </h3>
                     
                     <div class="bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 space-y-2">
                         <label class="block font-extrabold text-emerald-950 text-[10.5px] uppercase flex items-center gap-1.5">
@@ -1100,28 +1113,56 @@
                         <p class="text-[9px] text-slate-500">* Kosongkan teks jika tidak ada pengumuman yang ingin ditayangkan pada halaman depan pegawai.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Logo Resmi RSUD Sinjai (PNG Link)</label>
-                            <input type="url" id="cfg-logo-url" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Tanda Tangan Digital (PNG Link)</label>
-                            <input type="url" id="cfg-ttd-url" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Nama Pejabat Penandatangan</label>
-                            <input type="text" id="cfg-pejabat-nama" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jabatan Pejabat</label>
-                            <input type="text" id="cfg-pejabat-jabatan" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP Pejabat</label>
-                            <input type="text" id="cfg-pejabat-nip" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
+                    <!-- Master Data Direktur RSUD Sinjai -->
+                    <div class="p-3.5 rounded-xl bg-white border border-emerald-200 space-y-2.5">
+                        <h4 class="text-xs font-black text-emerald-950 uppercase border-b pb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-shield text-emerald-700"></i> Data Direktur RSUD Sinjai (Penandatangan Kiri)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px]">
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Nama Lengkap Direktur</label>
+                                <input type="text" id="cfg-direktur-nama" placeholder="dr. ...., Sp.B., M.Kes." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">NIP Direktur</label>
+                                <input type="text" id="cfg-direktur-nip" placeholder="19..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Tanda Tangan Digital Direktur (PNG Link)</label>
+                                <input type="url" id="cfg-direktur-ttd-url" placeholder="https://..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Master Data Kasubag / Pejabat Penandatangan Kanan -->
+                    <div class="p-3.5 rounded-xl bg-white border border-emerald-200 space-y-2.5">
+                        <h4 class="text-xs font-black text-emerald-950 uppercase border-b pb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-pen text-emerald-700"></i> Data Kasubag UMPEG / Verifikator (Penandatangan Kanan)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px]">
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">Nama Pejabat Penandatangan</label>
+                                <input type="text" id="cfg-pejabat-nama" placeholder="Nama Kasubag..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">Jabatan Pejabat</label>
+                                <input type="text" id="cfg-pejabat-jabatan" placeholder="Kepala Sub Bagian UMPEG" class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-slate-800 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] uppercase mb-0.5">NIP Pejabat</label>
+                                <input type="text" id="cfg-pejabat-nip" placeholder="19..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 font-mono text-slate-800 text-xs focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Tanda Tangan Digital Kasubag (PNG Link)</label>
+                                <input type="url" id="cfg-ttd-url" placeholder="https://..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 text-[10px] mb-0.5">URL Logo Resmi RSUD Sinjai (PNG Link)</label>
+                                <input type="url" id="cfg-logo-url" placeholder="https://..." class="w-full bg-emerald-50/70 border border-emerald-300 rounded-lg px-3 py-1.5 text-[10px] font-mono text-slate-900 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="pt-2 flex justify-end">
                         <button onclick="window.updateKopMasterConfig()" class="h-8 sm:h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
@@ -1404,16 +1445,16 @@
         
         let serverApiConfig = { ...DEFAULT_CONFIG };
 
-        const DEFAULT_RUANGAN = ["Poli Spesialis Rawat Jalan", "Instalasi Gawat Darutar (IGD)", "Ruang Perawatan ICU", "Kamar Operasi (OK)", "Instalasi Rawat Inap (IRNA)", "Instalasi Farmasi", "Laboratorium / UTDRS", "Radiologi", "Bagian Tata Usaha & UMPEG"];
+        const DEFAULT_RUANGAN = ["Bagian Tata Usaha & UMPEG", "Instalasi Farmasi", "Instalasi Gawat Darutar (IGD)", "Instalasi Rawat Inap (IRNA)", "Kamar Operasi (OK)", "Laboratorium / UTDRS", "Poli Spesialis Rawat Jalan", "Radiologi", "Ruang Perawatan ICU"];
         const DEFAULT_JABATAN = {
-            STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian UMPEG", "Kepala Sub Bagian Keuangan"],
-            FUNGSIONAL: ["Dokter Spesialis Penyakit Dalam", "Dokter Spesialis Anak", "Dokter Umum", "Perawat Ahli Pertama", "Bidan Terampil", "Apoteker"]
+            STRUKTURAL: ["Direktur RSUD", "Kepala Bagian TU", "Kepala Sub Bagian Keuangan", "Kepala Sub Bagian UMPEG"],
+            FUNGSIONAL: ["Apoteker", "Bidan Terampil", "Dokter Spesialis Anak", "Dokter Spesialis Penyakit Dalam", "Dokter Umum", "Perawat Ahli Pertama"]
         };
-        const DEFAULT_ESELON = ["NON_ESELON", "IV.b", "IV.a", "III.b", "III.a", "II.b", "II.a", "I.b", "I.a"];
-        const DEFAULT_STATUS_PEG = ["PNS", "PPPK (Penuh Waktu)", "PPPK (Paruh Waktu)", "Kontrak", "Honorer", "Sukarela"];
-        const DEFAULT_EDUCATION = ["S1", "Profesi", "S2", "Sp-1", "D3", "D4", "SMA", "SMP", "SD"];
-        const DEFAULT_GOLONGAN = ["IV/e", "IV/d", "IV/c", "IV/b", "IV/a", "III/d", "III/c", "III/b", "III/a", "II/d", "II/c", "II/b", "II/a", "Golongan IX (PPPK)", "Non-ASN (-)"];
-        const DEFAULT_ORG_PROFESI = ["IDI", "PPNI", "IBI", "IAI", "HAKLI", "PERSAGI", "PARI", "PATELKI"];
+        const DEFAULT_ESELON = ["I.a", "I.b", "II.a", "II.b", "III.a", "III.b", "IV.a", "IV.b", "NON_ESELON"];
+        const DEFAULT_STATUS_PEG = ["Honorer", "Kontrak", "PNS", "PPPK (Paruh Waktu)", "PPPK (Penuh Waktu)", "Sukarela"];
+        const DEFAULT_EDUCATION = ["D3", "D4", "Profesi", "S1", "S2", "SD", "SMA", "SMP", "Sp-1"];
+        const DEFAULT_GOLONGAN = ["Golongan IX (PPPK)", "II/a", "II/b", "II/c", "II/d", "III/a", "III/b", "III/c", "III/d", "IV/a", "IV/b", "IV/c", "IV/d", "IV/e", "Non-ASN (-)"];
+        const DEFAULT_ORG_PROFESI = ["HAKLI", "IAI", "IBI", "IDI", "PARI", "PATELKI", "PERSAGI", "PPNI"];
 
         const DEFAULT_CHECKLIST_CONFIG = [
             {
@@ -1483,15 +1524,29 @@
         ];
 
         let masterPegawaiDb = [];
-        let masterRuanganList = [...DEFAULT_RUANGAN];
-        let masterJabatanList = JSON.parse(JSON.stringify(DEFAULT_JABATAN));
-        let masterEselonList = [...DEFAULT_ESELON];
-        let masterStatusPegList = [...DEFAULT_STATUS_PEG];
-        let masterEducationList = [...DEFAULT_EDUCATION];
-        let masterGolonganList = [...DEFAULT_GOLONGAN];
-        let masterOrgList = [...DEFAULT_ORG_PROFESI];
+        let masterRuanganList = [...DEFAULT_RUANGAN].sort((a,b) => a.localeCompare(b));
+        let masterJabatanList = {
+            STRUKTURAL: [...DEFAULT_JABATAN.STRUKTURAL].sort((a,b) => a.localeCompare(b)),
+            FUNGSIONAL: [...DEFAULT_JABATAN.FUNGSIONAL].sort((a,b) => a.localeCompare(b))
+        };
+        let masterEselonList = [...DEFAULT_ESELON].sort((a,b) => a.localeCompare(b));
+        let masterStatusPegList = [...DEFAULT_STATUS_PEG].sort((a,b) => a.localeCompare(b));
+        let masterEducationList = [...DEFAULT_EDUCATION].sort((a,b) => a.localeCompare(b));
+        let masterGolonganList = [...DEFAULT_GOLONGAN].sort((a,b) => a.localeCompare(b));
+        let masterOrgList = [...DEFAULT_ORG_PROFESI].sort((a,b) => a.localeCompare(b));
         let masterChecklistConfig = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_CONFIG));
-        let masterKopConfig = { pejabatNama: '', pejabatJabatan: 'Kepala Sub Bagian UMPEG', pejabatNip: '', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png', ttdUrl: '', globalAnnouncement: '' };
+        
+        let masterKopConfig = { 
+            direkturNama: '',
+            direkturNip: '',
+            direkturTtdUrl: '',
+            pejabatNama: '', 
+            pejabatJabatan: 'Kepala Sub Bagian UMPEG', 
+            pejabatNip: '', 
+            logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lambang_Kabupaten_Sinjai.png/400px-Lambang_Kabupaten_Sinjai.png', 
+            ttdUrl: '', 
+            globalAnnouncement: '' 
+        };
 
         let pendingDeleteMaster = { type: null, category: null, index: null, itemId: null, targetNip: null, targetId: null };
         let activeAuditNip = null;
@@ -1611,7 +1666,7 @@
                             try {
                                 const { data: directPegData } = await supabaseClient.from('pegawai_lemari_digital').select('*');
                                 if (directPegData && directPegData.length > 0) {
-                                    masterPegawaiDb = directPegData.map(item => normalizePegawaiData(item));
+                                    masterPegawaiDb = directPegData.map(item => normalizePegawaiData(item)).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
                                     window.renderActiveView();
                                     window.showToast("Data Pegawai Terintegrasi Realtime!", "success");
                                     return;
@@ -1755,6 +1810,9 @@
             else if (subName === 'pend-gol') { window.renderMasterEducationBadges(); window.renderMasterGolonganBadges(); window.renderMasterOrgBadges(); }
             else if (subName === 'pejabat') {
                 if (document.getElementById('cfg-logo-url')) document.getElementById('cfg-logo-url').value = masterKopConfig.logoUrl || '';
+                if (document.getElementById('cfg-direktur-nama')) document.getElementById('cfg-direktur-nama').value = masterKopConfig.direkturNama || '';
+                if (document.getElementById('cfg-direktur-nip')) document.getElementById('cfg-direktur-nip').value = masterKopConfig.direkturNip || '';
+                if (document.getElementById('cfg-direktur-ttd-url')) document.getElementById('cfg-direktur-ttd-url').value = masterKopConfig.direkturTtdUrl || '';
                 if (document.getElementById('cfg-ttd-url')) document.getElementById('cfg-ttd-url').value = masterKopConfig.ttdUrl || '';
                 if (document.getElementById('cfg-pejabat-nama')) document.getElementById('cfg-pejabat-nama').value = masterKopConfig.pejabatNama || '';
                 if (document.getElementById('cfg-pejabat-jabatan')) document.getElementById('cfg-pejabat-jabatan').value = masterKopConfig.pejabatJabatan || '';
@@ -1835,16 +1893,21 @@
                 else if (json && Array.isArray(json.pegawai)) rawList = json.pegawai;
 
                 if (rawList && rawList.length > 0) {
-                    masterPegawaiDb = rawList.map(item => normalizePegawaiData(item));
+                    masterPegawaiDb = rawList.map(item => normalizePegawaiData(item)).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
                     
                     if (json && json.config) {
                         const cfg = json.config;
-                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = cfg.master_ruangan;
-                        if (cfg.master_jabatan) masterJabatanList = cfg.master_jabatan;
-                        if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = cfg.master_status;
-                        if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = cfg.master_edu;
-                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = cfg.master_golongan;
-                        if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = cfg.master_org;
+                        if (cfg.master_ruangan && Array.isArray(cfg.master_ruangan)) masterRuanganList = [...cfg.master_ruangan].sort((a,b) => a.localeCompare(b));
+                        if (cfg.master_jabatan) {
+                            masterJabatanList = {
+                                STRUKTURAL: [...(cfg.master_jabatan.STRUKTURAL||[])].sort((a,b) => a.localeCompare(b)),
+                                FUNGSIONAL: [...(cfg.master_jabatan.FUNGSIONAL||[])].sort((a,b) => a.localeCompare(b))
+                            };
+                        }
+                        if (cfg.master_status && Array.isArray(cfg.master_status)) masterStatusPegList = [...cfg.master_status].sort((a,b) => a.localeCompare(b));
+                        if (cfg.master_edu && Array.isArray(cfg.master_edu)) masterEducationList = [...cfg.master_edu].sort((a,b) => a.localeCompare(b));
+                        if (cfg.master_golongan && Array.isArray(cfg.master_golongan)) masterGolonganList = [...cfg.master_golongan].sort((a,b) => a.localeCompare(b));
+                        if (cfg.master_org && Array.isArray(cfg.master_org)) masterOrgList = [...cfg.master_org].sort((a,b) => a.localeCompare(b));
                         if (cfg.master_checklist && Array.isArray(cfg.master_checklist)) masterChecklistConfig = cfg.master_checklist;
                         if (cfg.kop_config) masterKopConfig = { ...masterKopConfig, ...cfg.kop_config };
                     }
@@ -2036,7 +2099,7 @@
                 if (jalurJab !== 'ALL' && p.sub2 !== jalurJab) return false;
                 if (search && !p.nama?.toLowerCase().includes(search) && !p.nip?.toLowerCase().includes(search) && !p.idPegawai?.toLowerCase().includes(search)) return false;
                 return true;
-            });
+            }).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
 
             window.setText('filter-verif-count-badge', `${filtered.length} Pegawai`);
 
@@ -2092,7 +2155,7 @@
             tbody.innerHTML = '';
 
             const search = (document.getElementById('search-direktori')?.value || '').toLowerCase();
-            const filtered = masterPegawaiDb.filter(p => !search || p.nama?.toLowerCase().includes(search) || p.nip?.toLowerCase().includes(search) || p.idPegawai?.toLowerCase().includes(search));
+            const filtered = masterPegawaiDb.filter(p => !search || p.nama?.toLowerCase().includes(search) || p.nip?.toLowerCase().includes(search) || p.idPegawai?.toLowerCase().includes(search)).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Data pegawai tidak ditemukan.</td></tr>`;
@@ -2146,7 +2209,7 @@
             if (unitSelectEl) {
                 const currentVal = unitSelectEl.value || 'ALL';
                 let optionsHtml = '<option value="ALL">-- Semua Unit Kerja Master --</option>';
-                masterRuanganList.forEach(r => {
+                [...masterRuanganList].sort((a,b) => a.localeCompare(b)).forEach(r => {
                     optionsHtml += `<option value="${r}">${r}</option>`;
                 });
                 unitSelectEl.innerHTML = optionsHtml;
@@ -2158,6 +2221,7 @@
                 const u = p.ruangan || 'Lainnya / Unassigned';
                 if (!units.includes(u)) units.push(u);
             });
+            units.sort((a,b) => a.localeCompare(b));
 
             if (selectedUnit !== 'ALL') {
                 units = units.filter(u => u === selectedUnit);
@@ -2166,18 +2230,16 @@
             let totalRenderedUnits = 0;
 
             units.forEach(u => {
-                // Filter pegawai di unit ini
                 const pegsInUnit = masterPegawaiDb.filter(p => {
                     const pegUnit = p.ruangan || 'Lainnya / Unassigned';
                     if (pegUnit !== u) return false;
                     if (selectedCategory !== 'ALL' && p.sub2 !== selectedCategory) return false;
                     if (search && !p.nama?.toLowerCase().includes(search) && !p.nip?.toLowerCase().includes(search) && !p.jabatan?.toLowerCase().includes(search)) return false;
                     return true;
-                });
+                }).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
 
                 totalRenderedUnits++;
 
-                // Header Unit Kerja tunggal (tanpa sekat STRUKTURAL / FUNGSIONAL)
                 tbody.innerHTML += `
                     <tr class="bg-emerald-100/90 border-b border-emerald-300 font-extrabold uppercase text-emerald-950 text-[9.5px] sm:text-[10px]">
                         <td colspan="3" class="p-2 text-left font-extrabold">
@@ -2218,9 +2280,29 @@
             window.renderDirektoriPerUnitTable();
 
             window.setText('unit-print-date', new Date().toLocaleDateString('id-ID'));
+            
+            // Direktur RSUD Sinjai
+            window.setText('unit-direktur-nama', masterKopConfig.direkturNama ? `( ${masterKopConfig.direkturNama} )` : '( ________________________ )');
+            window.setText('unit-direktur-nip', masterKopConfig.direkturNip ? `NIP. ${masterKopConfig.direkturNip}` : 'NIP. -');
+            const dirTtdImg = document.getElementById('unit-direktur-ttd-img');
+            if (dirTtdImg && masterKopConfig.direkturTtdUrl) {
+                dirTtdImg.src = masterKopConfig.direkturTtdUrl;
+                dirTtdImg.classList.remove('hidden');
+            } else if (dirTtdImg) {
+                dirTtdImg.classList.add('hidden');
+            }
+
+            // Kasubag UMPEG
             window.setText('unit-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('unit-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG,');
             window.setText('unit-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
+            const kasubagTtdImg = document.getElementById('unit-kasubag-ttd-img');
+            if (kasubagTtdImg && masterKopConfig.ttdUrl) {
+                kasubagTtdImg.src = masterKopConfig.ttdUrl;
+                kasubagTtdImg.classList.remove('hidden');
+            } else if (kasubagTtdImg) {
+                kasubagTtdImg.classList.add('hidden');
+            }
 
             const logoImg = document.getElementById('unit-report-logo-img');
             if (logoImg && masterKopConfig.logoUrl) logoImg.src = masterKopConfig.logoUrl;
@@ -2276,7 +2358,7 @@
             let rowNum = 1;
 
             const renderGroup = (jalurName, jobData) => {
-                const keys = Object.keys(jobData).sort();
+                const keys = Object.keys(jobData).sort((a,b) => a.localeCompare(b));
                 if (keys.length === 0) return;
 
                 tbody.innerHTML += `
@@ -2357,7 +2439,7 @@
                 if (jalur !== 'ALL' && p.sub2 !== jalur) return false;
                 if (search && !p.nama?.toLowerCase().includes(search) && !p.nip?.toLowerCase().includes(search)) return false;
                 return true;
-            });
+            }).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Tidak ada data monitoring.</td></tr>`;
@@ -2408,18 +2490,32 @@
             }
 
             window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
+            
+            // Direktur RSUD Sinjai
+            window.setText('matrix-direktur-nama', masterKopConfig.direkturNama ? `( ${masterKopConfig.direkturNama} )` : '( ________________________ )');
+            window.setText('matrix-direktur-nip', masterKopConfig.direkturNip ? `NIP. ${masterKopConfig.direkturNip}` : 'NIP. -');
+            const dirTtdImg = document.getElementById('matrix-direktur-ttd-img');
+            if (dirTtdImg && masterKopConfig.direkturTtdUrl) {
+                dirTtdImg.src = masterKopConfig.direkturTtdUrl;
+                dirTtdImg.classList.remove('hidden');
+            } else if (dirTtdImg) {
+                dirTtdImg.classList.add('hidden');
+            }
+
+            // Kasubag UMPEG
             window.setText('matrix-pejabat-nama', masterKopConfig.pejabatNama ? `( ${masterKopConfig.pejabatNama} )` : '( ________________________ )');
             window.setText('matrix-pejabat-jabatan', masterKopConfig.pejabatJabatan || 'Kepala Sub Bagian UMPEG,');
             window.setText('matrix-pejabat-nip', masterKopConfig.pejabatNip ? `NIP. ${masterKopConfig.pejabatNip}` : 'NIP. -');
+            const kasubagTtdImg = document.getElementById('matrix-kasubag-ttd-img');
+            if (kasubagTtdImg && masterKopConfig.ttdUrl) {
+                kasubagTtdImg.src = masterKopConfig.ttdUrl;
+                kasubagTtdImg.classList.remove('hidden');
+            } else if (kasubagTtdImg) {
+                kasubagTtdImg.classList.add('hidden');
+            }
 
             const logoImg = document.getElementById('matrix-logo-img');
             if (logoImg && masterKopConfig.logoUrl) logoImg.src = masterKopConfig.logoUrl;
-
-            const ttdImg = document.getElementById('matrix-ttd-img');
-            if (ttdImg && masterKopConfig.ttdUrl) {
-                ttdImg.src = masterKopConfig.ttdUrl;
-                ttdImg.classList.remove('hidden');
-            }
 
             document.body.className = "min-h-screen text-slate-800 flex flex-col antialiased print-mode-matrix";
             setTimeout(() => {
@@ -2528,6 +2624,7 @@
             const val = (document.getElementById('input-new-ruangan')?.value || '').trim();
             if (!val) return;
             masterRuanganList.push(val);
+            masterRuanganList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-ruangan').value = '';
             window.renderMasterRuanganCards();
             window.saveMasterConfigToCloud();
@@ -2567,6 +2664,7 @@
 
             if (!masterJabatanList[type]) masterJabatanList[type] = [];
             masterJabatanList[type].push(val);
+            masterJabatanList[type].sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-jabatan').value = '';
             window.renderMasterJabatanGrid();
             window.saveMasterConfigToCloud();
@@ -2595,6 +2693,7 @@
             const val = (document.getElementById('input-new-eselon')?.value || '').trim();
             if (!val) return;
             masterEselonList.push(val);
+            masterEselonList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-eselon').value = '';
             window.renderMasterEselonGrid();
             window.saveMasterConfigToCloud();
@@ -2621,6 +2720,7 @@
             const val = (document.getElementById('input-new-status-peg')?.value || '').trim();
             if (!val) return;
             masterStatusPegList.push(val);
+            masterStatusPegList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-status-peg').value = '';
             window.renderMasterStatusPegGrid();
             window.saveMasterConfigToCloud();
@@ -2647,6 +2747,7 @@
             const val = (document.getElementById('input-new-edu')?.value || '').trim();
             if (!val) return;
             masterEducationList.push(val);
+            masterEducationList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-edu').value = '';
             window.renderMasterEducationBadges();
             window.saveMasterConfigToCloud();
@@ -2669,6 +2770,7 @@
             const val = (document.getElementById('input-new-golongan')?.value || '').trim();
             if (!val) return;
             masterGolonganList.push(val);
+            masterGolonganList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-golongan').value = '';
             window.renderMasterGolonganBadges();
             window.saveMasterConfigToCloud();
@@ -2691,6 +2793,7 @@
             const val = (document.getElementById('input-new-org')?.value || '').trim();
             if (!val) return;
             masterOrgList.push(val);
+            masterOrgList.sort((a,b) => a.localeCompare(b));
             document.getElementById('input-new-org').value = '';
             window.renderMasterOrgBadges();
             window.saveMasterConfigToCloud();
@@ -2700,6 +2803,9 @@
 
         window.updateKopMasterConfig = function() {
             masterKopConfig.logoUrl = document.getElementById('cfg-logo-url')?.value || masterKopConfig.logoUrl;
+            masterKopConfig.direkturNama = document.getElementById('cfg-direktur-nama')?.value || masterKopConfig.direkturNama;
+            masterKopConfig.direkturNip = document.getElementById('cfg-direktur-nip')?.value || masterKopConfig.direkturNip;
+            masterKopConfig.direkturTtdUrl = document.getElementById('cfg-direktur-ttd-url')?.value || masterKopConfig.direkturTtdUrl;
             masterKopConfig.ttdUrl = document.getElementById('cfg-ttd-url')?.value || masterKopConfig.ttdUrl;
             masterKopConfig.pejabatNama = document.getElementById('cfg-pejabat-nama')?.value || '';
             masterKopConfig.pejabatJabatan = document.getElementById('cfg-pejabat-jabatan')?.value || '';
@@ -2900,6 +3006,7 @@
             target.detailJabatan.sub2 = target.sub2;
 
             if (isNew) masterPegawaiDb.push(target);
+            masterPegawaiDb.sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
 
             if (supabaseClient) {
                 try {
