@@ -630,7 +630,7 @@
                     </div>
                 </div>
 
-                <div class="table-scroll-container overflow-x-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
+                <div class="table-scroll-container overflow-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
                     <table class="w-full text-left border-collapse text-[9.5px] sm:text-[11px]">
                         <thead>
                             <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 sticky top-0 z-10 uppercase tracking-wide">
@@ -676,7 +676,7 @@
 
                 <!-- SUB-PANEL 1: TABEL UTAMA BUKU INDUK -->
                 <div id="panel-direktori-sub-semua" class="space-y-3">
-                    <div class="table-scroll-container overflow-x-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
+                    <div class="table-scroll-container overflow-auto max-h-[500px] rounded-xl border border-emerald-200/90 shadow-2xs">
                         <table class="w-full text-left border-collapse text-[9.5px] sm:text-[11px]">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-extrabold border-b border-emerald-900 sticky top-0 z-10 uppercase tracking-wide">
@@ -702,17 +702,6 @@
                                 </label>
                                 <select id="filter-direktori-unit-select" onchange="window.renderDirektoriPerUnitTable()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
                                     <option value="ALL">-- Semua Unit Kerja Master --</option>
-                                </select>
-                            </div>
-
-                            <div class="w-full sm:w-48">
-                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
-                                    <i class="fa-solid fa-sitemap text-emerald-600 mr-1"></i> Kategori Jalur Jabatan
-                                </label>
-                                <select id="filter-direktori-unit-category" onchange="window.renderDirektoriPerUnitTable()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
-                                    <option value="ALL">Semua Jalur Jabatan</option>
-                                    <option value="STRUKTURAL">STRUKTURAL</option>
-                                    <option value="FUNGSIONAL">FUNGSIONAL</option>
                                 </select>
                             </div>
 
@@ -746,7 +735,7 @@
                         <div class="w-16 h-16 shrink-0"></div>
                     </div>
 
-                    <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
+                    <div class="table-scroll-container overflow-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
                         <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10px]">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-extrabold text-left border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10 text-[9.5px] sm:text-[10px]">
@@ -816,6 +805,10 @@
                         <i class="fa-solid fa-id-card-clip"></i>
                         <span>Monitoring Kedinasan</span>
                     </button>
+                    <button type="button" onclick="window.switchLaporanSubTab('status')" id="btn-laporan-sub-status" class="flex-1 h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg font-bold text-emerald-950 hover:bg-emerald-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-[11px] sm:text-xs">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>Pegawai Per Status</span>
+                    </button>
                 </div>
 
                 <div class="border-b-4 border-double border-slate-900 pb-2 matrix-print-kop hidden print:flex items-center justify-between gap-4 text-center">
@@ -832,7 +825,7 @@
                 </div>
 
                 <div id="panel-laporan-sub-matriks" class="space-y-3">
-                    <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
+                    <div class="table-scroll-container overflow-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
                         <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10.5px]" id="table-export-matriks">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-black text-center border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10">
@@ -889,7 +882,7 @@
                         </div>
                     </div>
 
-                    <div class="table-scroll-container overflow-x-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
+                    <div class="table-scroll-container overflow-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
                         <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10.5px]" id="table-export-monitoring">
                             <thead>
                                 <tr class="bg-emerald-800 text-white font-black text-center border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10">
@@ -904,6 +897,53 @@
                                 </tr>
                             </thead>
                             <tbody id="monitoring-report-tbody" class="divide-y divide-emerald-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="panel-laporan-sub-status" class="hidden space-y-3">
+                    <div class="bg-emerald-50/80 p-2.5 sm:p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 no-print">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
+                            <div class="w-full sm:w-48">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
+                                    <i class="fa-solid fa-id-card text-emerald-600 mr-0.5"></i> Status Kepegawaian
+                                </label>
+                                <select id="filter-status-pegawai-select" onchange="window.renderSubTab3StatusKepegawaian()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                    <option value="ALL">Semua Status Kepegawaian</option>
+                                </select>
+                            </div>
+
+                            <div class="w-full sm:w-56">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
+                                    <i class="fa-solid fa-hospital text-emerald-600 mr-0.5"></i> Filter Unit Kerja
+                                </label>
+                                <select id="filter-status-unit-select" onchange="window.renderSubTab3StatusKepegawaian()" class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-bold text-slate-900 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                                    <option value="ALL">-- Semua Unit Kerja --</option>
+                                </select>
+                            </div>
+
+                            <div class="flex-1">
+                                <label class="block font-extrabold text-emerald-950 text-[9.5px] uppercase mb-1">
+                                    <i class="fa-solid fa-magnifying-glass text-emerald-600 mr-0.5"></i> Cari Nama / NIP / ID
+                                </label>
+                                <input type="text" id="filter-status-search" onkeyup="window.renderSubTab3StatusKepegawaian()" placeholder="Ketik kata kunci..." class="w-full h-8 sm:h-9 bg-white border border-emerald-300 rounded-lg px-2.5 font-semibold text-slate-800 text-xs focus:outline-none focus:border-emerald-600 shadow-2xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll-container overflow-auto max-h-[520px] rounded-xl border border-emerald-300 bg-white shadow-2xs">
+                        <table class="w-full text-left border-collapse text-[9.5px] sm:text-[10.5px]" id="table-export-status">
+                            <thead>
+                                <tr class="bg-emerald-800 text-white font-black text-center border-b border-emerald-900 uppercase tracking-wide sticky top-0 z-10">
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 w-8">NO.</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">NAMA PEGAWAI & NIP</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">JABATAN KEDINASAN</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-left">UNIT KERJA / RUANGAN</th>
+                                    <th class="p-2 sm:p-2.5 border-r border-emerald-700 text-center w-32">STATUS KEPEGAWAIAN</th>
+                                    <th class="p-2 sm:p-2.5 bg-emerald-950 text-center w-28">JALUR JABATAN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="status-report-tbody" class="divide-y divide-emerald-200"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1800,7 +1840,7 @@
 
         window.switchLaporanSubTab = function(subName) {
             activeLaporanSubTab = subName;
-            ['matriks', 'monitoring'].forEach(s => {
+            ['matriks', 'monitoring', 'status'].forEach(s => {
                 const panel = document.getElementById(`panel-laporan-sub-${s}`);
                 const btn = document.getElementById(`btn-laporan-sub-${s}`);
                 if (panel) {
@@ -1813,7 +1853,8 @@
                 }
             });
             if (subName === 'matriks') window.renderMatrixReport();
-            else window.renderSubTab2MonitoringKedinasan();
+            else if (subName === 'monitoring') window.renderSubTab2MonitoringKedinasan();
+            else if (subName === 'status') window.renderSubTab3StatusKepegawaian();
         };
 
         window.switchMasterSubTab = function(subName) {
@@ -1855,7 +1896,8 @@
                 else window.renderDirektoriPerUnitTable();
             } else if (activeAdminTab === 'laporan') {
                 if (activeLaporanSubTab === 'matriks') window.renderMatrixReport();
-                else window.renderSubTab2MonitoringKedinasan();
+                else if (activeLaporanSubTab === 'monitoring') window.renderSubTab2MonitoringKedinasan();
+                else if (activeLaporanSubTab === 'status') window.renderSubTab3StatusKepegawaian();
             } else if (activeAdminTab === 'master-data') {
                 window.switchMasterSubTab(activeMasterSubTab);
             }
@@ -2226,10 +2268,7 @@
             tbody.innerHTML = '';
 
             const unitSelectEl = document.getElementById('filter-direktori-unit-select');
-            const catSelectEl = document.getElementById('filter-direktori-unit-category');
-            
             const selectedUnit = unitSelectEl ? unitSelectEl.value : 'ALL';
-            const selectedCategory = catSelectEl ? catSelectEl.value : 'ALL';
             const search = (document.getElementById('search-direktori-unit')?.value || '').toLowerCase();
 
             if (unitSelectEl) {
@@ -2259,7 +2298,6 @@
                 const pegsInUnit = masterPegawaiDb.filter(p => {
                     const pegUnit = p.ruangan || 'Lainnya / Unassigned';
                     if (pegUnit !== u) return false;
-                    if (selectedCategory !== 'ALL' && p.sub2 !== selectedCategory) return false;
                     if (search && !p.nama?.toLowerCase().includes(search) && !p.nip?.toLowerCase().includes(search) && !p.jabatan?.toLowerCase().includes(search)) return false;
                     return true;
                 }).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
@@ -2508,18 +2546,87 @@
             });
         };
 
+        window.renderSubTab3StatusKepegawaian = function() {
+            const tbody = document.getElementById('status-report-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const statusSelectEl = document.getElementById('filter-status-pegawai-select');
+            const unitSelectEl = document.getElementById('filter-status-unit-select');
+
+            if (statusSelectEl && statusSelectEl.options.length <= 1) {
+                let optHtml = '<option value="ALL">Semua Status Kepegawaian</option>';
+                [...masterStatusPegList].sort((a,b) => a.localeCompare(b)).forEach(s => {
+                    optHtml += `<option value="${s}">${s}</option>`;
+                });
+                statusSelectEl.innerHTML = optHtml;
+            }
+
+            if (unitSelectEl && unitSelectEl.options.length <= 1) {
+                let optHtml = '<option value="ALL">-- Semua Unit Kerja --</option>';
+                [...masterRuanganList].sort((a,b) => a.localeCompare(b)).forEach(r => {
+                    optHtml += `<option value="${r}">${r}</option>`;
+                });
+                unitSelectEl.innerHTML = optHtml;
+            }
+
+            const selectedStatus = statusSelectEl?.value || 'ALL';
+            const selectedUnit = unitSelectEl?.value || 'ALL';
+            const search = (document.getElementById('filter-status-search')?.value || '').toLowerCase();
+
+            const filtered = masterPegawaiDb.filter(p => {
+                if (selectedStatus !== 'ALL' && p.status !== selectedStatus) return false;
+                if (selectedUnit !== 'ALL' && (p.ruangan || 'Lainnya / Unassigned') !== selectedUnit) return false;
+                if (search && !p.nama?.toLowerCase().includes(search) && !p.nip?.toLowerCase().includes(search) && !p.idPegawai?.toLowerCase().includes(search)) return false;
+                return true;
+            }).sort((a,b) => (a.nama||'').localeCompare(b.nama||''));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada data pegawai sesuai filter status.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((p, i) => {
+                const badgeColor = p.status === 'PNS' 
+                    ? 'bg-blue-100 text-blue-900 border-blue-300' 
+                    : (p.status || '').includes('PPPK') 
+                    ? 'bg-amber-100 text-amber-900 border-amber-300' 
+                    : 'bg-rose-100 text-rose-900 border-rose-300';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-emerald-50/50 transition-colors border-b border-emerald-100 text-[9.5px] sm:text-[10.5px]">
+                        <td class="p-1.5 sm:p-2 text-center font-bold font-mono text-slate-500">${i + 1}</td>
+                        <td class="p-1.5 sm:p-2">
+                            <div class="font-extrabold text-slate-900 leading-tight">${p.nama || p.username}</div>
+                            <div class="text-[8.5px] font-mono font-bold text-emerald-800">NIP: ${p.nip || '-'}</div>
+                        </td>
+                        <td class="p-1.5 sm:p-2 font-semibold text-slate-800">${p.jabatan || '-'}</td>
+                        <td class="p-1.5 sm:p-2 font-semibold text-slate-700">${p.ruangan || '-'}</td>
+                        <td class="p-1.5 sm:p-2 text-center font-bold">
+                            <span class="px-2 py-0.5 rounded-md border font-extrabold text-[8.5px] sm:text-[9.5px] ${badgeColor}">${p.status || '-'}</span>
+                        </td>
+                        <td class="p-1.5 sm:p-2 text-center font-mono font-bold text-slate-800">${p.sub2 || 'FUNGSIONAL'}</td>
+                    </tr>
+                `;
+            });
+        };
+
         window.printMatrixReport = function() {
             if (activeLaporanSubTab === 'matriks') {
                 window.renderMatrixReport();
-            } else {
+            } else if (activeLaporanSubTab === 'monitoring') {
                 window.renderSubTab2MonitoringKedinasan();
+            } else if (activeLaporanSubTab === 'status') {
+                window.renderSubTab3StatusKepegawaian();
             }
 
             const titleEl = document.getElementById('matrix-report-title');
             if (titleEl) {
                 titleEl.innerText = activeLaporanSubTab === 'matriks' 
                     ? 'LAPORAN REKAPITULASI MATRIKS SDM DAN FORMASI JABATAN' 
-                    : 'LAPORAN MONITORING KEDINASAN PEGAWAI';
+                    : activeLaporanSubTab === 'monitoring'
+                    ? 'LAPORAN MONITORING KEDINASAN PEGAWAI'
+                    : 'LAPORAN DAFTAR NOMINATIF PEGAWAI BERDASARKAN STATUS KEPEGAWAIAN';
             }
 
             window.setText('matrix-print-date', new Date().toLocaleDateString('id-ID'));
@@ -2557,12 +2664,16 @@
         };
 
         window.exportMatrixToExcel = function() {
-            const tbl = document.getElementById('table-export-matriks');
+            let tblId = 'table-export-matriks';
+            if (activeLaporanSubTab === 'monitoring') tblId = 'table-export-monitoring';
+            else if (activeLaporanSubTab === 'status') tblId = 'table-export-status';
+
+            const tbl = document.getElementById(tblId);
             if (!tbl) return;
             const html = tbl.outerHTML;
             const a = document.createElement('a');
             a.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
-            a.download = `Matriks_SDM_RSUD_Sinjai_${new Date().toISOString().slice(0,10)}.xls`;
+            a.download = `Laporan_${activeLaporanSubTab.toUpperCase()}_RSUD_Sinjai_${new Date().toISOString().slice(0,10)}.xls`;
             a.click();
         };
 
